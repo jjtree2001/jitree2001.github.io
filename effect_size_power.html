@@ -208,9 +208,6 @@ footer strong { color: rgba(247,243,238,0.85); }
   </div>
 </nav>
 
-<!-- ═══════════════════════════════════════════════
-     OVERVIEW
-═══════════════════════════════════════════════ -->
 <section id="overview">
   <div class="container">
     <div class="section-num">Overview</div>
@@ -248,9 +245,9 @@ footer strong { color: rgba(247,243,238,0.85); }
 
     <h3 style="margin-top:2.2rem;">A quick primer on p-values, before we go further</h3>
 
-    <p>Since we haven't dicsussed p-values in my earlier websites, a brief reminder. A p-value below .05 means the observed mean difference sits in the tail of the null probability distribution that is less likely than 1-in-20 if the true effect were exactly zero. The threshold of .05 has no deep theoretical meaning — it is a long-standing convention. What matters far more is what <em>determines</em> whether you cross it.</p>
+    <p>Since this is the first time we have looked directly at p-values, a brief orientation. A p-value below .05 means the observed mean difference sits in the tail of the null probability distribution that is less likely than 1-in-20 if the true effect were exactly zero. The threshold of .05 has no deep theoretical meaning — it is a long-standing convention. What matters far more is what <em>determines</em> whether you cross it.</p>
 
-    <p>Throughout this page two ingredients will keep returning, because together they explain why any result is significant or not. <strong>The size of the effect</strong> — how big is the difference between conditions? — and <strong>the precision of the estimate</strong> — how certain are we about that difference, given how much data we have? Put simply: if a difference is very large, we can tolerate quite a lot of uncertainty about its exact value and still be confident it is not exactly zero (since this is all null hypothesis testing is actually asking). If the difference is small, we need to be much more <em>certain</em> about it — much more precise — before we can rule zero out. Both ingredients clearly contribute, and a p-value collapses them into a single number — which is exactly why a p-value alone can mislead.</p>
+    <p>Throughout this page two ingredients will keep returning, because together they explain why any result is significant or not. <strong>The size of the effect</strong> — how big is the difference between conditions? — and <strong>the precision of the estimate</strong> — how certain are we about that difference, given how much data we have? Put simply: if a difference is very large, we can tolerate quite a lot of uncertainty about its exact value and still be confident it is not zero. If the difference is small, we need to be much more <em>certain</em> about it — much more precise — before we can rule zero out. Both ingredients clearly contribute, and a p-value collapses them into a single number — which is exactly why a p-value alone can mislead.</p>
 
     <div class="key-msg">
       <strong>Why effect size <em>and</em> precision both matter</strong>
@@ -259,15 +256,12 @@ footer strong { color: rgba(247,243,238,0.85); }
   </div>
 </section>
 
-<!-- ═══════════════════════════════════════════════
-     SECTION 1: WHY EFFECT SIZE?
-═══════════════════════════════════════════════ -->
 <section id="why">
   <div class="container">
     <div class="section-num">Section 1</div>
     <h2>Why effect size? The problem with p &lt; .05</h2>
 
-    <p>The p-value tells you the probability of observing a result as extreme as yours, assuming the null hypothesis is true. Cross the threshold of .05 and researchers declare "significance." But as I just flagged, "significance" is the joint result of two ingredients — the size of the effect, and the precision with which it is estimated. The widget below makes that joint dependence visible.</p>
+    <p>The p-value tells you the probability of observing a result as extreme as yours, assuming the null hypothesis is true. Cross the threshold of .05 and researchers declare "significance." But as we just flagged, "significance" is the joint result of two ingredients — the size of the effect, and the precision with which it is estimated. The widget below makes that joint dependence visible.</p>
 
     <div class="key-msg">
       <strong>Cohen's benchmarks — use with caution</strong>
@@ -330,9 +324,6 @@ footer strong { color: rgba(247,243,238,0.85); }
   </div>
 </section>
 
-<!-- ═══════════════════════════════════════════════
-     SECTION 2: COMPUTING d
-═══════════════════════════════════════════════ -->
 <section id="computing">
   <div class="container">
     <div class="section-num">Section 2</div>
@@ -395,17 +386,14 @@ footer strong { color: rgba(247,243,238,0.85); }
       <div class="info-note" id="d-interp"></div>
     </div>
 
-    <p>Cohen's U3 is a useful way to explain d to non-statisticians: it is the percentage of Group 1 scores that fall below the mean of Group 2. At d = 1.0, 84% of one group scores below the average of the other — a substantial separation. At d = 0.2, only 58% do — barely better than chance. You can play with the key parameters (size difference between means/pooled variance) in the widget above to see the degree of this overlap - if you can create what a effect size of 0.2 looks like, it will be obvious how much the two distributions actually overlap in practice!</p>
+    <p>Cohen's U3 is a useful way to explain d to non-statisticians: it is the percentage of Group 1 scores that fall below the mean of Group 2. At d = 1.0, 84% of one group scores below the average of the other — a substantial separation. At d = 0.2, only 58% do — barely better than chance.</p>
 
-    <p>Two things to notice in the calculator that connect to the wider story of this page. First, the calculator uses a single <strong>pooled SD</strong> — it implicitly assumes both groups have the same within-group spread. As you drag the SD slider down, the two distributions sharpen, the overlap shrinks, and d grows. That is the precision side of the joint story showing up directly: lower within-group variability means each group's mean is estimated more sharply, so the same raw mean difference translates into a larger d. Higher SD means the same raw difference looks smaller in standardised units.</p>
+    <p>Two things to notice in the calculator that connect to the wider story of this page. First, the calculator uses a single <strong>pooled SD</strong> — it implicitly assumes both groups have the same within-group spread. As you drag the SD slider down, the two distributions sharpen, the overlap shrinks, and d grows. Strictly speaking, this is the variability side of the story. Precision enters once we also specify N, because the standard error depends on both SD and sample size. Lower within-group variability means each group's mean can be estimated more sharply, so the same raw mean difference translates into a larger standardised effect. Higher SD means the same raw difference looks smaller in standardised units.</p>
 
     <p>Second, Cohen's d is <em>mechanical</em>. The formula will compute a number whether or not the two groups actually share the same variance — and it will produce that number regardless of whether the homogeneity-of-variance assumption (which we discussed at length in <a href="stats_part2_v2.html#s1">Part 2 §01</a>) holds. The calculator does not check, and neither does Cohen's d itself. If your two groups have genuinely different SDs, the choice of which SD to put in the denominator is no longer obvious, and d will give different answers depending on how you decide. That is the question §3 takes up.</p>
   </div>
 </section>
 
-<!-- ═══════════════════════════════════════════════
-     SECTION 3: THE DENOMINATOR PROBLEM
-═══════════════════════════════════════════════ -->
 <section id="denominator">
   <div class="container">
     <div class="section-num">Section 3</div>
@@ -419,7 +407,7 @@ footer strong { color: rgba(247,243,238,0.85); }
       <div class="widget-title">Denominator comparison — same data, three answers</div>
 
       <p style="font-size:13.5px; color:#555; margin-bottom:1rem; background:#f7f3ee; padding:0.6rem 0.9rem; border-radius:6px;">
-        Scenario: Control group M = 50, SD = 10, n = 20 &nbsp;·&nbsp; Treatment group M = 62, SD = 16, n = 20 - Note: I have delibertely created a situation where the variance across groups is obviously different.
+        Scenario: Control group M = 50, SD = 10, n = 20 &nbsp;·&nbsp; Treatment group M = 62, SD = 16, n = 20
       </p>
 
       <div class="toggle-group">
@@ -438,9 +426,6 @@ footer strong { color: rgba(247,243,238,0.85); }
   </div>
 </section>
 
-<!-- ═══════════════════════════════════════════════
-     SECTION 4: THE REPLICATION BRIDGE
-═══════════════════════════════════════════════ -->
 <section id="bridge">
   <div class="container">
     <div class="section-num">Section 4</div>
@@ -448,60 +433,65 @@ footer strong { color: rgba(247,243,238,0.85); }
 
     <p>You have read a published study. It reports Cohen's d = 0.5 for a two-group comparison. Your task is to replicate it. The critical question: <strong>how many participants do you need?</strong></p>
 
-    <p>The bridge from d back to N runs through the standard error. We unpacked the difference between the standard deviation and the standard error in <a href="lln_website_v2.html">Part 1</a> in detail; the very short recap is that SD is a fixed property of the population (how much individual scores vary), while SE is a property of your estimate (how precisely your sample mean tracks the true population mean), and the link between them is:</p>
+    <p>The bridge from d back to N runs through the standard error. We unpacked the difference between the standard deviation and the standard error in <a href="lln_website_v2.html">Part 1</a> in detail; the very short recap is that SD is a property of the population or sample spread, while SE is a property of your estimate — how precisely your sample estimate tracks the relevant population quantity. For a single mean, the familiar link is:</p>
 
-    <div class="formula-box">SE = SD / √N</div>
+    <div class="formula-box">SE<sub>mean</sub> = SD / √N</div>
 
-    <p>This single formula does most of the heavy lifting on this page. Three things hang off it that are worth holding together explicitly:</p>
+    <p>For a two-independent-groups design with equal N per group, however, the relevant quantity is the standard error of the <em>difference</em> between means:</p>
+
+    <div class="formula-box">SE<sub>difference</sub> = SD<sub>pooled</sub> × √(2 / N)</div>
+
+    <p>This is the version doing the work in the widgets on this page. Because Cohen's d is the mean difference divided by SD<sub>pooled</sub>, the test statistic can be written as:</p>
+
+    <div class="formula-box">t ≈ d × √(N / 2)</div>
+
+    <p>Three things hang off this that are worth holding together explicitly:</p>
 
     <div class="grid-2" style="margin: 1.2rem 0; gap: 14px;">
       <div style="background: #eaf4f4; border-radius:8px; padding:1rem; border-left: 3px solid #2a6b6e;">
         <strong style="color:#1a1714;">Connection back to §1 — why p depends on N</strong>
-        <p style="font-size:14px; color:#444; margin-top:0.4rem; margin-bottom:0;">The test statistic (t or z) divides the raw mean difference by the SE. As N increases, SE shrinks, so the same true effect d produces a larger and larger test statistic and a smaller p-value. That is exactly the dynamic the §1 widget displayed. The "p depends on N" pattern is just SE = SD / √N showing up in the denominator of the test.</p>
+        <p style="font-size:14px; color:#444; margin-top:0.4rem; margin-bottom:0;">The test statistic divides the raw mean difference by the SE of that difference. As N increases, SE shrinks, so the same true effect d produces a larger and larger test statistic and a smaller p-value. That is exactly the dynamic the §1 widget displayed.</p>
       </div>
       <div style="background: #f5e8d0; border-radius:8px; padding:1rem; border-left: 3px solid #c07c2a;">
         <strong style="color:#c07c2a;">Connection forward to §5 — why N scales with d²</strong>
-        <p style="font-size:14px; color:#444; margin-top:0.4rem; margin-bottom:0;">Because SE shrinks with √N (not N), each additional participant buys less precision than the last — the classic <em>diminishing returns</em>. Doubling N only multiplies precision by √2 ≈ 1.41, not by 2. To halve the SE you need to <em>quadruple</em> the sample. That is where §5's "N scales with d²" rule comes from.</p>
+        <p style="font-size:14px; color:#444; margin-top:0.4rem; margin-bottom:0;">Because SE shrinks with √N rather than N, each additional participant buys less precision than the last — the classic <em>diminishing returns</em>. Doubling N only multiplies precision by √2 ≈ 1.41, not by 2. To halve the SE you need to <em>quadruple</em> the sample. That is where §5's "N scales with d²" rule comes from.</p>
       </div>
     </div>
 
-    <p>So SE/√N is the same engine running in three places: it's why a tiny effect can become "significant" if N grows large enough (§1), it's how power analysis converts an expected d into a required N (§5), and — as we will see in the advanced section — it is also what makes the conventional null hypothesis structurally indefensible in the limit, since the SE will eventually shrink enough to produce p &lt; .05 for <em>any</em> nonzero true effect.</p>
+    <p>So the same standard-error machinery is running in three places: it is why a tiny effect can become "significant" if N grows large enough (§1), it is how power analysis converts an expected d into a required N (§5), and — as we will see in the advanced section — it is also what makes the conventional point-null hypothesis structurally weak in the limit, since the SE will eventually shrink enough to produce p &lt; .05 for <em>any</em> nonzero true effect.</p>
   </div>
 </section>
 
-<!-- ═══════════════════════════════════════════════
-     SECTION 5: POWER ANALYSIS
-═══════════════════════════════════════════════ -->
 <section id="power">
   <div class="container">
     <div class="section-num">Section 5</div>
     <h2>Power analysis — reverse engineering your sample size</h2>
 
-    <p>Power analysis works backwards from the question: <em>given the effect I expect to find, how many participants do I need to detect it reliably?</em> The same two-ingredients message returns one more time, with the planning logic on top: the bigger you expect the effect to be, the less precision (and so the fewer participants) you will need to be confident the result clears "not zero". The smaller the expected effect, the more precision you will need, and the more participants this implies. Power analysis just makes that trade-off quantitative.</p>
+    <p>Power analysis works backwards from the question: <em>given the effect I expect to find, how many participants do I need to detect it reliably?</em> The same two-ingredients message returns one more time, with the planning logic on top: the bigger you expect the effect to be, the less precision — and so the fewer participants — you will need to be confident the result clears "not zero". The smaller the expected effect, the more precision you will need, and the more participants this implies. Power analysis just makes that trade-off quantitative.</p>
 
     <p>You supply three inputs and the analysis outputs the required N.</p>
 
     <div class="grid-3" style="margin: 1.2rem 0;">
       <div style="background:#ede8e1; border-radius:8px; padding:0.9rem; text-align:center;">
         <div style="font-size:1.5rem; font-weight:700; color:#1a1714;">d</div>
-        <div style="font-size:12px; color:#888; margin-top:3px;">Expected effect size (from the study you are replicating)</div>
+        <div style="font-size:12px; color:#888; margin-top:3px;">Expected effect size from the study you are replicating</div>
       </div>
       <div style="background:#ede8e1; border-radius:8px; padding:0.9rem; text-align:center;">
         <div style="font-size:1.5rem; font-weight:700; color:#1a1714;">α</div>
-        <div style="font-size:12px; color:#888; margin-top:3px;">Acceptable false positive rate (typically .05)</div>
+        <div style="font-size:12px; color:#888; margin-top:3px;">Acceptable false-positive rate, typically .05</div>
       </div>
       <div style="background:#ede8e1; border-radius:8px; padding:0.9rem; text-align:center;">
         <div style="font-size:1.5rem; font-weight:700; color:#1a1714;">1−β</div>
-        <div style="font-size:12px; color:#888; margin-top:3px;">Desired power — probability of detecting the effect if real (typically .80)</div>
+        <div style="font-size:12px; color:#888; margin-top:3px;">Desired power — probability of detecting the effect if real, typically .80</div>
       </div>
     </div>
 
     <div class="key-msg">
       <strong>What "desired power" actually means</strong>
-      α is the false-positive rate students usually have a feel for: ".05" means we accept a 1-in-20 chance of declaring an effect when there isn't one. Power (1 − β) is the matching question on the other side: <em>given that the effect is real, what is the probability our study actually detects it?</em> The conventional 80% means we are accepting a 1-in-5 chance of missing a real effect. This is the "certainty" half of the two ingredients made explicit at the planning stage. Higher desired power → more precision required → larger N. Lower power → smaller N but more frequent false negatives.
+      α is the false-positive rate students usually have a feel for: ".05" means we accept a 1-in-20 chance of declaring an effect when there isn't one. Power (1 − β) is the matching question on the other side: <em>given that the effect <strong>is</strong> real, what is the probability our study actually detects it?</em> The conventional 80% means we are accepting a 1-in-5 chance of missing a real effect. This is the "certainty" half of the two ingredients made explicit at the planning stage. Higher desired power → more precision required → larger N. Lower power → smaller N but more frequent false negatives.
     </div>
 
-    <p>The underlying logic is geometric. You have two overlapping distributions of your test statistic. The <span class="hl">null distribution</span> (blue) is centred on zero — the "no effect" world. The <span class="hl-a">alternative distribution</span> (orange) is shifted by the true effect. Power (green shaded area) is the proportion of the alternative distribution that clears your critical value. Increasing N squeezes both distributions tighter, separating them. Power analysis finds the N at which the overlap drops to your acceptable threshold.</p>
+    <p>The underlying logic is geometric. You have two overlapping distributions of your test statistic. The <span class="hl">null distribution</span> is centred on zero — the "no effect" world. The <span class="hl-a">alternative distribution</span> is shifted by the true effect. Power is the proportion of the alternative distribution that clears your critical value. Increasing N squeezes both distributions tighter, separating them. Power analysis finds the N at which the overlap drops to your acceptable threshold.</p>
 
     <div class="widget">
       <div class="widget-title">Power analysis calculator</div>
@@ -562,83 +552,75 @@ footer strong { color: rgba(247,243,238,0.85); }
   </div>
 </section>
 
-<!-- ═══════════════════════════════════════════════
-     SECTION 6: ANCRED — REVERSE BAYES
-═══════════════════════════════════════════════ -->
 <section id="ancred" style="background:#f4f2ee;">
   <div class="container">
     <div class="section-num">Advanced Section</div>
     <h2>The AnCred framework — credibility beyond p &lt; .05</h2>
 
-    <!-- ─── THE CORE DIAGNOSIS ─── -->
     <div style="background:#1a1714; color:white; border-radius:12px; padding:1.5rem 1.75rem; margin-bottom:1.75rem;">
       <div style="font-size:11px; letter-spacing:2px; text-transform:uppercase; color:#c07c2a; font-weight:700; margin-bottom:0.6rem;">The central problem</div>
-      <p style="color:#e8edf5; margin-bottom:0.75rem; font-size:1.05rem; line-height:1.7;">With a point null hypothesis — the conventional assumption that the true effect is <em>exactly</em> zero — statistical significance is ultimately just a function of how long you are willing to collect data. Because SE shrinks with N, the null and alternative distributions will always eventually separate, for any true effect however trivial. Run enough participants and even a meaningless difference becomes "statistically significant."</p>
+      <p style="color:#e8edf5; margin-bottom:0.75rem; font-size:1.05rem; line-height:1.7;">With a point null hypothesis — the conventional assumption that the true effect is <em>exactly</em> zero — statistical significance is ultimately just a function of how long you are willing to collect data. Because the standard error shrinks with N, the null and alternative distributions will always eventually separate, for any true effect however trivial. Run enough participants and even a meaningless difference becomes "statistically significant."</p>
       <p style="color:#c8b8a4; margin-bottom:0; font-size:0.95rem;">The fix is to set the hypothesis being tested to a <strong style="color:white;">distribution of effects</strong> rather than a single point — a distribution that represents what a sceptic would have to believe before being convinced something real is going on. We will see two ways of operationalising this idea, plus a third framework that looks similar but works very differently. Untangling the three is the main business of this section.</p>
     </div>
 
-    <!-- ─── THE POINT NULL PROBLEM EXPANDED ─── -->
     <h3 style="font-size:1.15rem; color:#1a1714;">Why the point null is a straw man</h3>
 
     <p>The point null says: "the true effect is precisely zero." But in the real world, no two groups are ever <em>exactly</em> identical. Any manipulation, any group difference, any intervention will move the mean by some amount — if only by a fraction. The question is never really <em>is the effect zero?</em> It is <em>is the effect large enough to matter?</em></p>
 
-    <p>Because SE = SD / √N, increasing N always shrinks the SE, which always squeezes the null and alternative distributions further apart. This means any true effect — even one too small to care about — will produce p &lt; .05 with a sufficiently large sample. Significance becomes a measure of your patience, not the importance of your finding.</p>
+    <p>Because the standard error shrinks as N grows, increasing N always makes the estimated difference more precise. This means any true effect — even one too small to care about — will produce p &lt; .05 with a sufficiently large sample. Significance becomes a measure of your patience, not the importance of your finding.</p>
 
-    <p>Psychologist Paul Meehl identified this concretely with his concept of the <strong>crud factor</strong>: in psychology, almost any two groups you compare will differ on almost any measure you take, typically producing Cohen's d values around 0.2, purely because of the accumulated background correlation between all measured variables. A d of 0.2 is ambient noise — routinely observable, rarely meaningful. Yet with N = 200 per group it will produce p &lt; .001. The point null has nothing useful to say about this.</p>
+    <p>Psychologist Paul Meehl identified this concretely with his concept of the <strong>crud factor</strong>: in psychology, almost any two groups you compare will differ on almost any measure you take, typically producing small nonzero effects because of the accumulated background correlation between measured variables. A d of 0.2 may be ambient noise — routinely observable, rarely meaningful. Yet with around 550 participants per group it can produce p &lt; .001. The point null has nothing useful to say about this.</p>
 
     <div class="key-msg">
       <strong>The null-stretching solution</strong>
       Instead of asking "does the effect differ from precisely zero?", ask "does the effect clear a region around zero that represents either (a) what a reasonable sceptic should be willing to concede is plausible, or (b) the minimum size we'd consider practically meaningful?" Both reframings force significance to mean something real rather than just reflecting accumulated N.
     </div>
 
-    <!-- ─── WHY DOES SE SHRINK? ─── -->
     <h3 style="font-size:1.15rem; color:#1a1714;">Why does this happen?</h3>
 
-    <p>The root cause is the same SE = SD / √N machinery we kept revisiting in §4 and built up properly in <a href="lln_website_v2.html">Part 1</a>. As N grows, SE shrinks; the t-statistic — mean difference / SE — therefore grows toward infinity for <em>any</em> nonzero true effect, no matter how small.</p>
+    <p>The root cause is the same standard-error machinery we kept revisiting in §4 and built up properly in <a href="lln_website_v2.html">Part 1</a>. As N grows, SE shrinks; the test statistic — mean difference divided by SE — therefore grows for <em>any</em> nonzero true effect, no matter how small. For a two-independent-groups design with equal group sizes, this is:</p>
 
-    <div class="formula-box">t = mean difference / SE &nbsp;&nbsp;=&nbsp;&nbsp; mean difference / (SD / √N)</div>
+    <div class="formula-box">t ≈ d × √(N / 2)</div>
 
-    <p>The point worth restating here is that this is <em>not a bug in the statistics</em>. The estimator is doing exactly what it should — becoming more and more precise. The bug is in the interpretation: treating "the t-statistic cleared the threshold" as equivalent to "the effect is meaningfully large." Those are completely different claims, and given enough patience the threshold will be cleared for any nonzero true effect, including effects too small to care about, like the 'background noise' of small correlations that Meehl suggests happen all the time. So the threshold itself stops being informative.</p>
+    <p>The point worth restating here is that this is <em>not a bug in the statistics</em>. The estimator is doing exactly what it should — becoming more and more precise. The bug is in the interpretation: treating "the t-statistic cleared the threshold" as equivalent to "the effect is meaningfully large." Those are completely different claims, and given enough patience the threshold will be cleared for any nonzero true effect, including effects too small to care about. So the threshold itself stops being informative.</p>
 
-    <!-- ─── THREE FRAMEWORKS ─── -->
     <h3 style="font-size:1.15rem; color:#1a1714;">Three frameworks — three different ways to set up the question</h3>
 
     <p>Three different fixes have been proposed for this. They are easy to confuse because all three sound, on the surface, like they are "doing something with zero". Mechanically they are very different — in places, opposite. The cards below pull them apart.</p>
 
     <div class="grid-3" style="margin:1.5rem 0; gap:14px; align-items: stretch;">
-      <div style="background:white; border-top:3px solid #b84040; border:1px solid #ddd6cb; border-top:3px solid #b84040; border-radius:6px; padding:1.1rem 1.2rem;">
+      <div style="background:white; border:1px solid #ddd6cb; border-top:3px solid #b84040; border-radius:6px; padding:1.1rem 1.2rem;">
         <div style="font-size:11px; font-weight:700; letter-spacing:0.15em; text-transform:uppercase; color:#b84040; margin-bottom:0.5rem;">1 · NHST (the default)</div>
         <strong style="font-size:1rem; color:#1a1714; display:block; margin-bottom:0.3rem;">Point null at exactly zero</strong>
-        <p style="font-size:14px; color:#555; margin:0;">Tests whether the effect differs from <em>exactly</em> zero. Because the null is a single point, even a tiny nonzero effect rejects it given enough N — as we have just seen. This is the framework's structural weakness - all you are doing is chasing a binary outcome (i.e., below or above an arbitrary probability value).</p>
+        <p style="font-size:14px; color:#555; margin:0;">Tests whether the effect differs from <em>exactly</em> zero. Because the null is a single point, even a tiny nonzero effect rejects it given enough N. This is the framework's structural weakness.</p>
       </div>
       <div style="background:white; border:1px solid #ddd6cb; border-top:3px solid #1a1714; border-radius:6px; padding:1.1rem 1.2rem;">
         <div style="font-size:11px; font-weight:700; letter-spacing:0.15em; text-transform:uppercase; color:#1a1714; margin-bottom:0.5rem;">2 · Reverse Bayes / AnCred</div>
         <strong style="font-size:1rem; color:#1a1714; display:block; margin-bottom:0.3rem;">Tight distribution around zero</strong>
-        <p style="font-size:14px; color:#555; margin:0;">The hypothesis is now a distribution — typically Gaussian, centred on zero, deliberately tight. To shift it requires the data to be both <em>large</em> in effect and <em>precise</em> in CI. Larger effects are required to overturn tighter scepticism, where scepticism in this case is represented as higher and higher certainty that no effect actually exists.</p>
+        <p style="font-size:14px; color:#555; margin:0;">The hypothesis is now a distribution — typically Gaussian, centred on zero, deliberately tight. To shift it requires the data to be both <em>large</em> in effect and <em>precise</em> in CI. Larger effects are required to overturn tighter scepticism.</p>
       </div>
       <div style="background:white; border:1px solid #ddd6cb; border-top:3px solid #c07c2a; border-radius:6px; padding:1.1rem 1.2rem;">
         <div style="font-size:11px; font-weight:700; letter-spacing:0.15em; text-transform:uppercase; color:#c07c2a; margin-bottom:0.5rem;">3 · ROPE / Meehl's crud</div>
         <strong style="font-size:1rem; color:#1a1714; display:block; margin-bottom:0.3rem;">Pre-specified equivalence region</strong>
-        <p style="font-size:14px; color:#555; margin:0;">Not really about zero at all. Decide in advance that anything below some threshold (e.g., d &lt; 0.2 is "crud") doesn't count, then test whether the CI clears <em>that</em> boundary. Closer in spirit to NHST, but with a distribution as the threshold you are seeking to eliminate rather than exactly zero.</p>
+        <p style="font-size:14px; color:#555; margin:0;">This replaces the point null with a pre-specified region around zero that counts as practically negligible. Decide in advance that anything below some threshold — for example, d &lt; 0.2 as "crud" — does not count as meaningful, then ask whether the CI clears that boundary.</p>
       </div>
     </div>
 
     <div class="key-msg">
       <strong>Why these are not the same idea — read this carefully</strong>
-      In NHST, a tight focus on zero is structurally <em>weak</em>: any tiny nonzero effect will reject it given enough precision. In Reverse Bayes, a tight prior around zero is structurally <em>strong</em> — it carries informative content and resists being moved unless the data are both large and precise. Put simply if I have a very high certainty that the real effect is zero (I am VERY sceptical!) you will need to show me something extraordinary for me to think twice. The two frameworks operationalise "tight around zero" in opposite ways. ROPE is a third thing entirely: it does not centre on zero at all; it has chosen a non-trivial threshold above which an effect counts as real. So all three appear, on first hearing, to be "fixing the null", and all three are doing structurally different things.
+      In NHST, a tight focus on zero is structurally <em>weak</em>: any tiny nonzero effect will reject it given enough precision. In Reverse Bayes, a tight prior around zero is structurally <em>strong</em> — it carries informative content and resists being moved unless the data are both large and precise. The two frameworks operationalise "tight around zero" in opposite ways. ROPE is a third thing: it defines a region around zero that counts as practically negligible, and asks whether the evidence clears that region. So all three appear, on first hearing, to be "fixing the null", but they are doing structurally different things.
     </div>
 
-    <!-- ─── SL ─── -->
     <h3 style="margin-top:1.75rem; font-size:1.15rem; color:#1a1714;">The Scepticism Limit (SL) — how Reverse Bayes works</h3>
 
     <p>AnCred (Analysis of Credibility), developed by statistician Robert Matthews, computes the SL directly from your confidence interval. The sceptic maintains a prior distribution centred on zero — they are specifically doubtful that any effect exists. The SL answers: <em>how wide does that distribution need to be before your data can overcome their scepticism?</em></p>
 
     <div style="background:#eaf4f4; border:1px solid #b0d8da; border-radius:8px; padding:1.1rem 1.4rem; margin:1.25rem 0;">
       <div style="font-size:11px; font-weight:700; letter-spacing:0.15em; text-transform:uppercase; color:#2a6b6e; margin-bottom:0.6rem;">The Bayesian mechanics under the hood</div>
-      <p style="font-size:14.5px; color:#444; margin-bottom:0.7rem;">In a Bayesian update, posterior belief is a compromise between prior information (what was believed beforehand) and data information (how precise and strong the observed evidence is). In the normal–normal setting that maps cleanly to standard t-tests, the posterior mean is a weighted average:</p>
+      <p style="font-size:14.5px; color:#444; margin-bottom:0.7rem;">In a Bayesian update, posterior belief is a compromise between prior information — what was believed beforehand — and data information — how precise and strong the observed evidence is. In the normal–normal setting that maps cleanly to standard tests, the posterior mean is a weighted average:</p>
       <div style="font-family: 'DM Mono', monospace; text-align: center; font-size: 1rem; color: #1a1714; margin: 0.6rem 0 0.7rem;">μ<sub>post</sub> = <em>w</em> · μ<sub>data</sub> + (1 − <em>w</em>) · μ<sub>prior</sub></div>
-      <p style="font-size:14.5px; color:#444; margin-bottom:0.7rem;">where the weight <em>w</em> increases as the data become more precise. A <em>tight</em> sceptical prior centred on zero — high certainty, low variance — operationalises the position: "I am fairly certain there is no meaningful effect unless compelling evidence says otherwise." Weak or noisy data won't shift such a prior. Only strong, precise data — large effect <em>and</em> tight CI — can move it appreciably.</p>
-      <p style="font-size:14.5px; color:#444; margin-bottom:0;">Reverse Bayes inverts the operation. Rather than asserting a prior up front and computing a posterior, AnCred asks: <em>how tight a sceptical prior would the observed data have just barely overturned?</em> A low SL means even very tight scepticism cannot survive the evidence. A high SL means only loose, easily-shifted scepticism could be persuaded — which ironically is  <em>also <em> the same as saying the evidence is not really compelling!</p>
+      <p style="font-size:14.5px; color:#444; margin-bottom:0.7rem;">where the weight <em>w</em> increases as the data become more precise. A <em>tight</em> sceptical prior centred on zero — high certainty, low variance — operationalises the position: "I am fairly certain there is no meaningful effect unless compelling evidence says otherwise." Weak or noisy data will not shift such a prior. Only strong, precise data — large effect <em>and</em> tight CI — can move it appreciably.</p>
+      <p style="font-size:14.5px; color:#444; margin-bottom:0;">Reverse Bayes inverts the operation. Rather than asserting a prior up front and computing a posterior, AnCred asks: <em>how tight a sceptical prior would the observed data have just barely overturned?</em> A low SL means even very tight scepticism cannot survive the evidence. A high SL means only loose, easily shifted scepticism could be persuaded — which is the same as saying the evidence is not really compelling.</p>
     </div>
 
     <p>This is the place students often get confused, because NHST also "centres on zero". The key contrast: in NHST, "centred on zero" means a single point, which any tiny effect can reject given enough N. In Reverse Bayes, "centred on zero" means a tight <em>distribution</em> with informative content, which actively resists being moved. A wide sceptical prior is paradoxically a <em>weak</em> form of scepticism — a sceptic who concedes that effects up to 40 points are possible is easy to convince. The genuinely demanding sceptic holds a tight prior around zero. A low SL means your data defeated that hard opponent.</p>
@@ -661,7 +643,16 @@ footer strong { color: rgba(247,243,238,0.85); }
     </div>
 
     <div class="info-note" style="margin-bottom:1.25rem;">
-      <strong>A caveat about the CI itself.</strong> The SL formula treats the observed CI as a fixed object, but as we discussed in <a href="lln_website_v2.html">Part 1 §03</a>, a 95% CI is a property of the procedure (it contains the true parameter 95% of the time across hypothetical repetitions), not a property of the particular interval you have in your hands. The CI you observed is itself a sample-bound estimate. So SL is best read as "roughly how strong does scepticism need to be to absorb this result?" — a heuristic for credibility — rather than as a precise dividing line.</div>
+      <strong>A caveat about the CI itself.</strong> The SL formula treats the observed CI as a fixed object, but as we discussed in <a href="lln_website_v2.html">Part 1 §03</a>, a 95% CI is a property of the procedure — it contains the true parameter 95% of the time across hypothetical repetitions — not a property of the particular interval you have in your hands. The CI you observed is itself a sample-bound estimate. So SL is best read as "roughly how strong does scepticism need to be to absorb this result?" — a heuristic for credibility — rather than as a precise dividing line.
+    </div>
+
+    <h3 style="margin-top:2rem; font-size:1.15rem; color:#1a1714;">The ratio SL ÷ effect is the real story</h3>
+
+    <p>A binary "credible vs fragile" classification hides nuance the SL itself can give you. The single number that really tells the story is the <strong>ratio of SL to your observed effect</strong>. A ratio well below 1 means the observed effect comfortably dwarfs the sceptical zone — the data are doing decisive work. A ratio close to 1 means the effect just barely escapes the zone, significant but on the edge. A ratio above 1 means the sceptical zone extends further than the observed effect, and the result is sitting inside territory the sceptic was already willing to call "no effect".</p>
+
+    <p>The formula structure makes this dynamic visible. The numerator (U − L)² grows <em>quadratically</em> with the width of the CI — doubling the CI width quadruples the SL. The observed effect, M = (U + L)/2, does not grow with imprecision at all. So as your CI widens, SL climbs fast while M stays fixed — and the ratio SL/M climbs even faster. This is exactly why a "significant" result with a wide CI can have a ratio well above 1, and why effect size alone is not enough to judge credibility: a large effect with a wide CI is doing much less work than a smaller effect with a tight CI.</p>
+
+    <p>Watch the ratio change as you load the three scenarios in the calculator below. Scenarios B and C both clear "credible", but C's ratio is roughly half of B's — C's data are doing far more work over the sceptic's position, even though both have the same binary verdict. Scenario A is the warning case: a barely significant p-value pairs with a ratio of nearly 5, meaning the SL is almost five times the size of the observed effect. The CI was so wide that the apparent "effect" lives almost entirely inside the sceptic's zone — significant by NHST, fragile by AnCred.</p>
 
     <div class="widget">
       <div class="widget-title">Scepticism Limit calculator</div>
@@ -714,7 +705,6 @@ footer strong { color: rgba(247,243,238,0.85); }
         </div>
       </div>
 
-      <!-- Visual: sceptical zone vs observed effect -->
       <div style="margin:1.25rem 0 0.5rem;">
         <div style="font-size:12px; color:#888; margin-bottom:6px;">Sceptical prior zone (shaded) vs. observed mean difference (vertical line)</div>
         <div style="position:relative; height:80px; background:#f7f3ee; border-radius:8px; border:1px solid #ddd6cb; overflow:hidden;">
@@ -729,7 +719,6 @@ footer strong { color: rgba(247,243,238,0.85); }
       <div class="info-note" id="sl-interp"></div>
     </div>
 
-    <!-- ─── AL ─── -->
     <h3 style="margin-top:2rem; font-size:1.15rem; color:#1a1714;">The Advocacy Limit (AL) — for non-significant results</h3>
 
     <p>When your result is non-significant — the CI straddles zero — the SL cannot be computed. But there is an equally important question for that situation: just because you didn't reach significance, does that mean the effect is absent?</p>
@@ -743,7 +732,6 @@ footer strong { color: rgba(247,243,238,0.85); }
       When your study is non-significant, ask: is the upper bound of my CI clinically or practically meaningful? If the CI runs from −2 to +40 points, you have not shown the effect is zero — you have shown the data are consistent with effects from trivial to substantial. A large AL is a call for a better-powered study, not a declaration of null results.
     </div>
 
-    <!-- ─── Prior distinction ─── -->
     <h3 style="margin-top:2rem; font-size:1.15rem; color:#1a1714;">A note on what "prior" means here</h3>
 
     <p>The SL framework uses the word <em>prior</em> differently from classical Bayesian analysis.</p>
@@ -759,15 +747,15 @@ footer strong { color: rgba(247,243,238,0.85); }
       </div>
     </div>
 
-    <p>Counterintuitively, a <em>flat</em> prior is easy to defeat — it already spreads probability across large effects. The genuinely hard sceptic holds a <em>tight</em> prior around zero. A low SL means your data defeated that hard opponent. And this clarifies why NHST's point null is a false form of scepticism: it looks maximally demanding (all mass at exactly zero) but is trivially defeated with large N. The SL models scepticism as a <em>region</em> — which is how real scientific doubt actually operates.</p>
+    <p>Counterintuitively, a <em>flat</em> prior is easy to defeat — it already spreads probability across large effects. The genuinely hard sceptic holds a <em>tight</em> prior around zero. A low SL means your data defeated that hard opponent. And this clarifies why NHST's point null is a false form of scepticism: it looks maximally demanding — all mass at exactly zero — but is trivially defeated with large N. The SL models scepticism as a <em>region</em>, which is how real scientific doubt actually operates.</p>
 
     <div class="key-msg">
       <strong>How to use the three frameworks together</strong>
       <br>The three approaches we have separated out are not in competition — they answer different questions and can sit alongside each other.
       <ul style="margin: 0.6rem 0 0 1.4rem; line-height: 1.7;">
-        <li><strong>ROPE / Meehl's crud</strong> works <em>prospectively</em>: before you collect data, decide what "negligible" means (e.g., d &lt; 0.2 is just crud), and ask whether your effect clears that pre-specified threshold. This is the planning-side fix.</li>
+        <li><strong>ROPE / Meehl's crud</strong> works <em>prospectively</em>: before you collect data, decide what "negligible" means — for example, d &lt; 0.2 is just crud — and ask whether your effect clears that pre-specified threshold. This is the planning-side fix.</li>
         <li><strong>Reverse Bayes / SL</strong> works <em>retrospectively</em>: after the data are in, ask how tight a sceptical distribution your data can overturn. This is the credibility-side fix, evaluating what you already have.</li>
-        <li><strong>NHST</strong> remains the conventional reporting framework, but with the structural caveat now spelled out: clearing p &lt; .05 only tells you the true effect is not <em>exactly</em> zero, which (given enough N) is essentially guaranteed. The other two frameworks tell you something more useful.</li>
+        <li><strong>NHST</strong> remains the conventional reporting framework, but with the structural caveat now spelled out: clearing p &lt; .05 only tells you the true effect is not <em>exactly</em> zero, which given enough N is essentially guaranteed. The other two frameworks tell you something more useful.</li>
       </ul>
       <p style="margin-top:0.8rem;">A result that survives both ROPE and SL is genuinely robust. A result that survives only one deserves scrutiny.</p>
     </div>
@@ -798,9 +786,6 @@ footer strong { color: rgba(247,243,238,0.85); }
   </div>
 </footer>
 
-<!-- ═══════════════════════════════════════════════
-     SCRIPTS
-═══════════════════════════════════════════════ -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <script>
 // ────────────────────────────────────────────
@@ -834,7 +819,17 @@ function dLabel(d) {
   return {text:'very large', cls:'d-verylarge'};
 }
 
-function overlapPct(d) { return 2*normalCDF(-Math.abs(d)/2); }
+function overlapPct(d) {
+  return 2 * normalCDF(-Math.abs(d) / 2);
+}
+
+function setActiveWithinGroup(btn) {
+  if (!btn) return;
+  const group = btn.closest('.toggle-group');
+  if (!group) return;
+  group.querySelectorAll('.toggle-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+}
 
 const defaultChartOpts = {
   responsive: true,
@@ -844,13 +839,14 @@ const defaultChartOpts = {
 };
 
 // ────────────────────────────────────────────
-// WIDGET 1 — P-VALUE SLIDER (with d toggle)
+// WIDGET 1 — P-VALUE SLIDER
 // ────────────────────────────────────────────
 let currentPvalD = 0.5;
 let pNs = [], pPs = [];
 
 function recomputePvalCurve() {
-  pNs = []; pPs = [];
+  pNs = [];
+  pPs = [];
   for (let n = 10; n <= 500; n += 5) {
     const t = currentPvalD * Math.sqrt(n / 2);
     pNs.push(n);
@@ -880,16 +876,14 @@ const pvalChart = new Chart(document.getElementById('pvalChart'), {
 
 function setPvalD(d, btn) {
   currentPvalD = d;
-  // Update toggle visual state
-  if (btn) {
-    document.querySelectorAll('#why .toggle-group .toggle-btn').forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
-  }
+  setActiveWithinGroup(btn);
+
   recomputePvalCurve();
+
   pvalChart.data.labels = pNs;
   pvalChart.data.datasets[0].data = pPs;
   pvalChart.data.datasets[1].data = pNs.map(() => 0.05);
-  // Refresh widget for current N
+
   const n = +document.getElementById('pval-n').value;
   updatePval(n);
 }
@@ -897,21 +891,24 @@ function setPvalD(d, btn) {
 function updatePval(n) {
   const t = currentPvalD * Math.sqrt(n / 2);
   const p = 2 * (1 - normalCDF(t));
+
   document.getElementById('pval-n-out').textContent = n;
   document.getElementById('pval-d-out').textContent = currentPvalD.toFixed(2);
   document.getElementById('pval-t-out').textContent = t.toFixed(2);
   document.getElementById('pval-p-out').textContent = p < 0.001 ? '< .001' : p.toFixed(3);
+
   const sigEl = document.getElementById('pval-sig-out');
   const msgEl = document.getElementById('pval-msg');
-  const dLabel = currentPvalD < 0.35 ? 'small' : currentPvalD < 0.7 ? 'medium' : 'large';
+  const dTextLabel = currentPvalD < 0.35 ? 'small' : currentPvalD < 0.7 ? 'medium' : 'large';
+
   if (p < 0.05) {
     sigEl.innerHTML = '<span class="sig-badge sig">p &lt; .05 ✓</span>';
-    msgEl.innerHTML = `<strong>Significant.</strong> The combination of d = ${currentPvalD.toFixed(2)} (${dLabel}) and N = ${n} per group has produced enough precision to push the p-value below .05. Notice how a ${dLabel} effect can clear significance ${currentPvalD < 0.35 ? 'only with substantial N' : currentPvalD < 0.7 ? 'at moderate N' : 'even at modest N'} — the two ingredients are working together.`;
+    msgEl.innerHTML = `<strong>Significant.</strong> The combination of d = ${currentPvalD.toFixed(2)} (${dTextLabel}) and N = ${n} per group has produced enough precision to push the p-value below .05. Notice how a ${dTextLabel} effect can clear significance ${currentPvalD < 0.35 ? 'only with substantial N' : currentPvalD < 0.7 ? 'at moderate N' : 'even at modest N'} — the two ingredients are working together.`;
   } else {
     sigEl.innerHTML = '<span class="sig-badge nonsig">p ≥ .05</span>';
-    msgEl.innerHTML = `<strong>Not significant.</strong> The true effect is d = ${currentPvalD.toFixed(2)} (${dLabel}) — it has not disappeared. The test simply lacks the precision to rule out zero at this sample size. This is a Type II error: a real effect that the study could not detect. Either grow N, or expect the effect to need to be larger for this study to be informative.`;
+    msgEl.innerHTML = `<strong>Not significant.</strong> The true effect is d = ${currentPvalD.toFixed(2)} (${dTextLabel}) — it has not disappeared. The test simply lacks the precision to rule out zero at this sample size. This is a Type II error: a real effect that the study could not detect. Either grow N, or expect the effect to need to be larger for this study to be informative.`;
   }
-  // Highlight current point on curve
+
   const roundN = Math.round(n / 5) * 5;
   const idx = pNs.indexOf(roundN);
   pvalChart.data.datasets[0].pointRadius = pNs.map((_, i) => i === idx ? 5 : 0);
@@ -936,40 +933,44 @@ const dChart = new Chart(document.getElementById('dChart'), {
 });
 
 function updateDWidget() {
-  const m1=+document.getElementById('d-m1').value;
-  const m2=+document.getElementById('d-m2').value;
-  const sd=+document.getElementById('d-sd').value;
-  document.getElementById('d-m1-out').textContent=m1;
-  document.getElementById('d-m2-out').textContent=m2;
-  document.getElementById('d-sd-out').textContent=sd;
+  const m1 = +document.getElementById('d-m1').value;
+  const m2 = +document.getElementById('d-m2').value;
+  const sd = +document.getElementById('d-sd').value;
 
-  const d = Math.abs(m2-m1)/sd;
-  const u3 = normalCDF(d)*100;
-  const ov = overlapPct(d)*100;
+  document.getElementById('d-m1-out').textContent = m1;
+  document.getElementById('d-m2-out').textContent = m2;
+  document.getElementById('d-sd-out').textContent = sd;
+
+  const d = Math.abs(m2 - m1) / sd;
+  const u3 = normalCDF(d) * 100;
+  const ov = overlapPct(d) * 100;
 
   document.getElementById('d-val-out').textContent = d.toFixed(2);
-  document.getElementById('d-u3-out').textContent = u3.toFixed(0)+'%';
-  document.getElementById('d-ov-out').textContent = ov.toFixed(0)+'%';
+  document.getElementById('d-u3-out').textContent = u3.toFixed(0) + '%';
+  document.getElementById('d-ov-out').textContent = ov.toFixed(0) + '%';
 
   const lbl = dLabel(d);
   const badge = document.getElementById('d-badge');
   badge.textContent = lbl.text;
-  badge.className = 'd-badge '+lbl.cls;
+  badge.className = 'd-badge ' + lbl.cls;
 
-  const lo = Math.min(m1,m2)-3.5*sd, hi = Math.max(m1,m2)+3.5*sd;
+  const lo = Math.min(m1, m2) - 3.5 * sd;
+  const hi = Math.max(m1, m2) + 3.5 * sd;
   const xs = makeXs(lo, hi, 250);
 
   dChart.data.datasets = [
     { data:xs.map(x=>({x,y:gauss(x,m1,sd)})), borderColor:'#2a6b6e', backgroundColor:'rgba(37,99,235,0.14)', fill:true, borderWidth:2, pointRadius:0, tension:0.4 },
     { data:xs.map(x=>({x,y:gauss(x,m2,sd)})), borderColor:'#b84040', backgroundColor:'rgba(220,74,45,0.14)', fill:true, borderWidth:2, pointRadius:0, tension:0.4 }
   ];
+
   dChart.options.scales.x.min = lo;
   dChart.options.scales.x.max = hi;
   dChart.options.scales.y = { display:false, min:0 };
   dChart.update();
 
-  const bigGrp = m1>m2?'Group 1':'Group 2';
-  const smlGrp = m1>m2?'Group 2':'Group 1';
+  const bigGrp = m1 > m2 ? 'Group 1' : 'Group 2';
+  const smlGrp = m1 > m2 ? 'Group 2' : 'Group 1';
+
   document.getElementById('d-interp').innerHTML =
     `<strong>Cohen's U3:</strong> ${u3.toFixed(0)}% of ${smlGrp}'s scores fall below the average ${bigGrp} score. &nbsp;·&nbsp; <strong>Overlap:</strong> ${ov.toFixed(0)}% of the total combined area is shared between the two distributions.`;
 }
@@ -989,8 +990,8 @@ const denomInfo = {
     assumption: "Assumes both groups are sampled from populations with equal variance. The pooled SD is a weighted average of both group SDs, giving a single estimate of the common within-group spread.",
     compromise: "When the two group SDs differ substantially (as here, 10 vs 16), you are averaging across meaningfully different variabilities. The result sits between the two, representing neither group's true population SD perfectly.",
     compute() {
-      const sp = Math.sqrt(((C.n-1)*C.sd**2+(T.n-1)*T.sd**2)/(C.n+T.n-2));
-      return { val:(T.m-C.m)/sp, note:`Pooled SD = ${sp.toFixed(2)} (weighted average of SD₁ = ${C.sd} and SD₂ = ${T.sd})` };
+      const sp = Math.sqrt(((C.n - 1) * C.sd**2 + (T.n - 1) * T.sd**2) / (C.n + T.n - 2));
+      return { val:(T.m - C.m) / sp, note:`Pooled SD = ${sp.toFixed(2)} (weighted average of SD₁ = ${C.sd} and SD₂ = ${T.sd})` };
     }
   },
   glass: {
@@ -1000,7 +1001,7 @@ const denomInfo = {
     assumption: "Assumes the control group represents an undisturbed reference population. The treatment may have altered score variability in the treated group, so using the control SD gives a baseline-relative effect.",
     compromise: "Relies on the control group being a clean, untreated reference — a judgement call. If the treatment inflates or compresses variability in the treated group, this choice changes the interpretation considerably.",
     compute() {
-      return { val:(T.m-C.m)/C.sd, note:`Uses only the control group SD = ${C.sd}` };
+      return { val:(T.m - C.m) / C.sd, note:`Uses only the control group SD = ${C.sd}` };
     }
   },
   hedges: {
@@ -1010,26 +1011,30 @@ const denomInfo = {
     assumption: "Uses the pooled SD like Cohen's d, but applies a correction J < 1 that accounts for the slight upward bias in sample SD estimates when samples are small.",
     compromise: "At reasonable sample sizes (n > 20), J ≈ 1 and g ≈ d. The correction matters most at small N. It does not address the fundamental question of which SD to pool — it only corrects for sampling bias.",
     compute() {
-      const sp = Math.sqrt(((C.n-1)*C.sd**2+(T.n-1)*T.sd**2)/(C.n+T.n-2));
-      const rawD = (T.m-C.m)/sp;
-      const df = C.n+T.n-2;
-      const J = 1-3/(4*df-1);
-      return { val:rawD*J, note:`Raw Cohen's d = ${rawD.toFixed(3)}, correction factor J(df=${df}) = ${J.toFixed(4)}, g = d × J` };
+      const sp = Math.sqrt(((C.n - 1) * C.sd**2 + (T.n - 1) * T.sd**2) / (C.n + T.n - 2));
+      const rawD = (T.m - C.m) / sp;
+      const df = C.n + T.n - 2;
+      const J = 1 - 3 / (4 * df - 1);
+      return { val:rawD * J, note:`Raw Cohen's d = ${rawD.toFixed(3)}, correction factor J(df=${df}) = ${J.toFixed(4)}, g = d × J` };
     }
   }
 };
 
 function setDenom(type, btn) {
-  document.querySelectorAll('.toggle-btn').forEach(b=>b.classList.remove('active'));
-  btn.classList.add('active');
+  setActiveWithinGroup(btn);
+
   const info = denomInfo[type];
   const r = info.compute();
   const lbl = dLabel(r.val);
+
   document.getElementById('denom-panel').innerHTML = `
     <div style="margin-bottom:0.75rem;">
       <strong style="font-size:15px; color:#1a1714;">${info.name}</strong>
     </div>
-    <div class="formula-box">${info.formula}<br><span style="font-size:12px; color:#888;">${info.sub}</span></div>
+    <div class="formula-box">
+      ${info.formula}<br>
+      <span style="font-size:12px; color:#888;">${info.sub}</span>
+    </div>
     <div class="stat-row">
       <div class="stat-pill">
         <div class="pill-val">${r.val.toFixed(3)} <span class="d-badge ${lbl.cls}">${lbl.text}</span></div>
@@ -1048,7 +1053,12 @@ function setDenom(type, btn) {
       </div>
     </div>`;
 }
-setDenom('cohen', document.querySelector('.toggle-btn'));
+
+const denomInitialBtn = Array.from(document.querySelectorAll('.toggle-btn')).find(btn => {
+  const onclick = btn.getAttribute('onclick') || '';
+  return onclick.includes("setDenom('cohen'");
+});
+setDenom('cohen', denomInitialBtn);
 
 // ────────────────────────────────────────────
 // WIDGET 4 — POWER ANALYSIS
@@ -1072,34 +1082,32 @@ function updatePower() {
   const d  = +document.getElementById('pow-d').value;
   const al = document.getElementById('pow-alpha').value;
   const pw = document.getElementById('pow-power').value;
+
   document.getElementById('pow-d-out').textContent = d.toFixed(2);
 
   const za = ZA[al];
   const zb = ZB[pw];
-  const n = Math.ceil(2*((za+zb)/d)**2);
-  const lam = d*Math.sqrt(n/2);
-  const actualPow = 1-normalCDF(za-lam);
+  const n = Math.ceil(2 * ((za + zb) / d)**2);
+  const lam = d * Math.sqrt(n / 2);
+  const actualPow = (1 - normalCDF(za - lam)) + normalCDF(-za - lam);
 
   document.getElementById('pow-n-out').textContent = n;
-  document.getElementById('pow-total-out').textContent = (n*2)+' total participants';
+  document.getElementById('pow-total-out').textContent = (n * 2) + ' total participants';
 
-  const xLo=-4.2, xHi=Math.max(8,lam+4.5);
-  const xs=makeXs(xLo,xHi,500);
+  const xLo = -4.2;
+  const xHi = Math.max(8, lam + 4.5);
+  const xs = makeXs(xLo, xHi, 500);
 
-  powChart.data.datasets=[
-    // Null distribution
+  powChart.data.datasets = [
     { data:xs.map(x=>({x,y:gauss(x,0,1)})), borderColor:'#2a6b6e', backgroundColor:'rgba(37,99,235,0.10)', fill:true, borderWidth:2, pointRadius:0, tension:0.4 },
-    // Alternative distribution
     { data:xs.map(x=>({x,y:gauss(x,lam,1)})), borderColor:'#b84040', backgroundColor:'rgba(220,74,45,0.08)', fill:true, borderWidth:2, pointRadius:0, tension:0.4 },
-    // Power region
     { data:xs.map(x=>({x,y:x>=za?gauss(x,lam,1):null})), borderColor:'transparent', backgroundColor:'rgba(22,163,74,0.40)', fill:true, borderWidth:0, pointRadius:0, tension:0.4, spanGaps:false },
-    // Alpha region
     { data:xs.map(x=>({x,y:x>=za?gauss(x,0,1):null})), borderColor:'transparent', backgroundColor:'rgba(220,38,38,0.30)', fill:true, borderWidth:0, pointRadius:0, tension:0.4, spanGaps:false },
-    // Critical value vertical line
     { data:[{x:za,y:0},{x:za,y:0.42}], borderColor:'#555', borderWidth:1.5, borderDash:[5,3], pointRadius:0, fill:false, tension:0 }
   ];
-  powChart.options.scales.x.min=xLo;
-  powChart.options.scales.x.max=xHi;
+
+  powChart.options.scales.x.min = xLo;
+  powChart.options.scales.x.max = xHi;
   powChart.update();
 
   document.getElementById('pow-note').innerHTML =
@@ -1111,9 +1119,8 @@ function updatePower() {
 updatePower();
 
 // ────────────────────────────────────────────
-// WIDGET 6 — SCEPTICISM LIMIT (AnCred)
+// WIDGET 6 — SCEPTICISM LIMIT
 // ────────────────────────────────────────────
-
 const SL_PRESETS = {
   A: { L:0.16, U:15.84, obs:8 },
   B: { L:1.28, U:6.72,  obs:4 },
@@ -1121,12 +1128,13 @@ const SL_PRESETS = {
 };
 
 function loadSLPreset(key, btn) {
-  document.querySelectorAll('.toggle-btn').forEach(b=>b.classList.remove('active'));
-  btn.classList.add('active');
+  setActiveWithinGroup(btn);
+
   const p = SL_PRESETS[key];
   document.getElementById('sl-L').value = p.L;
   document.getElementById('sl-U').value = p.U;
   document.getElementById('sl-obs').value = p.obs;
+
   updateSL();
 }
 
@@ -1138,66 +1146,75 @@ function computeSL(U, L) {
 function drawSLCanvas(canvas, sl, observed) {
   const dpr = window.devicePixelRatio || 1;
   const rect = canvas.parentElement.getBoundingClientRect();
+
   canvas.width  = rect.width  * dpr;
   canvas.height = rect.height * dpr;
   canvas.style.width  = rect.width  + 'px';
   canvas.style.height = rect.height + 'px';
+
   const ctx = canvas.getContext('2d');
   ctx.scale(dpr, dpr);
-  const W = rect.width, H = rect.height;
+
+  const W = rect.width;
+  const H = rect.height;
 
   const maxVal = Math.max(sl, observed) * 1.35;
-  const PAD_L = 20, PAD_R = 20;
+  const PAD_L = 20;
+  const PAD_R = 20;
   const plotW = W - PAD_L - PAD_R;
   const toX = v => PAD_L + (v / maxVal) * plotW;
   const midY = H * 0.52;
   const barH = H * 0.42;
 
-  // Sceptical zone (0 → SL)
   const slX = toX(sl);
   ctx.fillStyle = 'rgba(220,38,38,0.12)';
   ctx.fillRect(PAD_L, midY - barH/2, slX - PAD_L, barH);
+
   ctx.strokeStyle = '#b84040';
   ctx.setLineDash([5,3]);
   ctx.lineWidth = 1.5;
-  ctx.beginPath(); ctx.moveTo(slX, midY - barH*0.7); ctx.lineTo(slX, midY + barH*0.7); ctx.stroke();
+  ctx.beginPath();
+  ctx.moveTo(slX, midY - barH*0.7);
+  ctx.lineTo(slX, midY + barH*0.7);
+  ctx.stroke();
   ctx.setLineDash([]);
 
-  // SL label
   ctx.fillStyle = '#b84040';
   ctx.font = '11px system-ui';
   ctx.textAlign = 'center';
   ctx.fillText('SL = ' + sl.toFixed(1), slX, midY - barH*0.7 - 4);
 
-  // Axis line
   ctx.strokeStyle = '#ccc';
   ctx.lineWidth = 1;
-  ctx.beginPath(); ctx.moveTo(PAD_L, midY + barH/2 + 6); ctx.lineTo(W - PAD_R, midY + barH/2 + 6); ctx.stroke();
+  ctx.beginPath();
+  ctx.moveTo(PAD_L, midY + barH/2 + 6);
+  ctx.lineTo(W - PAD_R, midY + barH/2 + 6);
+  ctx.stroke();
 
-  // Zero tick
   ctx.fillStyle = '#888';
   ctx.font = '11px system-ui';
   ctx.textAlign = 'center';
   ctx.fillText('0', PAD_L, midY + barH/2 + 18);
 
-  // Observed effect marker
   const isCredible = observed > sl;
   const obsX = toX(observed);
+
   ctx.strokeStyle = isCredible ? '#4a7028' : '#b84040';
   ctx.lineWidth = 2.5;
-  ctx.beginPath(); ctx.moveTo(obsX, midY - barH*0.85); ctx.lineTo(obsX, midY + barH*0.85); ctx.stroke();
+  ctx.beginPath();
+  ctx.moveTo(obsX, midY - barH*0.85);
+  ctx.lineTo(obsX, midY + barH*0.85);
+  ctx.stroke();
 
-  // Observed label
   ctx.fillStyle = isCredible ? '#4a7028' : '#b84040';
   ctx.font = 'bold 11px system-ui';
   ctx.textAlign = obsX > slX ? 'left' : 'right';
   ctx.fillText('observed = ' + observed, obsX + (obsX > slX ? 5 : -5), midY - barH*0.85 - 4);
 
-  // Zone label
   ctx.fillStyle = 'rgba(220,38,38,0.6)';
   ctx.font = '11px system-ui';
   ctx.textAlign = 'center';
-  const zoneMid = PAD_L + (slX - PAD_L)/2;
+  const zoneMid = PAD_L + (slX - PAD_L) / 2;
   ctx.fillText("sceptic's zone", zoneMid, midY + 4);
 }
 
@@ -1206,47 +1223,90 @@ function updateSL() {
   const U   = parseFloat(document.getElementById('sl-U').value);
   const obs = parseFloat(document.getElementById('sl-obs').value);
 
-  if (isNaN(L) || isNaN(U) || isNaN(obs) || L <= 0 || U <= L) {
+  if (isNaN(L) || isNaN(U) || isNaN(obs) || L <= 0 || U <= L || obs <= 0) {
     document.getElementById('sl-val-out').textContent = '—';
-    document.getElementById('sl-interp').textContent = 'Please enter valid CI bounds (both positive, L < U).';
+    document.getElementById('sl-interp').textContent = 'Please enter valid values: both CI bounds must be positive, L < U, and the observed effect must be positive.';
     return;
   }
 
   const sl = computeSL(U, L);
   const width = U - L;
   const ratio = sl / obs;
-  const isCredible = obs > sl;
 
-  document.getElementById('sl-ci-out').textContent  = width.toFixed(2) + ' pts';
+  document.getElementById('sl-ci-out').textContent = width.toFixed(2) + ' pts';
   document.getElementById('sl-val-out').textContent = sl.toFixed(2) + ' pts';
   document.getElementById('sl-ratio-out').textContent = ratio.toFixed(2) + '×';
-  document.getElementById('sl-axis-label').textContent = `scale in outcome units (max shown: ${(Math.max(sl,obs)*1.35).toFixed(1)} pts)`;
+  document.getElementById('sl-axis-label').textContent = `scale in outcome units (max shown: ${(Math.max(sl, obs) * 1.35).toFixed(1)} pts)`;
 
   const verdictEl = document.getElementById('sl-verdict');
-  if (isCredible) {
-    verdictEl.innerHTML = '<span class="sig-badge sig">Credible ✓</span>';
-    document.getElementById('sl-interp').innerHTML =
-      `<strong>Credible result.</strong> The observed effect (${obs} pts) exceeds the SL (${sl.toFixed(2)} pts). For a sceptic centred on zero to accommodate your result, they would need a prior that reaches out to ${sl.toFixed(1)} pts — a very modest concession in the context of your outcome scale. Your data overcome reasonable scepticism.`;
+  const interpEl  = document.getElementById('sl-interp');
+
+  let verdictHTML;
+  let interpHTML;
+
+  if (ratio < 0.4) {
+    verdictHTML = '<span class="sig-badge sig">Robustly credible ✓</span>';
+    interpHTML =
+      `<strong>Robustly credible — ratio = ${ratio.toFixed(2)}.</strong> ` +
+      `The SL (${sl.toFixed(2)} pts) is well below the observed effect (${obs} pts). ` +
+      `For a sceptic centred on zero to absorb this result, they would need a prior reaching only to ${sl.toFixed(1)} pts — a small concession on this outcome scale. ` +
+      `Your data dominate the sceptic's starting position; very little of the apparent signal is sitting inside their zone.`;
+
+  } else if (ratio < 0.8) {
+    verdictHTML = '<span class="sig-badge sig">Credible ✓</span>';
+    interpHTML =
+      `<strong>Credible, but not by a wide margin — ratio = ${ratio.toFixed(2)}.</strong> ` +
+      `The SL (${sl.toFixed(2)} pts) sits below the observed effect (${obs} pts), but not by an enormous distance. ` +
+      `The data carry the day, but a more demanding sceptic with a slightly tighter prior than ${sl.toFixed(1)} pts could resist. ` +
+      `This is solid evidence, not crushing evidence.`;
+
+  } else if (ratio < 1.0) {
+    verdictHTML = '<span class="sig-badge" style="background:#f5e8d0;color:#c07c2a;border:1px solid #ddc89a;">Marginal</span>';
+    interpHTML =
+      `<strong>Marginal — ratio = ${ratio.toFixed(2)}.</strong> ` +
+      `The observed effect (${obs} pts) only just exceeds the SL (${sl.toFixed(2)} pts). ` +
+      `Significant by p &lt; .05, but the data are barely clearing the sceptic's zone. ` +
+      `A small tightening of scepticism, or a slightly wider CI, would tip it into "fragile". ` +
+      `This is the regime where claims of "robust evidence" should be treated with caution.`;
+
   } else {
-    verdictEl.innerHTML = '<span class="sig-badge nonsig">Fragile</span>';
-    document.getElementById('sl-interp').innerHTML =
-      `<strong>Fragile result.</strong> The observed effect (${obs} pts) falls inside the SL boundary (${sl.toFixed(2)} pts). A sceptic centred on zero, with a prior that reaches only to ${sl.toFixed(1)} pts, can comfortably absorb your result as consistent with "essentially no effect." The CI was wide relative to the distance from zero — the result is statistically significant but evidentially weak.`;
+    verdictHTML = '<span class="sig-badge nonsig">Fragile</span>';
+    interpHTML =
+      `<strong>Fragile — ratio = ${ratio.toFixed(2)}.</strong> ` +
+      `The SL (${sl.toFixed(2)} pts) <em>exceeds</em> the observed effect (${obs} pts) — the sceptical zone is wider than the apparent effect itself. ` +
+      `A sceptic centred on zero with a prior reaching to ${sl.toFixed(1)} pts can comfortably absorb the result as consistent with "essentially no effect", regardless of the p-value. ` +
+      `The CI is too wide relative to the distance from zero for the data to do meaningful work.`;
   }
+
+  verdictEl.innerHTML = verdictHTML;
+  interpEl.innerHTML = interpHTML;
 
   const canvas = document.getElementById('slVisual');
   setTimeout(() => drawSLCanvas(canvas, sl, obs), 0);
 }
 
-// Initialise with Scenario A
 updateSL();
 
+window.addEventListener('resize', () => {
+  updateSL();
+}, { passive:true });
 
+// ────────────────────────────────────────────
+// NAV ACTIVE STATE
+// ────────────────────────────────────────────
 const sections = document.querySelectorAll('section[id]');
 const navLinks = document.querySelectorAll('nav a');
+
 window.addEventListener('scroll', () => {
-  let cur='';
-  sections.forEach(s=>{ if (window.scrollY >= s.offsetTop-100) cur=s.id; });
-  navLinks.forEach(a=>a.classList.toggle('active', a.getAttribute('href')==='#'+cur));
+  let cur = '';
+
+  sections.forEach(s => {
+    if (window.scrollY >= s.offsetTop - 100) cur = s.id;
+  });
+
+  navLinks.forEach(a => {
+    a.classList.toggle('active', a.getAttribute('href') === '#' + cur);
+  });
 }, { passive:true });
 </script>
 </body>

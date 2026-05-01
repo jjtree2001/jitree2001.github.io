@@ -286,7 +286,7 @@
 <header>
   <div class="header-grid">
     <div>
-      <div class="header-eyebrow">Statistical Foundations · Part 2 of 2</div>
+      <div class="header-eyebrow">Statistical Foundations · Part 2 of 4</div>
       <h1>When the <em>Chain</em> Breaks<br>— and How to Fix It</h1>
       <p class="header-subtitle">ANOVA in depth, then what to do when its assumptions fail — Linear Mixed Models, and then the deeper question of measurement quality through IRT.</p>
     </div>
@@ -344,6 +344,31 @@
 
   <p>
     Most introductory courses present ANOVA as a procedure: run the test, check if p &lt; .05. But ANOVA has a precise mechanical logic that makes it far more interpretable — and that connects directly back to the LLN and CLT we established in Part 1.
+  </p>
+
+  <h3>What kind of DV does ANOVA need?</h3>
+
+  <p>
+    Before we look inside ANOVA, a measurement question worth pausing on. The formal requirement is not that the DV be continuous — it is that the DV be measured at <em>interval level</em> or above. ANOVA computes group means and compares them using their variability, and for a mean to be a sensible summary the arithmetic that produces it must be meaningful: a one-unit difference anywhere on the scale must represent the same underlying difference in the quantity being measured. Continuity per se is not the issue. A discrete count of correct responses from a well-calibrated test sits on a proper interval scale, and can be analysed with ANOVA without apology.
+  </p>
+
+  <div class="three-col">
+    <div class="info-card" style="border-top:3px solid var(--red)">
+      <div class="info-card-title red">Nominal</div>
+      <p><strong>Fails completely.</strong> Numbers are arbitrary codes. Code dog = 1, cat = 2, fish = 3, and the mean of a group with one of each is 2 — implying "cat", which is absurd. Recode fish = 100 and the mean changes, referring to the same reality. An F-ratio computed on nominal codes is numerically meaningless.</p>
+    </div>
+    <div class="info-card" style="border-top:3px solid var(--amber)">
+      <div class="info-card-title" style="color:var(--amber)">Ordinal</div>
+      <p><strong>Fails in principle, often tolerably.</strong> Rank order is preserved but distances between ranks are unknown. A pain rating of mild / moderate / severe encodes order, but says nothing about whether "moderate" is closer to "mild" or to "severe" in actual experience. The mean silently assumes equal intervals it does not have. With 5–7 point Likert scales and roughly symmetric distributions, the distortion is usually modest and researchers proceed defensibly.</p>
+    </div>
+    <div class="info-card" style="border-top:3px solid var(--teal)">
+      <div class="info-card-title">Interval / ratio</div>
+      <p><strong>Appropriate.</strong> Equal intervals make arithmetic meaningful. Means are sensible summaries. ANOVA's measurement-level assumption is met.</p>
+    </div>
+  </div>
+
+  <p>
+    The real question in practice is not "is my DV technically continuous?" but "is the mean a sensible summary statistic for these data, and do residuals look approximately normally distributed around the group means?" For most psychological DVs with reasonable N, the answer is yes — even for discrete or bounded scales. The exception that breaks this comfortably-permissive picture is the <em>binary</em> DV, which we will return to in §04 when we look at the limits of the OLS family.
   </p>
 
   <h3>The fundamental partition</h3>
@@ -1117,7 +1142,7 @@
   </p>
 
   <p>
-    Every test we have considered so far in this resource — t-tests, ANOVA, RM-ANOVA, and the standard LMM — is fitted by <strong>ordinary least squares (OLS)</strong>, an estimation procedure based on a single underlying <em>likelihood</em>: the assumption that the response, conditional on the predictors, is normally distributed. That one likelihood is what <em>defines</em> OLS — squaring deviations to measure error (as we saw in §01), the F-distribution that licences p-values, the assumption that residuals are Gaussian, independent, and identically distributed (iid) — all of these follow from it. Different response types (binary outcomes, counts, ordinal ratings, skewed reaction times) need a different likelihood, and a model that uses one of those is no longer a member of this family — it is a <strong>Generalised Linear Model (GLM)</strong>, or a <strong>Generalised Linear Mixed Model (GLMM)</strong> when random effects are also needed. The fix for residual misspecification lives there, in stepping out of the Gaussian linear family altogether. We will consider statistical models for dependent variables that are binary (Y/N) or ordinal, and the tests that use a different likelihood model (GLM and GLMM), in a later website.
+    Every test we have considered so far in this resource — t-tests, ANOVA, RM-ANOVA, and the standard LMM — is fitted by <strong>ordinary least squares (OLS)</strong>, an estimation procedure based on a single underlying <em>likelihood</em>: the assumption that the response, conditional on the predictors, is normally distributed. That one likelihood is what <em>defines</em> OLS — squaring deviations to measure error (as we saw in §01), the F-distribution that licences p-values, the assumption that residuals are Gaussian, independent, and identically distributed (iid) — all of these follow from it. Different response types (binary outcomes, counts, ordinal ratings, skewed reaction times) need a different likelihood, and a model that uses one of those is no longer a member of this family — it is a <strong>Generalised Linear Model (GLM)</strong>, or a <strong>Generalised Linear Mixed Model (GLMM)</strong> when random effects are also needed. The fix for residual misspecification lives there, in stepping out of the Gaussian linear family altogether. Statistical models for dependent variables that are binary (Y/N), ordinal, counts, or otherwise non-Gaussian — and the tests that use a different likelihood (GLM and GLMM) — are picked up in <a href="generativestats.html"><strong>Part 3 — Where does your data come from?</strong></a>.
   </p>
 
   <p>
@@ -1137,6 +1162,69 @@
       <div class="info-card-title red">Distributional mismatch</div>
       <p>Reaction times are skewed and heavy-tailed; accuracy is binary; ratings are ordinal. A Gaussian LMM applied to any of these is a misspecified likelihood. Generalised LMMs with appropriate likelihoods (Bernoulli, ordinal, ex-Gaussian, lognormal) fix this, but a standard <code style="font-family:var(--mono);font-size:0.85em">lmer()</code> call does not — the estimates look clean and the output is miscalibrated.</p>
     </div>
+  </div>
+
+  <h3 class="violet">A worked case — the binary DV problem</h3>
+
+  <p>
+    The Distributional mismatch card just above can sound abstract: "non-Gaussian responses need a different likelihood". Here is the most common concrete case unpacked in detail — the binary DV. We flagged it back in §01 as the exception to the comfortably-permissive picture for the OLS family, and this is where the structural reason becomes clear.
+  </p>
+
+  <p>
+    Score every participant 0 (incorrect) or 1 (correct). The group mean is just the proportion correct, <em>p</em>. Now compute the variance — the average squared deviation from the mean. The 1s deviate from the mean by (1 − p), and there are p of them; the 0s deviate by (0 − p), and there are (1 − p) of them. Putting that together gives a result that ought to feel uncomfortable:
+  </p>
+
+  <div class="equation-block violet">
+    <span class="eq-label">Variance of a binary variable</span>
+    <span class="eq-main">σ² = p(1 − p)² + (1 − p)p² = p(1 − p)</span>
+    <div class="eq-vars">
+      <table>
+        <tr><td class="violet">p</td><td>The proportion of 1s in the group — equivalently, the group mean.</td></tr>
+        <tr><td class="violet">σ²</td><td>The variance of the binary outcome — entirely determined by p, with no separate parameter for spread.</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <p>
+    The crucial observation: <em>p</em> appears on both sides. It is both the mean and the sole determinant of the variance. Once you know the group mean, you know the variance exactly. There is no free parameter for spread — it is locked to the location.
+  </p>
+
+  <div class="sim-box light">
+    <div class="sim-title">See it for yourself — drag the slider</div>
+    <div class="sim-desc">As p moves from 0 to 1, the variance traces out a hill — rising as p approaches 0.5, falling away at the extremes. Variance is entirely a function of p, with no independent parameter to tune.</div>
+
+    <div class="sim-controls">
+      <div class="slider-group" style="flex:1 1 100%;min-width:0;">
+        <div class="slider-label"><span>Proportion correct (p)</span><span class="slider-val" id="bin-p-val">0.50</span></div>
+        <input type="range" min="0" max="100" value="50" id="bin-p-slider" oninput="BIN.update()">
+      </div>
+    </div>
+
+    <div class="sim-stat-row">
+      <div class="stat-chip"><span class="stat-label">Mean (= p)</span><span class="stat-value teal" id="bin-mean">0.50</span></div>
+      <div class="stat-chip"><span class="stat-label">Variance = p(1 − p)</span><span class="stat-value red" id="bin-var">0.2500</span></div>
+    </div>
+
+    <div style="margin-top:1rem">
+      <div style="font-family:var(--mono);font-size:0.6rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:0.4rem">Variance (max 0.25, at p = 0.5)</div>
+      <div style="height:14px;background:var(--paper-mid);border:1px solid var(--paper-dark);border-radius:7px;overflow:hidden">
+        <div id="bin-bar" style="height:100%;background:var(--amber);border-radius:7px;width:100%;transition:width 0.2s ease"></div>
+      </div>
+    </div>
+  </div>
+
+  <p>
+    Why this breaks ANOVA's logic: the homogeneity-of-variance assumption requires within-group variance to be roughly equal across groups, and independent of the group means. With binary data, the moment groups have different means — which is precisely what ANOVA is looking for — their variances are automatically different. A group with p = 0.5 has variance 0.25; a group with p = 0.9 has variance 0.09. You have done nothing wrong in the design. The variance heterogeneity is a <em>mathematical consequence</em> of the mean difference. The assumption ANOVA most needs — that within-group variance is a stable background quantity, independent of the group means — is structurally violated the moment your groups differ in performance.
+  </p>
+
+  <div class="callout violet">
+    <div class="callout-title">The deeper point</div>
+    <p>
+      With a Gaussian DV, mean and variance are genuinely separate parameters — two groups can share a mean but differ in spread, or share spread but differ in mean. They are free to vary independently. With binary data you have <em>one</em> free parameter per group (p), doing double duty. ANOVA assumes an independence between mean and variance that the binary DV does not provide. This is exactly why the GLM/GLMM family — with a Bernoulli likelihood — is the natural home of binary-outcome analysis. It does not pretend mean and variance are separate; the relationship between them is built into the likelihood from the start. ANOVA on proportion-correct with middling proportions and decent N often gives approximately correct answers, but it is doing so despite a misspecified error model rather than because of a well-fitted one.
+    </p>
+    <p style="margin-top:0.8rem">
+      Bernoulli is not the only distribution that ties the variance to the mean. Poisson, binomial, negative binomial and beta all do something similar. <a href="generativestats.html#independence">Part 3 §03</a> lays the common families out side by side in one table — the binary case here is the first row of that wider diagnostic.
+    </p>
   </div>
 
   <p>
@@ -1316,7 +1404,7 @@
 
   <div class="callout teal">
     <div class="callout-title">The complete picture</div>
-    <p>Statistical power is not only a function of sample size N. It is a function of the entire chain: how precise are the item-level measurements (IRT), how well do the person-level estimates capture the latent trait (reliability), how intelligently does the statistical model partition the variance it receives (LMM vs ANOVA), and how large is the true effect relative to the residual noise. Improving any link in the chain improves power — and IRT addresses the link that is usually treated as fixed. The chain itself continues beyond what we have covered here: stepping outside the Gaussian linear family altogether (binary outcomes, counts, skewed reaction times) is the GLM and GLMM territory we will pick up in a later resource.</p>
+    <p>Statistical power is not only a function of sample size N. It is a function of the entire chain: how precise are the item-level measurements (IRT), how well do the person-level estimates capture the latent trait (reliability), how intelligently does the statistical model partition the variance it receives (LMM vs ANOVA), and how large is the true effect relative to the residual noise. Improving any link in the chain improves power — and IRT addresses the link that is usually treated as fixed. The chain itself continues beyond what we have covered here: stepping outside the Gaussian linear family altogether (binary outcomes, counts, skewed reaction times) is the GLM and GLMM territory picked up in <a href="generativestats.html"><strong>Part 3 — Where does your data come from?</strong></a>, and the planning side of the chain — how large an effect to expect, how many participants to recruit, and how to interpret a significant result honestly — is unpacked in <a href="effect_size_power.html"><strong>Part 4 — Effect Size &amp; Power</strong></a>.</p>
   </div>
 
   <!-- FINAL CHAIN -->
@@ -1362,8 +1450,24 @@
 </section>
 
 <footer>
-  <p>Statistical Foundations · Part 2 of 2 &nbsp;·&nbsp; Teaching Materials</p>
-  <p style="margin-top:0.5rem;font-size:0.7rem;opacity:0.6">ANOVA → LMM → IRT · Precision at every level of the chain</p>
+  <p><strong>Statistical Foundations · Part 2 of 4</strong> &nbsp;·&nbsp; ANOVA, LMM, and IRT</p>
+  <p style="margin-top:0.5rem;font-size:0.7rem;opacity:0.7">
+    <a href="lln_website_v2.html" style="color:#4a9b9e;text-decoration:none">Part 1 — LLN &amp; CLT</a>
+    &nbsp;·&nbsp;
+    <strong>Part 2</strong>
+    &nbsp;·&nbsp;
+    <a href="generativestats.html" style="color:#4a9b9e;text-decoration:none">Part 3 — Where does your data come from?</a>
+    &nbsp;·&nbsp;
+    <a href="effect_size_power.html" style="color:#4a9b9e;text-decoration:none">Part 4 — Effect Size &amp; Power</a>
+  </p>
+  <p style="margin-top:0.4rem; font-size:0.7rem; opacity:0.55">
+    Companion track on <em>Measurement &amp; Psychometrics</em>:
+    <a href="measurement_fallacies.html" style="color:#5DCAA5;text-decoration:none">B1 — Fallacies</a>
+    &nbsp;·&nbsp;
+    <a href="psychometrics_teaching_v2.html" style="color:#5DCAA5;text-decoration:none">B2 — Measuring What We Cannot See</a>
+    &nbsp;·&nbsp;
+    <a href="reliability_final.html" style="color:#5DCAA5;text-decoration:none">B3 — Reliability</a>
+  </p>
 </footer>
 
 <script>
@@ -1827,6 +1931,24 @@ const IRT = (() => {
 })();
 
 // ================================================================
+// BINARY DV — VARIANCE = p(1 − p)
+// ================================================================
+const BIN = (() => {
+  function update() {
+    const slider = document.getElementById('bin-p-slider');
+    if (!slider) return;
+    const p = parseFloat(slider.value) / 100;
+    const v = p * (1 - p);
+    document.getElementById('bin-p-val').textContent = p.toFixed(2);
+    document.getElementById('bin-mean').textContent = p.toFixed(2);
+    document.getElementById('bin-var').textContent = v.toFixed(4);
+    document.getElementById('bin-bar').style.width = ((v / 0.25) * 100).toFixed(1) + '%';
+  }
+  return { update };
+})();
+window.addEventListener('DOMContentLoaded', () => BIN.update());
+
+// ================================================================
 // SCROLL / REVEAL
 // ================================================================
 const sections=document.querySelectorAll('.section,.part-marker');
@@ -1856,5 +1978,7 @@ setTimeout(()=>{
   });
 },150);
 </script>
+</body>
+</html>
 </body>
 </html>

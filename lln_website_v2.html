@@ -455,7 +455,7 @@
 <header>
   <div class="header-grid">
     <div>
-      <div class="header-eyebrow">Statistical Foundations · Part 1 of 2</div>
+      <div class="header-eyebrow">Statistical Foundations · Part 1 of 4</div>
       <h1>Why We <em>Average</em><br>— and What It Buys Us</h1>
       <p class="header-subtitle">From the Law of Large Numbers to Gaussian distributions — and why this is the foundation for t-tests and ANOVA.</p>
     </div>
@@ -602,6 +602,7 @@
     <p style="margin-top:0.6rem"><strong>A true mean μ</strong> — the average level of the trait across individuals.</p>
     <p style="margin-top:0.6rem"><strong>A true variance σ²</strong> — a measure of how much individuals differ from that mean, computed as the average <em>squared</em> deviation from μ. We more often work with its square root, the <strong>true standard deviation σ</strong>, because σ is expressed in the same units as the data itself: if the trait is measured in milliseconds, σ is in milliseconds, while σ² is in milliseconds². Variance and standard deviation carry the same information — σ² is the bookkeeping form, σ is the readable form.</p>
     <p style="margin-top:0.8rem">Both μ and σ are real features of the population — facts about the world, present whether or not anyone samples them. The CLT tells us how well we can estimate μ from a sample. It does not collapse σ away — true individual differences remain, and quantifying them is a separate scientific goal we return to in Part 2.</p>
+    <p style="margin-top:0.8rem">A wider point worth flagging: the fact that μ and σ² are <em>independent</em> parameters of the Gaussian — knowing one tells you nothing about the other — is itself a property of the Gaussian, not of distributions in general. Most other distributions you will meet in behavioural data (Bernoulli, binomial, Poisson) tie the variance to the mean. <a href="generativestats.html#independence">Part 3 §03</a> develops this directly and explains why it is the property that makes ANOVA work for Gaussian data and breaks for the rest.</p>
     <p style="margin-top:0.8rem">Before we leave σ behind, a point to keep in mind: σ will resurface almost immediately in a <em>second</em> role. Not as a target of estimation in its own right, but as the quantity that enters the formula for how <em>precisely</em> we can estimate μ from a finite sample. The same σ will therefore be doing two jobs in what follows — describing real variability between individuals in the population, and governing the error in our estimate of the mean. These are different things, and teaching routinely muddles them, so we will keep them apart deliberately.</p>
   </div>
 
@@ -1225,8 +1226,24 @@
 </section>
 
 <footer>
-  <p>Statistical Foundations · Part 1 of 2 &nbsp;·&nbsp; Teaching Materials</p>
-  <p style="margin-top:0.5rem; font-size:0.7rem; opacity:0.6">LLN → CLT → Group Means → t-test / ANOVA &nbsp;·&nbsp; Continue to Part 2: When the Chain Breaks</p>
+  <p><strong>Statistical Foundations · Part 1 of 4</strong> &nbsp;·&nbsp; LLN, CLT, and Standard Error</p>
+  <p style="margin-top:0.5rem; font-size:0.7rem; opacity:0.7">
+    <strong>Part 1</strong>
+    &nbsp;·&nbsp;
+    <a href="stats_part2_v2.html" style="color:#e8a44a;text-decoration:none">Part 2 — When the Chain Breaks</a>
+    &nbsp;·&nbsp;
+    <a href="generativestats.html" style="color:#e8a44a;text-decoration:none">Part 3 — Where does your data come from?</a>
+    &nbsp;·&nbsp;
+    <a href="effect_size_power.html" style="color:#e8a44a;text-decoration:none">Part 4 — Effect Size &amp; Power</a>
+  </p>
+  <p style="margin-top:0.4rem; font-size:0.7rem; opacity:0.55">
+    Companion track on <em>Measurement &amp; Psychometrics</em>:
+    <a href="measurement_fallacies.html" style="color:#5DCAA5;text-decoration:none">B1 — Fallacies</a>
+    &nbsp;·&nbsp;
+    <a href="psychometrics_teaching_v2.html" style="color:#5DCAA5;text-decoration:none">B2 — Measuring What We Cannot See</a>
+    &nbsp;·&nbsp;
+    <a href="reliability_final.html" style="color:#5DCAA5;text-decoration:none">B3 — Reliability</a>
+  </p>
 </footer>
 
 <script>

@@ -290,55 +290,23 @@ footer { background: #191817; color: #7A7870; padding: 44px 40px; text-align: ce
 
   <h3>Cronbach's alpha: the formula and its logic</h3>
 
-  <p>When a test comprises multiple items, the goal is usually to combine them into a total or average score. Cronbach's alpha (α) asks: how reliable is that composite? Given <em>k</em> items and a sample of responses, alpha is computed as:</p>
+  <p>When a test comprises multiple items, the goal is usually to combine them into a total or average score per person. This is exactly the Level-1 averaging move set out in <a href="lln_website_v2.html#s3">Part 1 §04 — Level 1: Averaging items</a>: each item is a noisy reading of the person's underlying trait, and aggregating across items is supposed to let the LLN cancel the item-specific noise and recover a stable estimate of the trait. It is also the same per-person aggregate that subsequently gets fed into a t-test or ANOVA at the group level (see <a href="lln_website_v2.html#s4">Part 1 §05</a> and <a href="stats_part2_v2.html#s1">Part 2 §01</a>) — so the quality of that aggregate determines the quality of every group-level inference built on top of it. Cronbach's alpha (α) is one way of asking: how reliable is that composite? Given <em>k</em> items and a sample of responses, alpha is computed as:</p>
 
   <div class="math">
     α = (k / (k − 1)) × (1 − Σσ²<sub>i</sub> / σ²<sub>total</sub>)
   </div>
 
-  <p>Here σ²<sub>i</sub> is the variance of item <em>i</em>, and σ²<sub>total</sub> is the variance of the total sum score across all <em>k</em> items. The logic is intuitive: if items share a common signal (true score variance), then item variances will be small relative to total score variance, and alpha will be high. When items are standardised to have equal variance (unit variance), this reduces to the more transparent expression:</p>
+  <p>Here σ²<sub>i</sub> is the variance of item <em>i</em> (across people, on that single item), and σ²<sub>total</sub> is the variance of the total sum score across all <em>k</em> items — that is, the variance of <em>person-level totals</em> across the sample, which is just another way of saying "individual differences in the composite score". The logic is intuitive: if items share a common signal — if real differences between people drive correlated variation across items — then those individual differences will dominate the composite and σ²<sub>total</sub> will be large relative to the sum of single-item variances, and alpha will be high. This already foreshadows what is coming: what researchers want from a scale is for the observed distribution of total scores to track the true distribution of the latent construct in the population. Alpha is one (limited) check on whether the observed distribution is reflecting that real signal rather than item-specific noise. When items are standardised to have equal variance (unit variance), the formula reduces to the more transparent expression:</p>
 
   <div class="math">
     α = (k × r̄) / (1 + (k − 1) × r̄)
   </div>
 
-  <p>where r̄ is the mean pairwise inter-item correlation. This version makes two things immediately visible: reliability increases with the number of items <em>k</em>, and it increases with the average correlation between items r̄. The interactive widget below lets you explore this relationship directly.</p>
+  <p>where r̄ is the mean pairwise inter-item correlation. This version makes two things immediately visible: reliability increases with the number of items <em>k</em>, and it increases with the average correlation between items r̄.</p>
 
-  <p>One of the most intuitive ways to interpret alpha is via its square root. Because reliability is defined as the proportion of observed score variance attributable to true score variance, the square root of alpha estimates the <em>correlation</em> between observed scores and true scores (Nunnally &amp; Bernstein, 1994). So a scale with α = 0.81 implies that observed scores correlate approximately 0.90 with the underlying true score — a reassuringly concrete statement about measurement quality. Conversely, α = 0.49 implies a correlation of only 0.70, meaning that nearly half the variance in observed scores is noise. This framing can make reliability values feel more tangible than the abstract variance-ratio definition alone.</p>
+  <p>One of the most intuitive ways to interpret alpha is via its square root. Because reliability is defined as the proportion of observed (composite) score variance attributable to true (composite) score variance, the square root of alpha estimates the <em>correlation</em> between observed total/average scores and the corresponding true total/average — i.e. between the per-person composite the test produces and the per-person composite that the test would produce if there were no measurement error (Nunnally &amp; Bernstein, 1994). So a scale with α = 0.81 implies that observed composite scores correlate approximately 0.90 with their underlying true composite — a reassuringly concrete statement about the measurement quality of the aggregate. Conversely, α = 0.49 implies a correlation of only 0.70, meaning that nearly half the variance in observed composite scores is noise. This framing can make reliability values feel more tangible than the abstract variance-ratio definition alone.</p>
 
-  <p>It is important to note that alpha is an exact estimate of reliability only under a specific structural assumption called <strong>tau-equivalence</strong>: all items must carry the same true score component — in matrix terms, all factor loadings must be equal. When factor loadings differ (as is common in practice), alpha is technically a lower bound on reliability rather than an exact estimate. It is better understood as an approximation whose accuracy depends on how close the items are to being tau-equivalent.</p>
-
-  <h3>The alpha trap: what a high value does not tell you</h3>
-
-  <p>Despite decades of methodological critique, the dominant practice in scale development remains what Flake, Pek, &amp; Hehman (2017) call the <em>sum-and-alpha</em> approach: items are written, summed into a total score, and a single alpha coefficient is reported alongside an appeal to face validity as the primary evidence that the scale measures its intended construct. No factor analysis, no dimensionality check, no DIF testing across groups. This approach is widespread precisely because it is easy and because reviewers have historically accepted it — but it leaves a cascade of assumptions untested and mistakes the absence of scrutiny for the presence of quality. as confirmation that a test is reliable, unidimensional, and fair across groups — all at once. This is sometimes called the <em>alpha trap</em>, and it matters because each of those three claims requires a different kind of evidence that alpha simply cannot provide.</p>
-
-  <div class="callout callout-warn">
-    <div class="callout-label">A common but mistaken inference</div>
-    <p>"Our empathy scale produced α = 0.88, demonstrating that it is reliable, measures a single empathy construct, and is valid across genders."<br><br>
-    Each part of this sentence is doing something alpha cannot support. A single reliability coefficient cannot confirm unidimensionality, and it cannot confirm measurement equivalence across groups. Only targeted checks — factor analysis for the first, measurement invariance testing or DIF analysis for the second — can address those questions.</p>
-  </div>
-
-  <p>Consider the empathy example more carefully. Empathy researchers have long distinguished between <em>emotional empathy</em> (feeling what another feels) and <em>cognitive empathy</em> (understanding another's perspective). A scale that mixes items tapping both facets may well produce α = 0.88 — the two facets are positively correlated, so the inter-item covariance is substantial, and alpha dutifully reports a high value. But the composite score is averaging across two conceptually distinct abilities, and downstream conclusions about individual differences in "empathy" will be systematically ambiguous. The high alpha did not warn you because it was never designed to.</p>
-
-  <p>More specifically, alpha provides no protection against three distinct failures:</p>
-
-  <ul>
-    <li><strong>Tau-equivalence violation causing underestimation.</strong> If some items load more heavily on the construct than others — which is normal — alpha underestimates reliability rather than accurately measuring it. A scale may be more reliable than alpha suggests, not less.</li>
-    <li><strong>Correlated errors causing overestimation.</strong> When errors are not independent — because items share a reading passage, because respondents experience fatigue across a block of similar items, or because a scale is multidimensional with positively correlated factors — alpha inflates. Violations of the local independence assumption can cause alpha to overestimate reliability by as much as 20% (Gessaroli &amp; Folske, 2002). Critically, alpha is biased in both directions depending on which assumption is violated, making it difficult to know whether a given value is too high or too low without additional diagnostic checks.</li>
-    <li><strong>Multidimensionality.</strong> Two or more correlated but distinct traits generate positive inter-item covariances, inflating alpha. The composite score mixes incommensurable things. Alpha cannot detect this — only factor analysis can.</li>
-    <li><strong>Measurement non-invariance.</strong> A test may function differently for different groups: the same item may be harder for one group not because of lower ability but because of cultural familiarity, translation effects, or differential construct relevance. Alpha computed on the combined sample will be blind to this. Establishing that a test works the same way across groups — <em>measurement invariance</em> — requires a separate programme of testing (confirmatory factor analysis with increasingly constrained models across groups, or item-level DIF analysis). These checks are conducted before group comparisons are made, not after.</li>
-  </ul>
-
-  <h3>Why Cronbach eventually moved beyond alpha</h3>
-
-  <p>Perhaps the most striking evidence that alpha is insufficient comes from Cronbach himself. In later work, he explicitly distanced himself from the coefficient that bears his name, arguing that it addressed only one facet of reliability — the sampling of items — while leaving untouched the many other sources of variance that contribute to measurement error in practice. These include day-to-day fluctuation in a respondent's state, rater effects in subjectively scored assessments, differences in testing mode (paper versus computer, supervised versus unsupervised), and occasion-specific context effects.</p>
-
-  <p>His response was <strong>Generalisability Theory</strong> (Cronbach et al., 1963), a framework that replaces the single CTT error term with a partition of variance across multiple crossed facets — items, occasions, raters, contexts. A generalisability coefficient is then computed that reflects reliability not just across items but across whatever combination of facets the researcher wishes to generalise over. The practical implication is clear: a test with high alpha may still have poor generalisability if occasion-to-occasion variability is large, if rater disagreement is substantial, or if performance is sensitive to administration context. Alpha, by design, is blind to all of these sources.</p>
-
-  <div class="callout callout-key">
-    <div class="callout-label">The bottom line</div>
-    <p>Alpha is a useful first screening tool. A very low alpha almost certainly signals a problem. A high alpha rules out one specific failure mode — insufficient item intercorrelation — but confirms nothing else. Researchers who report only alpha and draw conclusions about unidimensionality, measurement equivalence, or generalisability across contexts are over-interpreting a statistic that was never designed to carry that weight.</p>
-  </div>
+  <p>It is important to note that alpha is an exact estimate of reliability only under a specific structural assumption called <strong>tau-equivalence</strong>: all items must carry the same true score component — in matrix terms, all factor loadings must be equal. When factor loadings differ (as is common in practice), alpha is technically a lower bound on reliability rather than an exact estimate. It is better understood as an approximation whose accuracy depends on how close the items are to being tau-equivalent. The same restrictive-assumptions caveat is the one flagged in <a href="lln_website_v2.html#s3">Part 1 §04</a> when α is first introduced, and the cross-instrument extension of the same logic — items <em>across</em> different instruments rather than within one — is developed in <a href="measurement_fallacies.html#instrument">B1 §4 — The fallacy of the instrument</a>.</p>
 
   <h3>How k and r̄ jointly determine alpha</h3>
 
@@ -346,48 +314,7 @@ footer { background: #191817; color: #7A7870; padding: 44px 40px; text-align: ce
 
   <div class="math">α = 1 / (1 + (1 − r̄) / (k × r̄))</div>
 
-  <p>As <em>k</em> grows large (with r̄ held constant and positive), the fraction (1 − r̄) / (k × r̄) shrinks toward zero, so alpha approaches 1. Critically, this only happens when r̄ > 0. If items are genuinely independent (r̄ = 0), alpha equals zero regardless of how many items you administer — there is no shared signal for aggregation to amplify. Explore this in the widget below.</p>
-
-  <h3>The hierarchy of measurement assumptions</h3>
-
-  <p>Not all CTT models are equally restrictive. There is a hierarchy of assumptions about how items relate to the underlying true score, running from most to least restrictive. Understanding this hierarchy clarifies both what alpha requires and why it so frequently underestimates reliability in practice.</p>
-
-  <table>
-    <thead>
-      <tr><th>Model</th><th>What it requires</th><th>Reliability estimator</th></tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><strong>Parallel</strong></td>
-        <td>Items have identical true scores <em>and</em> identical error variances. Extremely restrictive; rarely defensible.</td>
-        <td>Split-half (Spearman-Brown)</td>
-      </tr>
-      <tr>
-        <td><strong>Tau-equivalent</strong></td>
-        <td>Items share the same true score (equal factor loadings) but may have different error variances.</td>
-        <td>Cronbach's alpha (exact)</td>
-      </tr>
-      <tr>
-        <td><strong>Essentially tau-equivalent</strong></td>
-        <td>True scores are linearly related across items — loadings equal but means may differ by a constant.</td>
-        <td>Cronbach's alpha (approximate)</td>
-      </tr>
-      <tr>
-        <td><strong>Congeneric</strong></td>
-        <td>Items measure the same construct with different loadings <em>and</em> different error variances. The most realistic case in practice.</td>
-        <td>Omega total; alpha is only a lower bound</td>
-      </tr>
-    </tbody>
-  </table>
-
-  <p>The practical implication is stark: most psychological scales are congeneric — items capture the same construct but with demonstrably different factor loadings. In these circumstances, alpha is not a point estimate of reliability but a lower bound, and it can underestimate true reliability by as much as 20% when loadings are heterogeneous (Green &amp; Yang, 2009; McNeish, 2017). A researcher who obtains α = 0.65 and concludes the scale is borderline acceptable may in fact be looking at a genuinely reliable measure that alpha is undervaluing because it mistakenly assumes all loadings are equal.</p>
-
-  <p>The hierarchy as set out here is within a single instrument. The same logic extends across instruments — when two questionnaires both claim to measure "wellbeing" but load on partly overlapping latent blends, they are congeneric to one another, not parallel — and that cross-instrument extension is the subject of <a href="measurement_fallacies.html#instrument">B1 §4 — The fallacy of the instrument</a>. The "construct is one thing or several" question that sits beneath both is also unpacked there.</p>
-
-  <div class="callout callout-key">
-    <div class="callout-label">A brief historical note</div>
-    <p>The index universally called "Cronbach's alpha" was in fact derived by Guttman (1945) as his third lambda coefficient. Cronbach's (1951) genuine contributions were demonstrating that the index equals the average of all possible split-half reliabilities — elegantly removing the need to choose a specific split — and popularising it under a more accessible notation. McDonald (1999) proposed the more accurate label <em>Guttman-Cronbach alpha</em>. Cronbach acknowledged that the single-error-source framework of CTT was insufficient, and by the 1960s had developed Generalisability Theory as a more complete answer. That a coefficient so widely used carries the name of a researcher who ultimately advocated moving beyond it should give practitioners pause.</p>
-  </div>
+  <p>As <em>k</em> grows large (with r̄ held constant and positive), the fraction (1 − r̄) / (k × r̄) shrinks toward zero, so alpha approaches 1. Critically, this only happens when r̄ > 0. If items are genuinely independent (r̄ = 0), alpha equals zero regardless of how many items you administer — there is no shared signal for aggregation to amplify. The widget below lets you explore this directly: try setting r̄ near zero and watching k become powerless.</p>
 
 </div><!-- /container -->
 </div><!-- /section -->
@@ -432,11 +359,122 @@ footer { background: #191817; color: #7A7870; padding: 44px 40px; text-align: ce
     </div>
   </div>
 
-  <h3>The aggregation principle</h3>
+  <h3>The aggregation principle — and how it relates to LLN, CLT, and power</h3>
 
-  <p>The widget illustrates a principle with deep roots in statistics: when many noisy measurements all contain a small fragment of the same underlying signal, aggregating them can recover that signal with useful precision. Each individual item score is dominated by noise, but summing many items allows the noise — being random and uncorrelated — to partially cancel while the common signal accumulates coherently. This is why a 40-item test can be substantially more reliable than a 10-item test, even when the average inter-item correlation is unchanged.</p>
+  <p>The widget exposes a principle with deep roots elsewhere in this resource: when many noisy measurements all carry a small fragment of the same underlying signal, aggregating them lets the random item-level noise partially cancel while the shared component accumulates. This is the same logic that makes the LLN work for coin flips and that makes the CLT-on-means underwrite t-tests and ANOVA at the group level — both unpacked in <a href="lln_website_v2.html#s1">Part 1 §01–§02</a>. Cronbach's α is what that argument looks like applied at Level 1 of the <a href="lln_website_v2.html#s3">two levels of averaging</a> framework — averaging items <em>within</em> a person to recover a stable per-person estimate, before any group-level averaging is done.</p>
 
-  <p>However, this mechanism rests entirely on the CTT error assumptions. Errors must be genuinely random and uncorrelated across items. If items share a common source of unwanted variance — for example, groups of items sharing a reading passage, or later items all being affected by fatigue — then the errors are no longer independent, the cancellation logic breaks down, and alpha will overestimate reliability. The formula gives you a number, but the number is only meaningful if its assumptions are met.</p>
+  <h4>Two regimes that produce a high α</h4>
+
+  <p>The widget shows that high α can be reached two quite different ways, and the conceptual interpretation differs sharply between them.</p>
+
+  <p><strong>High r̄, few items.</strong> A handful of strongly intercorrelated items will already produce a high α. Each item is a fairly clean reading of the same thing — a short scale of nearly-redundant items. Adding a sixth item to a five-item scale where the items already correlate at r̄ = 0.6 brings little new information; in the language of independent observations from <a href="lln_website_v2.html#s1">Part 1 §01</a>, when the next observation is largely predictable from the ones you already have, it adds little to the aggregate. The summed score is reliable because the items are essentially measuring the same thing several times.</p>
+
+  <p><strong>Low r̄, many items.</strong> The other route to a high α is to have many items, each of which carries only a small amount of shared signal. With r̄ = 0.10 and k ≈ 36, α reaches about 0.80. Here the logic is different: each item alone is a poor reading of the construct, but aggregating across many items lets the item-specific noise partially cancel while the small shared component accumulates. This is essentially the LLN/CLT mechanism imported into psychometrics — and it requires the same condition: that the small shared component really is the same construct across all the items.</p>
+
+  <h4>The power-analysis parallel</h4>
+
+  <p>There is a direct analogy worth seeing. In a between-groups experiment, the size of the effect (Cohen's <em>d</em>) tells you how much shared signal is present in each new participant's score; smaller <em>d</em> requires larger <em>N</em> to detect cleanly. The relationship is roughly that required <em>N</em> scales as 1/<em>d</em>² — half the effect size means roughly quadruple the sample, as developed in <a href="effect_size_power.html#power">Part 4 §5 — Power analysis</a>. Cronbach's α is structurally the same problem one level down: r̄ tells you how much shared signal is present in each new item, and smaller r̄ requires a larger <em>k</em> to reach a target reliability. In both cases the reason more "<em>N</em>" (participants or items) is needed is the same — the per-unit signal-to-noise ratio is small, so more units have to be aggregated to extract the signal. The widget's "key insight" line ("at r̄ = 0.10, approximately 36 items would be required to reach α = 0.80") is the psychometric counterpart of a power calculation for a small <em>d</em>.</p>
+
+  <h4>The crucial caveat — reliability of the sum is not coherence of the construct</h4>
+
+  <p>The two regimes look the same in α, but they are not the same scientifically — and each carries its own validity risk that α cannot diagnose. The risks point in opposite directions, but the diagnosis is the same: <em>α tells you whether the aggregate is internally stable; it tells you nothing about the degree to which the aggregate is actually measuring the construct it claims to measure</em>.</p>
+
+  <p><strong>The high-r̄ risk: construct under-representation.</strong> In the few-highly-correlated-items case, the items behave as nearly-redundant readings of one thing. That much is empirically demonstrable — the items really do covary as if measuring a common quantity. But α has no view on what that "one thing" actually is, or on how much of the intended construct it covers. Three highly intercorrelated items measuring "depression" might all tap the somatic side (changes in sleep, appetite, energy) while missing the cognitive (worthlessness, hopelessness), affective (sadness, anhedonia), and behavioural (withdrawal, agitation) sides entirely. The three items would be highly intercorrelated, α would be high, and the scale would still be measuring only a sliver of what "depression" actually denotes. Pictured as overlapping circles inside a larger "depression" circle, the items can sit tightly together in one corner of the construct, leaving most of the latent space untouched — and α reports a happy high value all the same. This is what the measurement literature calls <em>construct under-representation</em> (or <em>construct deficiency</em>): the items collectively do not span the latent space they claim to measure. A high α gives you no protection against it.</p>
+
+  <p><strong>The low-r̄ risk: construct heterogeneity.</strong> In the many-weakly-correlated-items case, the assumption that all the items are tapping the <em>same</em> construct (just noisily) is doing a great deal of work — and α cannot tell you whether that assumption is true. The same observed pattern of small positive inter-item correlations could arise from one underlying construct sampled noisily, OR from a heterogeneous mix of related-but-distinct sub-constructs that happen to be positively correlated with one another. Alpha returns the same number in both cases.</p>
+
+  <p>The charitable CTT reading of the low-r̄ case is: each item carries a small amount of common true-score variance plus a lot of item-specific error (X = T + E, with T contributing only a little per item). On that reading, aggregation accumulates T while averaging away E, exactly as the LLN promises. But the promise depends on an extra assumption: that the items are all contributing to the <em>same</em> T, in roughly the same direction — i.e. that the scale is approximately tau-equivalent or congeneric on a single dimension. If the low correlations instead reflect multidimensionality or construct heterogeneity, the aggregate is averaging across qualitatively different things and the reliable sum does not refer to one coherent latent quantity.</p>
+
+  <p>The two risks are mirror images. The high-r̄ scale measures one thing reliably but only a corner of the construct; the low-r̄ scale aggregates broadly but may be averaging across several different constructs. Both produce respectable α values. Both are invisible to α. The remedy is the same in both directions: factor analysis to inspect what the items are actually doing, and a substantive theory of the construct to judge whether the items collectively span it.</p>
+
+  <p>This is the cleanest way to state what α can and cannot do. <em>Alpha tells you whether the aggregate is reproducible</em> — whether someone scoring 47 on the test today would likely score around 47 on a parallel administration. It does <em>not</em> tell you whether 47 measures one coherent thing. The deeper question — whether the aggregate <em>deserves to exist</em> as a single composite — needs a separate kind of evidence: factor structure, dimensionality, external validity, and a defensible substantive theory of what construct the items are jointly measuring. The next section turns to what α specifically does and does not licence — the <em>alpha trap</em>.</p>
+
+  <p>One more condition has to hold for the aggregation logic to work at all: the item-level noise has to actually be uncorrelated across items. This is the third CTT error assumption introduced earlier (local independence) and the same independence assumption that runs through residuals in regression and ANOVA — see <a href="stats_part2_v2.html#s2">Part 2 §02 — The problem with assuming independence</a>. If items share a common source of unwanted variance (a shared reading passage, fatigue across a block of similar items, a positively-correlated method factor), the errors are no longer independent, the cancellation breaks down, and α will overestimate reliability. The formula gives you a number; the number is only meaningful if its assumptions are met.</p>
+
+</div>
+</div>
+
+
+<!-- ── SECTION: ALPHA TRAP, GENERALISABILITY, HIERARCHY ── -->
+<div id="part-a-critique" class="section">
+<div class="container">
+
+  <h3>The alpha trap: what a high value does not tell you</h3>
+
+  <p>Despite decades of methodological critique, the dominant practice in scale development remains what Flake, Pek, &amp; Hehman (2017) call the <em>sum-and-alpha</em> approach: items are written, summed into a total score, and a single alpha coefficient is reported alongside an appeal to face validity as the primary evidence that the scale measures its intended construct. No factor analysis, no dimensionality check, no DIF testing across groups. This approach is widespread precisely because it is easy and because reviewers have historically accepted it — but it leaves a cascade of assumptions untested and treats a single coefficient as confirmation that a test is reliable, unidimensional, and fair across groups — all at once. The cascade itself is the subject of <a href="measurement_fallacies.html">B1 — Three Fallacies of Psychological Measurement</a>: subjective scale anchors, ordinal vs interval spacing, and instrument equivalence are all upstream assumptions that the sum-and-alpha workflow silently presupposes. This is sometimes called the <em>alpha trap</em>, and it matters because each of those three claims requires a different kind of evidence that alpha simply cannot provide.</p>
+
+  <div class="callout callout-warn">
+    <div class="callout-label">A common but mistaken inference</div>
+    <p>"Our empathy scale produced α = 0.88, demonstrating that it is reliable, measures a single empathy construct, and is valid across genders."<br><br>
+    Each part of this sentence is doing something alpha cannot support. A single reliability coefficient cannot confirm unidimensionality, and it cannot confirm measurement equivalence across groups. Only targeted checks — factor analysis for the first, measurement invariance testing or DIF analysis for the second — can address those questions.</p>
+  </div>
+
+  <p>Consider the empathy example more carefully. Empathy researchers have long distinguished between <em>emotional empathy</em> (feeling what another feels) and <em>cognitive empathy</em> (understanding another's perspective). A scale that mixes items tapping both facets may well produce α = 0.88 — the two facets are positively correlated, so the inter-item covariance is substantial, and alpha dutifully reports a high value. But the composite score is averaging across two conceptually distinct abilities, and downstream conclusions about individual differences in "empathy" will be systematically ambiguous. The high alpha did not warn you because it was never designed to.</p>
+
+  <p>More specifically, alpha provides no protection against three distinct failures:</p>
+
+  <ul>
+    <li><strong>Tau-equivalence violation causing underestimation.</strong> If some items load more heavily on the construct than others — which is normal — alpha underestimates reliability rather than accurately measuring it. A scale may be more reliable than alpha suggests, not less.</li>
+    <li><strong>Correlated errors causing overestimation.</strong> When errors are not independent — because items share a reading passage, because respondents experience fatigue across a block of similar items, or because a scale is multidimensional with positively correlated factors — alpha inflates. Violations of the local independence assumption can cause alpha to overestimate reliability by as much as 20% (Gessaroli &amp; Folske, 2002). Critically, alpha is biased in both directions depending on which assumption is violated, making it difficult to know whether a given value is too high or too low without additional diagnostic checks.</li>
+    <li><strong>Multidimensionality.</strong> Two or more correlated but distinct traits generate positive inter-item covariances, inflating alpha. The composite score mixes incommensurable things. Alpha cannot detect this — only factor analysis can.</li>
+    <li><strong>Measurement non-invariance.</strong> A test may function differently for different groups: the same item may be harder for one group not because of lower ability but because of cultural familiarity, translation effects, or differential construct relevance. Alpha computed on the combined sample will be blind to this. Establishing that a test works the same way across groups — <em>measurement invariance</em> — requires a separate programme of testing (confirmatory factor analysis with increasingly constrained models across groups, or item-level DIF analysis). These checks are conducted before group comparisons are made, not after.</li>
+  </ul>
+
+  <h3>Why Cronbach eventually moved beyond alpha</h3>
+
+  <p>Perhaps the most striking evidence that alpha is insufficient comes from Cronbach himself. In later work, he explicitly distanced himself from the coefficient that bears his name, arguing that it addressed only one facet of reliability — the sampling of items — while leaving untouched the many other sources of variance that contribute to measurement error in practice. These include day-to-day fluctuation in a respondent's state, rater effects in subjectively scored assessments, differences in testing mode (paper versus computer, supervised versus unsupervised), and occasion-specific context effects.</p>
+
+  <p>This connects directly back to the widget logic. When the widget says "low r̄ means you need many more items to reach a high α", that prescription rests on a specific diagnosis of where the unwanted variance is coming from: that it is <em>item-sampling error</em> — the kind of error that more items, sampled from the same construct, will average out. Alpha implicitly treats every source of unwanted variance as if it lived inside the items themselves, and so prescribes the items themselves as the cure. But if the actual source of noise is the respondent's mood that morning, the rater scoring it, the room temperature, or the order of administration, adding more items will not help — those errors do not cancel by item-sampling because they are not item-sampling errors. The widget's "more items" recommendation is therefore conditional on a substantive assumption about the structure of the error, not just a numerical fact about how α scales with k.</p>
+
+  <p>His response was <strong>Generalisability Theory</strong> (Cronbach et al., 1963), a framework that replaces the single CTT error term with a partition of variance across multiple crossed facets — items, occasions, raters, contexts. A generalisability coefficient is then computed that reflects reliability not just across items but across whatever combination of facets the researcher wishes to generalise over. The practical implication is clear: a test with high alpha may still have poor generalisability if occasion-to-occasion variability is large, if rater disagreement is substantial, or if performance is sensitive to administration context. Alpha, by design, is blind to all of these sources — it sees only the item-by-person matrix it was given and partitions whatever it finds into "shared signal" and "item-level noise", with no vocabulary for anything else.</p>
+
+  <p>A natural question this section deliberately leaves on the table: what about reliability assessed <em>across occasions</em> rather than within a single administration? Test-retest reliability and the intraclass correlation coefficient (ICC) belong to that across-occasions family — and they sit on a different axis from internal consistency. They are the subject of <a href="reliability_final.html">B3 — The Reliability Problem</a>, where they are also unified with α under Rouder's signal-to-noise framework γ². Internal-consistency α (this section) and test-retest ICC (B3) are answering different questions about the same underlying construct of measurement error: α asks whether the items hang together when computed once, ICC asks whether the same person produces the same score on a different occasion. Both are necessary; neither is sufficient on its own.</p>
+
+  <div class="callout callout-key">
+    <div class="callout-label">The bottom line</div>
+    <p>Alpha is a useful first screening tool. A very low alpha almost certainly signals a problem. A high alpha rules out one specific failure mode — insufficient item intercorrelation — but confirms nothing else. Researchers who report only alpha and draw conclusions about unidimensionality, measurement equivalence, or generalisability across contexts are over-interpreting a statistic that was never designed to carry that weight.</p>
+  </div>
+
+  <h3>The hierarchy of measurement assumptions</h3>
+
+  <p>Up to this point we have written "the CTT model" as if there were one — but Classical Test Theory is really a family of models, each making different structural assumptions about how items relate to the underlying true score. A "CTT model" is therefore a particular specification of those assumptions: how strongly each item is tied to the latent trait, whether items are tied to it equally, and what the error structure looks like. Not all of these specifications are equally restrictive, and the differences matter for which reliability estimator is appropriate. Running from most to least restrictive, the four common members of the family are set out in the table below. Understanding this hierarchy clarifies both what alpha requires and why it so frequently underestimates reliability in practice.</p>
+
+  <table>
+    <thead>
+      <tr><th>Model</th><th>What it requires</th><th>Reliability estimator</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>Parallel</strong></td>
+        <td>Items have identical true scores <em>and</em> identical error variances. Extremely restrictive; rarely defensible.</td>
+        <td>Split-half (Spearman-Brown)</td>
+      </tr>
+      <tr>
+        <td><strong>Tau-equivalent</strong></td>
+        <td>Items share the same true score (equal factor loadings) but may have different error variances.</td>
+        <td>Cronbach's alpha (exact)</td>
+      </tr>
+      <tr>
+        <td><strong>Essentially tau-equivalent</strong></td>
+        <td>True scores are linearly related across items — loadings equal but means may differ by a constant.</td>
+        <td>Cronbach's alpha (approximate)</td>
+      </tr>
+      <tr>
+        <td><strong>Congeneric</strong></td>
+        <td>Items measure the same construct with different loadings <em>and</em> different error variances. The most realistic case in practice.</td>
+        <td>Omega total; alpha is only a lower bound</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p>The practical implication is stark: most psychological scales are congeneric — items capture the same construct but with demonstrably different factor loadings. In these circumstances, alpha is not a point estimate of reliability but a lower bound, and it can underestimate true reliability by as much as 20% when loadings are heterogeneous (Green &amp; Yang, 2009; McNeish, 2017). A researcher who obtains α = 0.65 and concludes the scale is borderline acceptable may in fact be looking at a genuinely reliable measure that alpha is undervaluing because it mistakenly assumes all loadings are equal.</p>
+
+  <p>The hierarchy as set out here is within a single instrument. The same logic extends across instruments — when two questionnaires both claim to measure "wellbeing" but load on partly overlapping latent blends, they are congeneric to one another, not parallel — and that cross-instrument extension is the subject of <a href="measurement_fallacies.html#instrument">B1 §4 — The fallacy of the instrument</a>. The "construct is one thing or several" question that sits beneath both is also unpacked there.</p>
+
+  <div class="callout callout-key">
+    <div class="callout-label">A brief historical note</div>
+    <p>The index universally called "Cronbach's alpha" was in fact derived by Guttman (1945) as his third lambda coefficient. Cronbach's (1951) genuine contributions were demonstrating that the index equals the average of all possible split-half reliabilities — elegantly removing the need to choose a specific split — and popularising it under a more accessible notation. McDonald (1999) proposed the more accurate label <em>Guttman-Cronbach alpha</em>. Cronbach acknowledged that the single-error-source framework of CTT was insufficient, and by the 1960s had developed Generalisability Theory as a more complete answer. That a coefficient so widely used carries the name of a researcher who ultimately advocated moving beyond it should give practitioners pause.</p>
+  </div>
 
 </div>
 </div>
@@ -488,6 +526,8 @@ footer { background: #191817; color: #7A7870; padding: 44px 40px; text-align: ce
 
   <div class="math">SEM = SD(X) × √(1 − ρ<sub>XX</sub>)</div>
 
+  <p>This is a third "standard error" worth distinguishing from the two introduced in <a href="lln_website_v2.html#s2">Part 1 §02 — Two kinds of variability: world vs estimation error</a>. There the distinction was σ (real variability between people in the world) versus SE = σ/√n (the error in our estimate of a population mean from a finite sample). The SEM here is a third object: it is the typical distance between an <em>individual person's</em> observed score and that <em>same person's</em> true score, not a between-person quantity and not a sampling-distribution quantity. As I have stressed a number of times the σ vs SE pair is about the <em>precision</em> of group-level inference; SEM is about the <em>precision</em> of person-level measurement. All three deserve to be kept separate in the way the resource has consistently kept σ and SE separate — they are different quantities doing different scientific jobs even though the words "standard error" attach to two of them.</p>
+
   <p>The SEM is expressed in the same units as the test score, making it directly interpretable. A test with score SD = 8 and reliability = 0.84 has SEM = 8 × √0.16 = 3.2 points, so a 95% confidence interval for any observed score spans roughly ±6 points around it. A critical limitation of the CTT-based SEM is that it is <em>constant across all ability levels</em> — the same margin of error applies whether a person scores near the floor or near the ceiling. In reality, tests often measure middle-range ability more precisely than the extremes. This limitation is one of the central motivations for IRT, which replaces the single SEM with a <strong>test information function</strong> that shows exactly where along the ability continuum the test is precise and where it is not — the topic of Part B.</p>
 
 </div>
@@ -504,6 +544,8 @@ footer { background: #191817; color: #7A7870; padding: 44px 40px; text-align: ce
 
   <h2>Item Response Theory: modelling the item</h2>
 
+  <p>IRT has been alluded to several times already in this resource: it gets a preview in <a href="stats_part2_v2.html#s4">Part 2 §05 — The measurement question: precision at the item level</a>, and it appears in <a href="measurement_fallacies.html#ordinal">B1 §3</a> as the "formal escape" psychometrics offers from the ordinal-fallacy problem (estimating ability on a logit scale that is interval by construction). This Part B is where the mechanics of that escape get worked through.</p>
+
   <p>Classical Test Theory operates at the level of the test. It treats the item sum as the fundamental quantity and asks how reliable it is. Item Response Theory (IRT) zooms in a level further: it models how each individual item behaves, and makes explicit, testable predictions about the probability of a correct response as a function of a person's underlying ability.</p>
 
   <p>This shift has significant practical consequences. In CTT, a person's score is partly a function of the difficulty of the particular items they happened to receive — an easier set of items produces higher scores, not higher ability. IRT places person ability and item difficulty on the same underlying scale, making them directly comparable and — crucially — independent of the specific items administered. This property, called <em>measurement invariance</em> or <em>specific objectivity</em> within Rasch theory, is what gives IRT its power for adaptive testing and cross-test comparisons.</p>
@@ -518,7 +560,7 @@ footer { background: #191817; color: #7A7870; padding: 44px 40px; text-align: ce
 
   <p>Both ability and difficulty are expressed on a common <em>logit</em> scale — the log-odds of a correct response. The model has an elegant, interpretable property: when person ability exactly matches item difficulty (θ = β), the probability of a correct response is exactly 0.5. As ability increasingly exceeds difficulty, the probability approaches 1; as difficulty increasingly exceeds ability, the probability approaches 0.</p>
 
-  <p>When plotted, this relationship produces an S-shaped (sigmoid) curve called an <strong>Item Characteristic Curve (ICC)</strong>. Under the Rasch model, every item's ICC has the same shape — the same slope at its inflection point — with items differing only in their horizontal position (their difficulty). This is the key visual signature of the Rasch model: a family of parallel S-curves, equally steep, spread across the ability axis.</p>
+  <p>When plotted, this relationship produces an S-shaped (sigmoid) curve called an <strong>Item Characteristic Curve (ICC)</strong>. Under the Rasch model, every item's ICC has the same shape — the same slope at its inflection point — with items differing only in their horizontal position (their difficulty). This is the key visual signature of the Rasch model: a family of parallel S-curves, equally steep, spread across the ability axis (see example in interactive widget below).</p>
 
   <h3>Why the Rasch model validates summing</h3>
 
@@ -527,6 +569,19 @@ footer { background: #191817; color: #7A7870; padding: 44px 40px; text-align: ce
   <p>This is a remarkable result. It means that if the Rasch model accurately describes how your items work, the traditional practice of simply summing responses is not just convenient — it is statistically optimal. CTT and Rasch IRT converge on the same answer when the data conform to Rasch expectations.</p>
 
   <p>Seen from this angle, fitting a Rasch model to your data is a way of <em>empirically testing whether summing was justified in the first place</em>. If the model fits, the sum is vindicated. If the model fails to fit, you know that something in the Rasch assumptions is wrong — items may discriminate differently, the data may be multidimensional, or there may be local dependence — and the simple sum is missing something important.</p>
+
+  <h3>What the Rasch model also tells you: <em>range</em> of difficulty and test targeting</h3>
+
+  <p>Showing that the sum is a sufficient statistic for ability is one thing; showing that the resulting sum is a <em>useful</em> estimate of ability across the population you actually care about is another. A 30-item test with all items calibrated at the same difficulty (say, β = 0) will satisfy the Rasch sufficient-statistic property — every item has the same slope, summing is justified — but it will discriminate poorly between someone at θ = 2 and someone at θ = 3, because every item is too easy for both of them and their sums will both saturate near the maximum. A 30-item test with difficulties spread across, say, β = −3 to β = +3 will, by contrast, produce sums that meaningfully separate people across a wide range of θ. Both tests fit the Rasch model perfectly; only the second one is useful for measuring an ability-heterogeneous population.</p>
+
+  <p>Consequentially, the Rasch fit gives you several tools for evaluating range and targeting — separate from the question of whether the model fits at all:</p>
+
+  <ul>
+    <li><strong>The distribution of β estimates.</strong> Plot the item difficulties along the logit axis, as we have established its important to see if your items cover a range of difficulty. A clustered distribution flags poor coverage; an evenly spread one indicates the test can discriminate across a wide ability range.</li>
+    <li><strong>The item-person map (Wright map).</strong> A visual display putting person ability estimates and item difficulty estimates on the same logit axis. If the person distribution sits in a region with few items, the test is mistargeted for that population — again this is another way to indicate whether sums will be noisy or compressed exactly where most of the population lives.</li>
+  </ul>
+
+  <p>The practical point is that under Rasch, summing is mathematically vindicated, but a sum that is mathematically vindicated can still be a poor estimator of ability if the items do not cover the right part of the ability continuum. The "right part" depends on what the test is for — measuring an unselected population, selecting candidates above a threshold, or distinguishing people in a narrow band of ability — and the answer to that substantive question is what guides item difficulty selection. This is why test development is iterative: fit the model, look at where the items sit relative to the population, and add or revise items to fill the gaps.</p>
 
   <h3>Rasch fit statistics: infit and outfit</h3>
 
@@ -592,9 +647,16 @@ footer { background: #191817; color: #7A7870; padding: 44px 40px; text-align: ce
     P(X<sub>ij</sub> = 1 | θ<sub>j</sub>, α<sub>i</sub>, β<sub>i</sub>) = exp(α<sub>i</sub>(θ<sub>j</sub> − β<sub>i</sub>)) / (1 + exp(α<sub>i</sub>(θ<sub>j</sub> − β<sub>i</sub>)))
   </div>
 
-  <p>The discrimination parameter α<sub>i</sub> controls the steepness of the ICC. A high value (say, 2.0) produces a steeply rising curve — the item sharply separates people whose ability is just above from those just below the difficulty threshold, making it highly informative about ability at that point. A low value (say, 0.5) produces a shallow, nearly flat curve — the item is only weakly related to ability and discriminates poorly. Select the 2PL view in the ICC widget above to see how curves of different slopes spread across the ability axis.</p>
+  <p>The discrimination parameter α<sub>i</sub> controls the steepness of the ICC (again illustrated by the widget above). A high value (say, 2.0) produces a steeply rising curve — the item sharply separates people whose ability is just above from those just below the difficulty threshold, making it highly informative about ability at that point. A low value (say, 0.5) produces a shallow, nearly flat curve — the item is only weakly related to ability and discriminates poorly. Select the 2PL view in the ICC widget above to see how curves of different slopes spread across the ability axis.</p>
 
   <p>The practical implication is important: <strong>if items vary substantially in discrimination, then equal weighting is suboptimal</strong>. Items with high discrimination carry more information about ability and ideally should receive proportionally more weight. Simply summing scores — which treats each item as equally informative — will be less precise than the weighted combination implied by the 2PL estimates.</p>
+
+  <div class="callout callout-key">
+    <div class="callout-label">How is this different from omega total?</div>
+    <p>A natural question at this point: didn't we already address unequal item loadings back in Part A, with omega total replacing alpha for congeneric scales? Yes — and the two moves are closely related, but they are not the same move. Both omega total and the 2PL acknowledge that items differ in how strongly they tap the construct, and both use item-specific factor loadings or discriminations rather than treating all items as equally informative. The difference is in <em>what they then do with that information</em>.</p>
+    <p style="margin-top:0.6rem"><strong>Omega total</strong> still produces a single reliability coefficient for a fixed sum-score composite. It says: "given that loadings differ, here is a more honest reliability estimate of the sum you are scoring". The score itself is still the equal-weighted sum; the loadings only enter the reliability calculation.</p>
+    <p style="margin-top:0.6rem"><strong>The 2PL</strong> goes further. It uses each item's discrimination not just to estimate a reliability coefficient but to estimate <em>person ability itself</em> on a logit scale, with each item contributing according to its information value at that person's ability level. The ability estimate is not a sum at all — it is a maximum-likelihood (or Bayesian) estimate that down-weights low-discrimination items and up-weights high-discrimination ones. The reliability statement that follows (the test information function, the topic of the next subsection) is then specific to the ability level, not constant across the scale. So omega total fixes the reliability accounting for an existing sum; 2PL replaces the sum-based scoring procedure with a model-based one that uses the loadings throughout. They operate at different points in the workflow, and a study could in principle use both — omega total to characterise the simple sum if it is still being scored, and a 2PL fit to obtain the model-based ability estimate that is closer to the true latent quantity.</p>
+  </div>
 
   <div class="callout callout-key">
     <div class="callout-label">Deciding between 1PL and 2PL</div>
@@ -660,7 +722,12 @@ footer { background: #191817; color: #7A7870; padding: 44px 40px; text-align: ce
     <div class="part-line"></div>
   </div>
 
-  <h2>Before you fit a model: what to check</h2>
+  <h2>Before you fit a model: what to check <span style="display:inline-block;font-family:'Source Sans 3',sans-serif;font-size:0.55em;font-weight:600;letter-spacing:0.15em;text-transform:uppercase;color:var(--amber);background:var(--amber-pale);padding:4px 10px;border-radius:4px;vertical-align:middle;margin-left:0.6rem;border:1px solid var(--amber-mid)">Advanced</span></h2>
+
+  <div class="callout callout-key">
+    <div class="callout-label">Heads-up — this section is more technically demanding</div>
+    <p>Part C is the most advanced section on this page. It signposts a number of techniques — parallel analysis, exploratory and confirmatory factor analysis, principal-components-based residual diagnostics, Mokken scaling, differential item functioning analysis — that are themselves substantial topics, and most are introduced rather than fully developed here. If a check below references a method that is unfamiliar, it is fine to read the surrounding paragraph for the conceptual point ("what failure does this check guard against?") and come back to the technical details once the relevant method is covered in later pages of this resource. The page can be read end-to-end on a first pass without working through every R snippet.</p>
+  </div>
 
   <p>Neither CTT nor IRT is automatically appropriate for any given dataset. Both frameworks rest on assumptions that must be evaluated — not merely declared — before the resulting scores and estimates can be interpreted with confidence. The checks described in this section should be understood as a coherent programme of model evaluation, each addressing a different facet of the same underlying question: are these data consistent with the measurement model I intend to apply?</p>
 
@@ -743,7 +810,7 @@ footer { background: #191817; color: #7A7870; padding: 44px 40px; text-align: ce
 
   <h3>Putting it together: a practical workflow</h3>
 
-  <p>The three parts of this resource form a logical hierarchy. Alpha (Part A) answers the most basic question: is the composite score adequately consistent? IRT (Part B) goes further: does the data conform to a specific model of how ability generates responses — and if so, what is that structure? The checks in Part C are the preconditions that must be satisfied before either of those questions can be answered coherently. Skipping Part C and proceeding directly to model fitting is like checking whether a ladder is well-constructed without first checking whether it is resting against the right wall.</p>
+  <p>The three parts of this resource form a logical hierarchy. Alpha (Part A) answers the most basic question: is the composite score adequately consistent? IRT (Part B) goes further: does the data conform to a specific model of how ability generates responses — and if so, what is that structure? The checks in Part C are the preconditions that must be satisfied before either of those questions can be answered coherently. Skipping Part C and proceeding directly to model fitting is like running a regression analysis without first checking whether the assumptions of the regression hold — you will get coefficients and p-values out either way, and they will look perfectly respectable on the page, but their meaning depends on conditions you never verified.</p>
 
   <div class="steps" style="margin-top:28px;">
     <div class="step">

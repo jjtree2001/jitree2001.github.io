@@ -421,14 +421,14 @@ threshold_table</code></pre>
     <div class="formula">observed estimate = target signal + sampling noise</div>
 
     <p>
-      Sampling noise comes from whatever observations we happened to collect: people, items, trials, raters, images,
-      days, tasks, or occasions. A single observation is usually noisy. A mean over many observations is usually less
-      noisy.
+      The above is just basically Classical Test Theory's point - Sampling noise comes from whatever observations we happened to collect: people, items, trials, raters, images,
+      days, tasks, or occasions. A single observation is usually noisy. What is actually kind amazing is the point that Central limit thereom shows that if u want to drive that sampling noise down then a mean over many observations is usually the best way to
+      do it.
     </p>
 
     <h3>9.2 The core principle is aggregation</h3>
     <p>
-      If noise is partly idiosyncratic, averaging more observations reduces its influence. This is the basic
+      Central limit theoreoms point is that if noise is partly idiosyncratic, averaging more observations reduces its influence (the phrase is usually "random errors cancel out"). This is the basic
       central-limit-theorem intuition: more observations produce less sampling error and therefore a more precise
       estimate. For a simple mean, this is familiar:
     </p>
@@ -436,8 +436,8 @@ threshold_table</code></pre>
     <div class="formula">SE(mean) = SD / √N</div>
 
     <p>
-      The same logic appears in reliability theory. Reliability improves when the stable signal remains the same but
-      the error term is averaged down.
+      Importantly, precisely the same logic appears in reliability theory. Reliability improves when the stable signal remains the same but
+      the error term is averaged down - and this is what is being illustated in the worked example above and sits at the heart of Rouder and Mehrvarz’s (2026) proposals. When you stop and thinking about it, this point actually appears literally everywhere in the reliability analytical approaches (examples are below)
     </p>
 
     <h3>9.3 Different reliability frameworks use different sampling units</h3>
@@ -467,7 +467,7 @@ threshold_table</code></pre>
           <td>An average across raters is more reliable than a single rater because individual rater error is averaged down.</td>
         </tr>
         <tr>
-          <td>Mila’s identity-rating design</td>
+          <td>Mila’s identity-rating design example above</td>
           <td>Raters and images</td>
           <td>More raters reduce observer noise; more images reduce stimulus-sampling noise.</td>
         </tr>
@@ -482,7 +482,7 @@ threshold_table</code></pre>
     </p>
 
     <p>
-      In Mila’s case, participant variance was large in the raw model. However, participant-related noise was already
+      In the example from Mila’s study: participant variance was large in the raw model. However, participant-related noise was already
       divided by about 47 raters. Image-specific noise was smaller in raw terms, but divided by only 5 images. So after
       aggregation, image-sampling noise remained the more important bottleneck.
     </p>
@@ -494,7 +494,7 @@ threshold_table</code></pre>
 
     <h3>9.5 Generalizability Theory makes this logic explicit</h3>
     <p>
-      Generalizability Theory is perhaps the cleanest formal expression of this idea. It asks what the relevant sources
+      Generalizability Theory (Cronbach's approach that everyone ignored after he told people to stop using alpha) - is perhaps the cleanest formal expression of this idea. It asks what the relevant sources
       of measurement variation are and how many samples are needed from each source. Those sources might be persons,
       items, raters, occasions, tasks, stimuli, or sessions.
     </p>
@@ -503,7 +503,7 @@ threshold_table</code></pre>
       Once those variance components are estimated, we can ask design questions such as whether reliability would
       improve more by adding items, raters, occasions, or stimuli. This is exactly the logic used here: estimate the
       variance structure with a hierarchical model, then ask which sampling dimension should be increased to improve the
-      target estimate.
+      target estimate. The answer is typically pretty simple - if you have a very small initial sample, well make it bigger dummy. (I find this amusing given all the obsession about power analyses)
     </p>
 
     <h3>9.6 General lesson</h3>

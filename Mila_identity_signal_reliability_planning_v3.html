@@ -43,15 +43,15 @@
 <div class="wrap">
   <div class="hero">
     <h1>Using hierarchical variance partitioning to optimise identity-level ratings</h1>
-    <p>A shareable workflow for Mila’s rating data: the goal is best estimate the stable friendliness 'signal' attributable to each face identity, identify the noise sources, and use those variance components to decide whether future work should add raters or add images per identity. This also serve to demonstrate the additional utility of LMMs as they naturally partion variance!</p>
+    <p>A shareable workflow for Mila’s rating data: the goal is to best estimate the stable friendliness 'signal' attributable to each face identity, identify the noise sources, and use those variance components to decide whether future work should add raters or add images per identity. This will also serve to demonstrate the additional utility of LMMs as they naturally partion variance!</p>
   </div>
 
   <section>
     <h2>1. Data context and objective</h2>
-    <p>Mila’s design has 47 raters, two sessions, 100 face images, and 20 identities with 5 images per identity. Ratings are on a 1–9 ordered scale - relating to how friendly the would rate each image presented. The central objective is to improve the estimate of <strong>identity-level friendliness</strong>: the stable consensus score for a particular person, abstracting over the particular raters and images sampled which also includes the fact we ran this twice (to look at test-retest reliability which I discuss elsewhere).</p>
+    <p>Mila’s design has 47 raters, two sessions, 100 face images, and 20 identities with 5 images per identity. Ratings are on a 1–9 ordered scale - relating to how friendly they would rate each image presented. The central objective is to improve the estimate of <strong>identity-level friendliness</strong>: the stable consensus score for a particular person, abstracting over the particular raters and images sampled which also includes the fact we ran this twice (to look at test-retest reliability which I discuss elsewhere).</p>
     <div class="callout">
-      <strong>Target signal:</strong> stable identity-level consensus friendliness.<br>
-      <strong>Design levers:</strong> number of raters and number of images per identity.<br>
+      <strong>Target signal:</strong> stable identity-level consensus friendliness (this is essentially an aggregate of the ratings given by participants across the five exemplar images for each of the 20 individuals).<br>
+      <strong>Design levers:</strong> number of raters (pariticipant N) and number of images per identity.<br>
       <strong>Practical question:</strong> once we have around 50 raters, is the next reliability gain better achieved by adding more participants or more exemplars of each identity?
     </div>
   </section>
@@ -102,13 +102,13 @@
     </table>
 
     <div class="callout good">
-      <strong>Stage 5 interpretation:</strong> stable identity-level signal is clearly present, but it is not the largest source of variation in individual raw ratings. A single rating contains substantial participant scale-use variation, idiosyncratic taste, image-specific effects, and residual noise. Aggregating across raters and images reduces these unstable components, boosting the identity-level estimate. The tiny identity-by-session component helps explain why the T1–T2 identity correlations were so high.
+      <strong>Stage 5 interpretation:</strong> stable identity-level signal is clearly present, but it is not the largest source of variation in individual raw ratings. A single rating contains substantial participant scale-use variation, idiosyncratic taste, image-specific effects, and residual noise. Aggregating across raters and images reduces these unstable components, boosting the identity-level estimate. The tiny identity-by-session component helps explain why the T1–T2 identity correlations were so high (discussed in earlier stages).
     </div>
   </section>
 
   <section>
     <h2>3. Stage 6: Rouder-inspired reliability planning</h2>
-    <p>The final stage uses the logic of Rouder’s signal-to-noise framework, adapted to the rating paradigm. In Rouder’s cognitive-task examples, increasing trials improves reliability by averaging down trial noise. Here, the analogous target is stable identity-level friendliness, and the relevant design levers are <strong>number of raters</strong> and <strong>number of images per identity</strong>.</p>
+    <p>The final stage uses the logic of Rouder’s signal-to-noise framework, adapted to the rating paradigm. In Rouder’s cognitive-task examples, increasing trials improves reliability by averaging down trial noise (basically CLT in a trench-coat!). Here, the analogous target is stable identity-level friendliness, and the relevant design levers are <strong>number of raters</strong> and <strong>number of images per identity</strong>.</p>
 
     <div class="formula">reliability = identity signal / (identity signal + design-adjusted noise)</div>
 
@@ -140,7 +140,7 @@ Var_Identity /
 
   <section>
     <h2>4. Predicted reliability for selected designs</h2>
-    <p>These values are lower than the earlier classical identity-level ICCs because this calculation asks a stricter generalisation question: not merely whether the current raters agree about the current images, but how well the design recovers the underlying identity-level signal when raters and images are treated as sampled sources of uncertainty.</p>
+    <p>These values are lower than the earlier classical identity-level ICCs (discussed in earlier stages) because this calculation asks a stricter generalisation question: not merely whether the current raters agree about the current images, but how well the design recovers the underlying identity-level signal when raters and images are treated as sampled sources of uncertainty.</p>
 
     <table>
       <thead>
@@ -173,8 +173,6 @@ Var_Identity /
 
   <section>
     <h2>5. Design optimisation: where should reliability gains come from?</h2>
-    <p>The planning analysis should not be read simply as saying that the current design is “good enough”. The practical question is what to do next if the aim is to improve the identity-level estimate. The perhaps surprising answer is that, at the current scale of around 50 raters, increasing the number of raters alone gives limited benefit. The focus should shift from observer noise to stimulus-sampling noise: each identity is still represented by only a limited sample of images.</p>
-
     <div class="callout">
       With 5 images fixed, increasing from 47 to 100 raters only raises predicted absolute reliability from approximately .735 to .762. Additional raters continue to average down participant scale-use, idiosyncratic taste, and residual noise, but they do not average down image-specific presentation effects.
     </div>
@@ -183,7 +181,7 @@ Var_Identity /
       By contrast, holding sample size near the current level and increasing the number of images has a larger payoff. A design with approximately 50 raters and 10 images is predicted to reach absolute reliability of approximately .820, with consistency reliability around .850.
     </div>
 
-    <p>Rouder and Mehrvarz’s proposal can be understood as a signal-to-noise account of reliability that is closely aligned with the logic of the central limit theorem. Their key point is that reliability is not simply a fixed property of a task; it depends on the size of the target signal, the amount of noise, and the sampling design used to average that noise down. Here, although participant variance was large in the raw model, it was already being divided by 47 raters, whereas image-specific variance was divided by only 5 images. Therefore, after aggregation, image-sampling noise remained the larger practical contributor to the denominator of the reliability ratio.</p>
+    <p>Rouder and Mehrvarz’s proposal can be understood as a signal-to-noise account of reliability that is closely aligned with the logic of the central limit theorem - that is always look at the size of sample you have obtained for the estimates you are after. Their suprisingly simple key point is that reliability is not simply a fixed property of a task; it depends on the size of target signal estimation recovery, relative to the the amount of noise - this 'noise' or the 'denominator' in all these reliability ratios is attenuated by the sampling design used to average that noise down! Here, although participant variance was large in the raw model, it was already being divided by 47 raters, whereas image-specific variance was divided by only 5 images. Therefore, after aggregation, image-sampling noise remained the larger practical contributor to the denominator of the reliability ratio. Put simply adding +1 to 47 gets you less benefit that adding +1 to 5 (Shades of Spearman-Brown prophecy here boys and girls)</p>
   </section>
 
   <section>

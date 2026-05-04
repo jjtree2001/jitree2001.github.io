@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Mila project: identity signal reliability planning</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+  body { margin:0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif; background:#f7f7f4; color:#202936; line-height:1.55; }
+  .wrap { max-width:1050px; margin:0 auto; padding:38px 24px 80px; }
+  .hero { background:linear-gradient(135deg,#23396f,#6078ad); color:white; padding:40px; border-radius:22px; box-shadow:0 12px 32px rgba(0,0,0,.16); }
+  .hero h1 { margin:0 0 10px; font-size:2.15rem; line-height:1.12; }
+  .hero p { margin:0; font-size:1.05rem; max-width:850px; opacity:.96; }
+  section { background:white; border:1px solid #d9dee8; border-radius:18px; padding:28px; margin:22px 0; box-shadow:0 8px 22px rgba(31,41,55,.06); }
+  h2 { margin-top:0; color:#314e8b; }
+  h3 { color:#283a66; margin-top:26px; }
+  .callout { border-radius:14px; padding:16px 18px; margin:18px 0; border:1px solid #c9daf8; background:#edf3ff; }
+  .good { background:#edf7ed; border-color:#b8d9b8; }
+  .warn { background:#fff7e6; border-color:#f3d19c; }
+  table { width:100%; border-collapse:collapse; margin:16px 0; font-size:.95rem; }
+  th, td { border:1px solid #d9dee8; padding:10px 12px; vertical-align:top; text-align:left; }
+  th { background:#eef2ff; color:#243b73; }
+  code, pre { font-family:"SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace; }
+  pre { background:#111827; color:#eef2ff; padding:18px; border-radius:14px; overflow-x:auto; font-size:.86rem; line-height:1.48; }
+  .formula { background:#f4f7fb; border:1px solid #d9dee8; border-radius:14px; padding:16px; margin:14px 0; overflow-x:auto; white-space:pre; font-family:"SFMono-Regular", Consolas, monospace; }
+  .small { color:#667085; font-size:.92rem; }
+  .fig { margin:22px 0; padding:18px; border:1px solid #d9dee8; border-radius:16px; background:#fbfcff; }
+  .caption { color:#344054; font-size:.94rem; margin-top:8px; }
+  svg { width:100%; height:auto; display:block; }
+  .axis { stroke:#475467; stroke-width:1.2; }
+  .grid { stroke:#e5e7eb; stroke-width:1; }
+  .bar { fill:#5b75ad; }
+  .bar2 { fill:#314e8b; }
+  .line { fill:none; stroke:#314e8b; stroke-width:3; }
+  .ribbon { fill:#314e8b; opacity:.13; }
+  .pt { fill:#314e8b; }
+  .label { font: 13px sans-serif; fill:#202936; }
+  .muted { fill:#667085; font: 12px sans-serif; }
+  .footer { text-align:center; color:#667085; font-size:.9rem; margin-top:34px; }
+  @media print { body{background:white;} section,.hero{box-shadow:none;} pre{white-space:pre-wrap;} }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="hero">
+    <h1>Using hierarchical variance partitioning to optimise identity-level ratings</h1>
+    <p>A shareable workflow for Mila’s rating data: estimate the stable identity signal, identify the noise sources, and use those variance components to decide whether future work should add raters or add images per identity.</p>
+  </div>
+
+  <section>
+    <h2>1. Data context and objective</h2>
+    <p>Mila’s design has 47 raters, two sessions, 100 face images, and 20 identities with 5 images per identity. Ratings are on a 1–9 ordered scale. The central objective is to improve the estimate of <strong>identity-level attractiveness/friendliness</strong>: the stable consensus score for a particular person, abstracting over the particular raters and images sampled.</p>
+    <div class="callout">
+      <strong>Target signal:</strong> stable identity-level consensus attractiveness/friendliness.<br>
+      <strong>Design levers:</strong> number of raters and number of images per identity.<br>
+      <strong>Practical question:</strong> once we have around 50 raters, is the next reliability gain better achieved by adding more participants or more exemplars of each identity?
+    </div>
+  </section>
+
+  <section>
+    <h2>2. Stage 5: Bayesian ordinal hierarchical variance decomposition</h2>
+    <p>Earlier analyses showed that aggregated ratings were reliable and stable. Stage 5 shifts the question from “is it reliable?” to “why is it reliable?” The hierarchical model partitions raw ratings into a stable identity signal and several sources of noise: participant scale-use, image-specific effects, participant-specific taste, session shifts, and residual response-level variation.</p>
+    <p>Because the dependent variable is a 1–9 ordered rating, the preferred model is a Bayesian cumulative-logit model rather than a Gaussian model. Variance components are interpreted on the latent response scale. In a cumulative-logit model, the fixed latent residual/logistic variance is π²/3.</p>
+
+    <h3>Model</h3>
+    <pre><code>fit_ord &lt;- brm(
+  Rating_ord ~ Session + Gender +
+    (1 | PID) +                # participant scale-use / generosity
+    (1 | PID_Session) +        # participant session-specific shifts
+    (1 | Identity) +           # stable identity attractiveness/friendliness
+    (1 | File) +               # image-specific effects
+    (1 | PID_Identity) +       # participant-specific taste
+    (1 | Identity_Session),    # identity-specific session instability
+  data = dat_ord,
+  family = cumulative("logit"),
+  prior = c(
+    prior(normal(0, 1), class = "b"),
+    prior(student_t(3, 0, 1), class = "sd")
+  ),
+  chains = 4,
+  cores = 4,
+  iter = 2000,
+  backend = "cmdstanr",
+  control = list(adapt_delta = 0.95, max_treedepth = 12)
+)</code></pre>
+
+    <p>The model was computationally healthy: Rhats were close to 1, effective sample sizes were acceptable, there were 0 divergent transitions, and there was no problematic treedepth behaviour.</p>
+
+    <h3>Variance-decomposition table</h3>
+    <table>
+      <thead>
+        <tr><th>Component</th><th>Proportion</th><th>Interpretation</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Residual/logistic variance</td><td>38.7%</td><td>Fixed latent-scale response-level variance in the ordinal logit model.</td></tr>
+        <tr><td>PID</td><td>20.5%</td><td>Participant scale-use/generosity: some raters generally used higher or lower ratings.</td></tr>
+        <tr><td>PID × Identity</td><td>14.5%</td><td>Participant-specific taste: some raters liked/disliked particular identities differently from the group pattern.</td></tr>
+        <tr><td>File</td><td>12.5%</td><td>Image-specific effects: particular images shifted ratings beyond the identity signal.</td></tr>
+        <tr><td>Identity</td><td>10.7%</td><td>Stable identity-level attractiveness/friendliness signal.</td></tr>
+        <tr><td>PID × Session</td><td>3.0%</td><td>Participant session-specific shifts in overall rating tendency.</td></tr>
+        <tr><td>Identity × Session</td><td>0.2%</td><td>Identity-specific instability over time; essentially tiny.</td></tr>
+      </tbody>
+    </table>
+
+    <div class="callout good">
+      <strong>Stage 5 interpretation:</strong> stable identity-level signal is clearly present, but it is not the largest source of variation in individual raw ratings. A single rating contains substantial participant scale-use variation, idiosyncratic taste, image-specific effects, and residual noise. Aggregating across raters and images reduces these unstable components, boosting the identity-level estimate. The tiny identity-by-session component helps explain why the T1–T2 identity correlations were so high.
+    </div>
+  </section>
+
+  <section>
+    <h2>3. Stage 6: Rouder-inspired reliability planning</h2>
+    <p>The final stage uses the logic of Rouder’s signal-to-noise framework, adapted to the rating paradigm. In Rouder’s cognitive-task examples, increasing trials improves reliability by averaging down trial noise. Here, the analogous target is stable identity-level attractiveness/friendliness, and the relevant design levers are <strong>number of raters</strong> and <strong>number of images per identity</strong>.</p>
+
+    <div class="formula">reliability = identity signal / (identity signal + design-adjusted noise)</div>
+
+    <p>Identity variance is treated as the stable signal. File/image effects, participant scale-use, participant-by-identity taste, and residual/logistic variance are treated as sources of noise that can be reduced by aggregation.</p>
+
+    <h3>Absolute reliability</h3>
+    <div class="formula">Absolute reliability =
+Var_Identity /
+[
+  Var_Identity
+  + Var_File / n_images
+  + Var_PID / n_raters
+  + Var_PID_Identity / n_raters
+  + Var_Residual / (n_raters × n_images)
+]</div>
+
+    <h3>Consistency reliability</h3>
+    <div class="formula">Consistency reliability =
+Var_Identity /
+[
+  Var_Identity
+  + Var_File / n_images
+  + Var_PID_Identity / n_raters
+  + Var_Residual / (n_raters × n_images)
+]</div>
+
+    <p>The consistency version removes general participant scale-use/generosity (<code>Var_PID</code>), because it focuses more on whether identities are ranked similarly rather than whether raters use exactly the same absolute scale values.</p>
+  </section>
+
+  <section>
+    <h2>4. Predicted reliability for selected designs</h2>
+    <p>These values are lower than the earlier classical identity-level ICCs because this calculation asks a stricter generalisation question: not merely whether the current raters agree about the current images, but how well the design recovers the underlying identity-level signal when raters and images are treated as sampled sources of uncertainty.</p>
+
+    <table>
+      <thead>
+        <tr><th>Design</th><th>Absolute reliability</th><th>Consistency reliability</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>5 raters × 1 image</td><td>.276</td><td>.309</td></tr>
+        <tr><td>10 raters × 1 image</td><td>.341</td><td>.365</td></tr>
+        <tr><td>20 raters × 1 image</td><td>.387</td><td>.402</td></tr>
+        <tr><td>5 raters × 5 images</td><td>.474</td><td>.584</td></tr>
+        <tr><td>10 raters × 5 images</td><td>.590</td><td>.670</td></tr>
+        <tr><td>20 raters × 5 images</td><td>.673</td><td>.724</td></tr>
+        <tr><td><strong>47 raters × 5 images (current)</strong></td><td><strong>.735 [.521, .880]</strong></td><td><strong>.760 [.553, .894]</strong></td></tr>
+        <tr><td>100 raters × 5 images</td><td>.762 [.559, .896]</td><td>.775 [.574, .903]</td></tr>
+        <tr><td><strong>50 raters × 10 images</strong></td><td><strong>.820 [.651, .924]</strong></td><td><strong>.850 [.697, .940]</strong></td></tr>
+      </tbody>
+    </table>
+
+    <h3>Target reliability guide</h3>
+    <table>
+      <thead>
+        <tr><th>Target reliability</th><th>Absolute reliability: examples</th><th>Consistency reliability: examples</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>~.70</td><td>4 images need ~47 raters; 5 images need ~28 raters; 6 images need ~21 raters; 10 images need ~14 raters.</td><td>4 images need ~26 raters; 5 images need ~15 raters; 6 images need ~11 raters.</td></tr>
+        <tr><td>~.80</td><td>7 images need ~76 raters; 8 images need ~53 raters; 10 images need ~37 raters.</td><td>6 images need ~86 raters; 7 images need ~37 raters; 10 images need ~18 raters.</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section>
+    <h2>5. Design optimisation: where should reliability gains come from?</h2>
+    <p>The planning analysis should not be read simply as saying that the current design is “good enough”. The practical question is what to do next if the aim is to improve the identity-level estimate. The perhaps surprising answer is that, at the current scale of around 50 raters, increasing the number of raters alone gives limited benefit. The focus should shift from observer noise to stimulus-sampling noise: each identity is still represented by only a limited sample of images.</p>
+
+    <div class="callout">
+      With 5 images fixed, increasing from 47 to 100 raters only raises predicted absolute reliability from approximately .735 to .762. Additional raters continue to average down participant scale-use, idiosyncratic taste, and residual noise, but they do not average down image-specific presentation effects.
+    </div>
+
+    <div class="callout good">
+      By contrast, holding sample size near the current level and increasing the number of images has a larger payoff. A design with approximately 50 raters and 10 images is predicted to reach absolute reliability of approximately .820, with consistency reliability around .850.
+    </div>
+
+    <p>Rouder and Mehrvarz’s proposal can be understood as a signal-to-noise account of reliability that is closely aligned with the logic of the central limit theorem. Their key point is that reliability is not simply a fixed property of a task; it depends on the size of the target signal, the amount of noise, and the sampling design used to average that noise down. Here, although participant variance was large in the raw model, it was already being divided by 47 raters, whereas image-specific variance was divided by only 5 images. Therefore, after aggregation, image-sampling noise remained the larger practical contributor to the denominator of the reliability ratio.</p>
+  </section>
+
+  <section>
+    <h2>6. Figures</h2>
+
+    <div class="fig">
+      <h3>Figure 1. Direct comparison of three design options</h3>
+      <svg viewBox="0 0 760 360" role="img" aria-label="Bar chart comparing current design, more raters, and more images">
+        <line x1="80" y1="300" x2="720" y2="300" class="axis"/>
+        <line x1="80" y1="40" x2="80" y2="300" class="axis"/>
+        <line x1="80" y1="235" x2="720" y2="235" class="grid"/><text x="42" y="240" class="muted">.25</text>
+        <line x1="80" y1="170" x2="720" y2="170" class="grid"/><text x="42" y="175" class="muted">.50</text>
+        <line x1="80" y1="105" x2="720" y2="105" class="grid"/><text x="42" y="110" class="muted">.75</text>
+        <line x1="80" y1="79" x2="720" y2="79" stroke="#888" stroke-dasharray="6,5"/><text x="725" y="84" class="muted">.80</text>
+
+        <rect x="145" y="108.9" width="110" height="191.1" class="bar"/>
+        <rect x="325" y="101.9" width="110" height="198.1" class="bar"/>
+        <rect x="505" y="86.8" width="110" height="213.2" class="bar2"/>
+
+        <text x="165" y="99" class="label">.735</text>
+        <text x="345" y="92" class="label">.762</text>
+        <text x="525" y="77" class="label">.820</text>
+
+        <text x="130" y="328" class="label">Current</text>
+        <text x="126" y="346" class="muted">47 × 5</text>
+        <text x="300" y="328" class="label">More raters</text>
+        <text x="320" y="346" class="muted">100 × 5</text>
+        <text x="490" y="328" class="label">More images</text>
+        <text x="515" y="346" class="muted">50 × 10</text>
+      </svg>
+      <div class="caption">Adding raters from 47 to 100 while keeping 5 images gives only a small gain; increasing to 10 images with approximately 50 raters gives the larger improvement.</div>
+    </div>
+
+    <div class="fig">
+      <h3>Figure 2. Adding raters gives diminishing returns when images are fixed at 5</h3>
+      <svg viewBox="0 0 760 360" role="img" aria-label="Line chart showing reliability as raters increase with images fixed at 5">
+        <line x1="80" y1="300" x2="720" y2="300" class="axis"/>
+        <line x1="80" y1="40" x2="80" y2="300" class="axis"/>
+        <line x1="80" y1="235" x2="720" y2="235" class="grid"/><text x="42" y="240" class="muted">.25</text>
+        <line x1="80" y1="170" x2="720" y2="170" class="grid"/><text x="42" y="175" class="muted">.50</text>
+        <line x1="80" y1="105" x2="720" y2="105" class="grid"/><text x="42" y="110" class="muted">.75</text>
+        <line x1="80" y1="79" x2="720" y2="79" stroke="#888" stroke-dasharray="6,5"/><text x="725" y="84" class="muted">.80</text>
+
+        <polyline points="112,176 144,154 208,128 272,112 380,97 496,90 720,86" class="line"/>
+        <circle cx="380" cy="97" r="5" class="pt"/><text x="390" y="91" class="label">47×5 = .735</text>
+        <circle cx="720" cy="86" r="5" class="pt"/><text x="585" y="70" class="label">100×5 = .762</text>
+
+        <text x="360" y="342" class="label">Number of raters</text>
+        <text x="10" y="38" class="label" transform="rotate(-90 18,38)">Predicted reliability</text>
+      </svg>
+      <div class="caption">The curve plateaus because rater-related noise is already averaged over roughly 50 people; image-specific noise remains untouched when images are fixed at 5.</div>
+    </div>
+
+    <div class="fig">
+      <h3>Figure 3. Adding images improves reliability when raters are fixed around 50</h3>
+      <svg viewBox="0 0 760 360" role="img" aria-label="Line chart showing reliability as images increase with raters fixed at 50">
+        <line x1="80" y1="300" x2="720" y2="300" class="axis"/>
+        <line x1="80" y1="40" x2="80" y2="300" class="axis"/>
+        <line x1="80" y1="235" x2="720" y2="235" class="grid"/><text x="42" y="240" class="muted">.25</text>
+        <line x1="80" y1="170" x2="720" y2="170" class="grid"/><text x="42" y="175" class="muted">.50</text>
+        <line x1="80" y1="105" x2="720" y2="105" class="grid"/><text x="42" y="110" class="muted">.75</text>
+        <line x1="80" y1="79" x2="720" y2="79" stroke="#888" stroke-dasharray="6,5"/><text x="725" y="84" class="muted">.80</text>
+
+        <polyline points="95,190 165,155 235,132 305,115 375,103 445,95 515,90 585,86 655,82 720,79" class="line"/>
+        <circle cx="375" cy="103" r="5" class="pt"/><text x="385" y="97" class="label">~50×5</text>
+        <circle cx="720" cy="79" r="5" class="pt"/><text x="575" y="62" class="label">50×10 = .820</text>
+
+        <text x="330" y="342" class="label">Number of images per identity</text>
+        <text x="10" y="38" class="label" transform="rotate(-90 18,38)">Predicted reliability</text>
+      </svg>
+      <div class="caption">Increasing images directly targets image-sampling noise, which is the least averaged component in the current design.</div>
+    </div>
+  </section>
+
+  <section>
+    <h2>7. Why this matters for downstream empirical work</h2>
+    <p>Optimising the mean identity-level estimate is important because this estimate often becomes the dependent variable in downstream analyses. The aim is usually not just to know whether raters agree, but to generate a stable distribution of consensus scores across a population of identities, and then ask what predicts variation in that distribution.</p>
+    <p>For example, once each identity has a reliable attractiveness/friendliness estimate, one can test whether facial symmetry, averageness, sexual dimorphism, skin texture, age cues, personality impressions, or other properties explain why some identities are judged as more attractive/friendly than others. If the identity score is estimated from too few images or raters, such covariate analyses risk being dominated by image-specific noise or idiosyncratic rater effects.</p>
+    <div class="callout good">
+      <strong>Design recommendation:</strong> the current design of 47 raters × 5 images is acceptable, but it is not maximised. If future work aims to improve reliability, the more efficient next step is to increase the number of images per identity. A practical target is around 50 raters × 10 images per identity, which the model predicts would move absolute reliability from about .735 to about .820.
+    </div>
+  </section>
+
+  <section>
+    <h2>8. Full annotated Stage 6 code</h2>
+    <pre><code># ============================================================
+# Stage 6. Rouder-inspired reliability planning
+# ============================================================
+#
+# Aim:
+# Use the variance components from the Stage 5 ordinal hierarchical
+# model to answer a design question:
+#
+#   How many raters and how many images per identity are needed to
+#   recover a reliable identity-level attractiveness/friendliness estimate?
+#
+# This is the design analogue of Rouder's trial-planning logic.
+# In Rouder-style terms:
+#
+#   reliability = signal / (signal + noise)
+#
+# But here the noise is design-adjusted:
+# - image-specific noise is reduced by sampling more images
+# - rater-related noise is reduced by sampling more raters
+# - residual response noise is reduced by the total number of ratings
+#
+# Target signal:
+#   stable identity-level attractiveness/friendliness
+#
+# Design levers:
+#   1. number of raters per identity
+#   2. number of images per identity
+# ============================================================
+
+var_draws &lt;- draws_full %&gt;%
+  transmute(
+    draw = row_number(),
+
+    # Participant scale-use / generosity.
+    Var_PID = sd_PID__Intercept^2,
+
+    # Target signal: stable identity-level attractiveness/friendliness.
+    Var_Identity = sd_Identity__Intercept^2,
+
+    # Image-specific presentation effects.
+    Var_File = sd_File__Intercept^2,
+
+    # Participant-specific taste for particular identities.
+    Var_PID_Identity = sd_PID_Identity__Intercept^2,
+
+    # Fixed residual variance for the cumulative-logit latent scale.
+    Var_Residual = pi^2 / 3
+  )
+
+design_grid &lt;- expand_grid(
+  n_raters = 1:100,
+  n_images = 1:10
+)
+
+planning_draws &lt;- design_grid %&gt;%
+  crossing(var_draws) %&gt;%
+  mutate(
+    reliability_absolute =
+      Var_Identity /
+      (
+        Var_Identity +
+          Var_File / n_images +
+          Var_PID / n_raters +
+          Var_PID_Identity / n_raters +
+          Var_Residual / (n_raters * n_images)
+      ),
+
+    reliability_consistency =
+      Var_Identity /
+      (
+        Var_Identity +
+          Var_File / n_images +
+          Var_PID_Identity / n_raters +
+          Var_Residual / (n_raters * n_images)
+      )
+  )
+
+planning_summary &lt;- planning_draws %&gt;%
+  group_by(n_raters, n_images) %&gt;%
+  summarise(
+    absolute_mean = mean(reliability_absolute),
+    absolute_lower = quantile(reliability_absolute, .025),
+    absolute_upper = quantile(reliability_absolute, .975),
+
+    consistency_mean = mean(reliability_consistency),
+    consistency_lower = quantile(reliability_consistency, .025),
+    consistency_upper = quantile(reliability_consistency, .975),
+
+    .groups = "drop"
+  )
+
+planning_summary
+
+key_designs &lt;- planning_summary %&gt;%
+  filter(
+    (n_raters == 47 &amp; n_images == 5)  |
+      (n_raters == 100 &amp; n_images == 5) |
+      (n_raters == 50 &amp; n_images == 10)
+  ) %&gt;%
+  mutate(
+    Design = case_when(
+      n_raters == 47 &amp; n_images == 5  ~ "Current: 47 raters × 5 images",
+      n_raters == 100 &amp; n_images == 5 ~ "More raters only: 100 × 5",
+      n_raters == 50 &amp; n_images == 10 ~ "More images: 50 × 10"
+    )
+  )
+
+key_designs
+
+threshold_table &lt;- planning_summary %&gt;%
+  pivot_longer(
+    cols = c(absolute_mean, consistency_mean),
+    names_to = "Reliability_Type",
+    values_to = "Reliability"
+  ) %&gt;%
+  mutate(
+    Reliability_Type = recode(
+      Reliability_Type,
+      absolute_mean = "Absolute",
+      consistency_mean = "Consistency"
+    )
+  ) %&gt;%
+  crossing(threshold = c(.70, .80, .90)) %&gt;%
+  filter(Reliability &gt;= threshold) %&gt;%
+  group_by(Reliability_Type, n_images, threshold) %&gt;%
+  summarise(
+    min_raters_required = min(n_raters),
+    .groups = "drop"
+  ) %&gt;%
+  arrange(Reliability_Type, threshold, n_images)
+
+threshold_table</code></pre>
+  </section>
+
+
+  <section>
+    <h2>9. Teaching primer: why more sampling often means better measurement</h2>
+
+    <p>
+      A useful way to think about almost any empirical estimate is that it is based on a sample from some distribution,
+      and its precision depends on how much of that distribution has been sampled. This applies whether the estimate is
+      a simple mean, a reliability coefficient, a participant-level task score, a stimulus rating, or a model-derived
+      latent trait estimate.
+    </p>
+
+    <h3>9.1 Every estimate sits on a sampling distribution</h3>
+    <p>
+      Suppose we want to know someone’s “true” average mood, an identity’s “true” consensus attractiveness, or a
+      participant’s “true” Stroop effect. We never observe that value directly. Instead, we observe a limited sample.
+    </p>
+
+    <div class="formula">observed estimate = target signal + sampling noise</div>
+
+    <p>
+      Sampling noise comes from whatever observations we happened to collect: people, items, trials, raters, images,
+      days, tasks, or occasions. A single observation is usually noisy. A mean over many observations is usually less
+      noisy.
+    </p>
+
+    <h3>9.2 The core principle is aggregation</h3>
+    <p>
+      If noise is partly idiosyncratic, averaging more observations reduces its influence. This is the basic
+      central-limit-theorem intuition: more observations produce less sampling error and therefore a more precise
+      estimate. For a simple mean, this is familiar:
+    </p>
+
+    <div class="formula">SE(mean) = SD / √N</div>
+
+    <p>
+      The same logic appears in reliability theory. Reliability improves when the stable signal remains the same but
+      the error term is averaged down.
+    </p>
+
+    <h3>9.3 Different reliability frameworks use different sampling units</h3>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Framework</th>
+          <th>Sampling unit that improves reliability</th>
+          <th>Interpretation</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Cronbach’s alpha / Spearman–Brown</td>
+          <td>Items</td>
+          <td>More items usually produce a more reliable total or mean score because item-specific error averages down.</td>
+        </tr>
+        <tr>
+          <td>Rouder-style task reliability</td>
+          <td>Trials</td>
+          <td>More trials produce a more reliable participant-level task effect because trial-level noise averages down.</td>
+        </tr>
+        <tr>
+          <td>ICC average-rater logic</td>
+          <td>Raters</td>
+          <td>An average across raters is more reliable than a single rater because individual rater error is averaged down.</td>
+        </tr>
+        <tr>
+          <td>Mila’s identity-rating design</td>
+          <td>Raters and images</td>
+          <td>More raters reduce observer noise; more images reduce stimulus-sampling noise.</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h3>9.4 The biggest raw variance component is not always the best target</h3>
+    <p>
+      A tempting mistake is to look at the raw variance components and assume that the biggest component is the one
+      that should be sampled more. But what matters for design optimisation is the
+      <strong>design-adjusted</strong> contribution to uncertainty.
+    </p>
+
+    <p>
+      In Mila’s case, participant variance was large in the raw model. However, participant-related noise was already
+      divided by about 47 raters. Image-specific noise was smaller in raw terms, but divided by only 5 images. So after
+      aggregation, image-sampling noise remained the more important bottleneck.
+    </p>
+
+    <div class="callout good">
+      <strong>Design lesson:</strong> do not simply sample more from the largest raw variance component. Sample more
+      from the source that still contributes the most uncertainty after the current design has averaged things down.
+    </div>
+
+    <h3>9.5 Generalizability Theory makes this logic explicit</h3>
+    <p>
+      Generalizability Theory is perhaps the cleanest formal expression of this idea. It asks what the relevant sources
+      of measurement variation are and how many samples are needed from each source. Those sources might be persons,
+      items, raters, occasions, tasks, stimuli, or sessions.
+    </p>
+
+    <p>
+      Once those variance components are estimated, we can ask design questions such as whether reliability would
+      improve more by adding items, raters, occasions, or stimuli. This is exactly the logic used here: estimate the
+      variance structure with a hierarchical model, then ask which sampling dimension should be increased to improve the
+      target estimate.
+    </p>
+
+    <h3>9.6 General lesson</h3>
+    <p>
+      Reliability is not only a property of a measure. It is a property of a measure under a particular sampling design.
+      The same construct can look unreliable under sparse sampling and highly reliable under richer sampling.
+    </p>
+
+    <div class="callout">
+      <strong>Key question:</strong> reliable with how many items, trials, raters, stimuli, or occasions?
+    </div>
+
+    <p>
+      When trying to improve an estimate, the best question is:
+    </p>
+
+    <div class="formula">Which distribution have we sampled least well, relative to how much noise it contributes?</div>
+
+    <p>
+      If the problem is item noise, add items. If the problem is trial noise, add trials. If the problem is rater noise,
+      add raters. If the problem is stimulus-sampling noise, add stimuli. If the problem is occasion-level fluctuation,
+      add occasions.
+    </p>
+
+    <div class="callout good">
+      <strong>Unifying principle:</strong> more sampling improves precision, but only for the source of noise being
+      sampled. The best design improvement is to increase the sampling dimension that still contributes the most
+      uncertainty to the target estimate.
+    </div>
+  </section>
+
+
+  <div class="footer">Mila attractiveness/friendliness reliability planning resource</div>
+</div>
+</body>
+</html>

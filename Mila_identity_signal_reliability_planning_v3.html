@@ -43,14 +43,14 @@
 <div class="wrap">
   <div class="hero">
     <h1>Using hierarchical variance partitioning to optimise identity-level ratings</h1>
-    <p>A shareable workflow for Mila’s rating data: estimate the stable identity signal, identify the noise sources, and use those variance components to decide whether future work should add raters or add images per identity.</p>
+    <p>A shareable workflow for Mila’s rating data: the goal is best estimate the stable friendliness 'signal' attributable to each face identity, identify the noise sources, and use those variance components to decide whether future work should add raters or add images per identity. This also serve to demonstrate the additional utility of LMMs as they naturally partion variance!</p>
   </div>
 
   <section>
     <h2>1. Data context and objective</h2>
-    <p>Mila’s design has 47 raters, two sessions, 100 face images, and 20 identities with 5 images per identity. Ratings are on a 1–9 ordered scale. The central objective is to improve the estimate of <strong>identity-level attractiveness/friendliness</strong>: the stable consensus score for a particular person, abstracting over the particular raters and images sampled.</p>
+    <p>Mila’s design has 47 raters, two sessions, 100 face images, and 20 identities with 5 images per identity. Ratings are on a 1–9 ordered scale - relating to how friendly the would rate each image presented. The central objective is to improve the estimate of <strong>identity-level friendliness</strong>: the stable consensus score for a particular person, abstracting over the particular raters and images sampled which also includes the fact we ran this twice (to look at test-retest reliability which I discuss elsewhere).</p>
     <div class="callout">
-      <strong>Target signal:</strong> stable identity-level consensus attractiveness/friendliness.<br>
+      <strong>Target signal:</strong> stable identity-level consensus friendliness.<br>
       <strong>Design levers:</strong> number of raters and number of images per identity.<br>
       <strong>Practical question:</strong> once we have around 50 raters, is the next reliability gain better achieved by adding more participants or more exemplars of each identity?
     </div>
@@ -58,7 +58,7 @@
 
   <section>
     <h2>2. Stage 5: Bayesian ordinal hierarchical variance decomposition</h2>
-    <p>Earlier analyses showed that aggregated ratings were reliable and stable. Stage 5 shifts the question from “is it reliable?” to “why is it reliable?” The hierarchical model partitions raw ratings into a stable identity signal and several sources of noise: participant scale-use, image-specific effects, participant-specific taste, session shifts, and residual response-level variation.</p>
+    <p>Earlier analyses (Stages 1-4) showed that aggregated ratings were reliable and stable (using ICC and test-retest reliaability). Stage 5 shifts the question from “is it reliable?” to “why is it reliable?” The hierarchical model partitions raw ratings into a stable identity signal and several sources of noise: participant scale-use, image-specific effects, participant-specific taste, session shifts, and residual response-level variation.</p>
     <p>Because the dependent variable is a 1–9 ordered rating, the preferred model is a Bayesian cumulative-logit model rather than a Gaussian model. Variance components are interpreted on the latent response scale. In a cumulative-logit model, the fixed latent residual/logistic variance is π²/3.</p>
 
     <h3>Model</h3>
@@ -66,7 +66,7 @@
   Rating_ord ~ Session + Gender +
     (1 | PID) +                # participant scale-use / generosity
     (1 | PID_Session) +        # participant session-specific shifts
-    (1 | Identity) +           # stable identity attractiveness/friendliness
+    (1 | Identity) +           # stable identity friendliness
     (1 | File) +               # image-specific effects
     (1 | PID_Identity) +       # participant-specific taste
     (1 | Identity_Session),    # identity-specific session instability
@@ -95,7 +95,7 @@
         <tr><td>PID</td><td>20.5%</td><td>Participant scale-use/generosity: some raters generally used higher or lower ratings.</td></tr>
         <tr><td>PID × Identity</td><td>14.5%</td><td>Participant-specific taste: some raters liked/disliked particular identities differently from the group pattern.</td></tr>
         <tr><td>File</td><td>12.5%</td><td>Image-specific effects: particular images shifted ratings beyond the identity signal.</td></tr>
-        <tr><td>Identity</td><td>10.7%</td><td>Stable identity-level attractiveness/friendliness signal.</td></tr>
+        <tr><td>Identity</td><td>10.7%</td><td>Stable identity-level friendliness signal.</td></tr>
         <tr><td>PID × Session</td><td>3.0%</td><td>Participant session-specific shifts in overall rating tendency.</td></tr>
         <tr><td>Identity × Session</td><td>0.2%</td><td>Identity-specific instability over time; essentially tiny.</td></tr>
       </tbody>
@@ -108,7 +108,7 @@
 
   <section>
     <h2>3. Stage 6: Rouder-inspired reliability planning</h2>
-    <p>The final stage uses the logic of Rouder’s signal-to-noise framework, adapted to the rating paradigm. In Rouder’s cognitive-task examples, increasing trials improves reliability by averaging down trial noise. Here, the analogous target is stable identity-level attractiveness/friendliness, and the relevant design levers are <strong>number of raters</strong> and <strong>number of images per identity</strong>.</p>
+    <p>The final stage uses the logic of Rouder’s signal-to-noise framework, adapted to the rating paradigm. In Rouder’s cognitive-task examples, increasing trials improves reliability by averaging down trial noise. Here, the analogous target is stable identity-level friendliness, and the relevant design levers are <strong>number of raters</strong> and <strong>number of images per identity</strong>.</p>
 
     <div class="formula">reliability = identity signal / (identity signal + design-adjusted noise)</div>
 
@@ -261,7 +261,7 @@ Var_Identity /
   <section>
     <h2>7. Why this matters for downstream empirical work</h2>
     <p>Optimising the mean identity-level estimate is important because this estimate often becomes the dependent variable in downstream analyses. The aim is usually not just to know whether raters agree, but to generate a stable distribution of consensus scores across a population of identities, and then ask what predicts variation in that distribution.</p>
-    <p>For example, once each identity has a reliable attractiveness/friendliness estimate, one can test whether facial symmetry, averageness, sexual dimorphism, skin texture, age cues, personality impressions, or other properties explain why some identities are judged as more attractive/friendly than others. If the identity score is estimated from too few images or raters, such covariate analyses risk being dominated by image-specific noise or idiosyncratic rater effects.</p>
+    <p>For example, once each identity has a reliable friendliness estimate, one can test whether facial symmetry, averageness, sexual dimorphism, skin texture, age cues, personality impressions, or other properties explain why some identities are judged as more friendly than others. If the identity score is estimated from too few images or raters, such covariate analyses risk being dominated by image-specific noise or idiosyncratic rater effects.</p>
     <div class="callout good">
       <strong>Design recommendation:</strong> the current design of 47 raters × 5 images is acceptable, but it is not maximised. If future work aims to improve reliability, the more efficient next step is to increase the number of images per identity. A practical target is around 50 raters × 10 images per identity, which the model predicts would move absolute reliability from about .735 to about .820.
     </div>
@@ -278,7 +278,7 @@ Var_Identity /
 # model to answer a design question:
 #
 #   How many raters and how many images per identity are needed to
-#   recover a reliable identity-level attractiveness/friendliness estimate?
+#   recover a reliable identity-level friendliness estimate?
 #
 # This is the design analogue of Rouder's trial-planning logic.
 # In Rouder-style terms:
@@ -291,7 +291,7 @@ Var_Identity /
 # - residual response noise is reduced by the total number of ratings
 #
 # Target signal:
-#   stable identity-level attractiveness/friendliness
+#   stable identity-level friendliness
 #
 # Design levers:
 #   1. number of raters per identity
@@ -305,7 +305,7 @@ var_draws &lt;- draws_full %&gt;%
     # Participant scale-use / generosity.
     Var_PID = sd_PID__Intercept^2,
 
-    # Target signal: stable identity-level attractiveness/friendliness.
+    # Target signal: stable identity-level friendliness.
     Var_Identity = sd_Identity__Intercept^2,
 
     # Image-specific presentation effects.
@@ -416,7 +416,7 @@ threshold_table</code></pre>
 
     <h3>9.1 Every estimate sits on a sampling distribution</h3>
     <p>
-      Suppose we want to know someone’s “true” average mood, an identity’s “true” consensus attractiveness, or a
+      Suppose we want to know someone’s “true” average mood, an identity’s “true” consensus friendliness, or a
       participant’s “true” Stroop effect. We never observe that value directly. Instead, we observe a limited sample.
     </p>
 
@@ -538,7 +538,7 @@ threshold_table</code></pre>
   </section>
 
 
-  <div class="footer">Mila attractiveness/friendliness reliability planning resource</div>
+  <div class="footer">Mila friendliness reliability planning resource</div>
 </div>
 </body>
 </html>

@@ -8,91 +8,76 @@
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;0,900;1,400&family=Source+Serif+4:ital,opsz,wght@0,8..60,300;0,8..60,400;0,8..60,600;1,8..60,300;1,8..60,400&family=Source+Sans+3:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
   :root {
-    /* Track B unified palette — Measurement & Psychometrics (light theme) */
-    --bg: #f7f4ef;
-    --bg-mid: #ede9e1;
-    --bg-dark: #d8d3ca;
+    /* Track B unified palette — Measurement & Psychometrics */
     --navy: #1a2540;
     --navy-light: #2c3d5e;
-    --cream: #1a2540;        /* legacy: was light text on dark; now dark text on light */
-    --cream-dim: #5a6070;    /* legacy: was dim light text; now muted dark text */
-    --slate: #ede9e1;        /* legacy: was dark slate bg; now light cream-mid bg */
-    --card: #ede9e1;         /* legacy: was dark card bg; now light cream-mid bg */
-    --card-light: #d8d3ca;   /* legacy: was darker card; now subtle border tone */
-    --amber: #BA7517;
-    --amber-light: #e8a44a;
-    --amber-pale: #FAEEDA;
+    --cream: #f7f4ef;
+    --cream-mid: #ede9e1;
+    --cream-dark: #d8d3ca;
     --teal: #1D9E75;
     --teal-mid: #5DCAA5;
     --teal-pale: #E1F5EE;
     --coral: #D85A30;
     --coral-pale: #FAECE7;
-    --red: #D85A30;          /* alias for coral, used in legacy callout colors */
-    --green: #1D9E75;        /* alias for teal */
-    --blue: #2c3d5e;         /* navy-light variant for legacy "blue" accents */
-    --purple: #6b4a8e;
+    --amber: #BA7517;
+    --amber-mid: #FAC775;
+    --amber-light: #e8a44a;
+    --amber-pale: #FAEEDA;
     --muted: #5a6070;
-    --border: rgba(186,117,23,0.28);
-    --border-dim: rgba(26,37,64,0.1);
+    --border: #d8d3ca;
     --display: 'Playfair Display', Georgia, serif;
     --serif: 'Source Serif 4', Georgia, serif;
     --sans: 'Source Sans 3', system-ui, sans-serif;
     --mono: 'JetBrains Mono', monospace;
+    /* Legacy aliases — preserve existing B3 class behaviour */
+    --bg: var(--cream);
+    --bg-mid: var(--cream-mid);
+    --bg-dark: var(--cream-dark);
+    --slate: var(--cream-mid);
+    --card: var(--cream-mid);
+    --card-light: var(--cream-dark);
+    --cream-dim: var(--muted);
+    --red: var(--coral);
+    --green: var(--teal);
+    --blue: var(--navy-light);
+    --purple: #6b4a8e;
+    --border-dim: rgba(26,37,64,0.1);
   }
   * { margin: 0; padding: 0; box-sizing: border-box; }
   html { scroll-behavior: smooth; }
   body {
-    background: var(--bg);
-    color: var(--cream);
+    background: var(--cream);
+    color: var(--navy);
     font-family: var(--serif);
     font-size: 18px;
     line-height: 1.75;
     overflow-x: hidden;
   }
+  /* NAV — matches B1/B2 sticky-solid pattern */
   nav {
-    position: fixed;
-    top: 0; left: 0; right: 0;
-    z-index: 100;
-    background: rgba(26,37,64,0.97);
-    backdrop-filter: blur(12px);
-    border-bottom: 1px solid var(--border);
+    position: sticky;
+    top: 0;
+    background: var(--navy);
+    color: #fff;
     padding: 0 2rem;
     display: flex;
     align-items: center;
-    gap: 0;
-    height: 56px;
+    gap: 2rem;
+    height: 52px;
+    z-index: 100;
+    font-family: 'Source Serif 4', serif;
+    font-size: 13px;
+    letter-spacing: 0.04em;
   }
-  nav .logo {
-    font-family: var(--sans);
-    font-size: 0.7rem;
-    color: var(--amber-light);
-    letter-spacing: 0.12em;
-    margin-right: auto;
-    font-weight: 700;
-    text-transform: uppercase;
-  }
-  nav a {
-    color: rgba(255,255,255,0.6);
-    text-decoration: none;
-    font-family: var(--sans);
-    font-size: 0.62rem;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    padding: 0 1rem;
-    height: 56px;
-    display: flex;
-    align-items: center;
-    border-bottom: 2px solid transparent;
-    transition: all 0.2s;
-    font-weight: 600;
-  }
-  nav a:hover { color: var(--amber-light); border-bottom-color: var(--amber); }
+  nav .brand { font-weight: 600; color: var(--teal-mid); font-size: 14px; margin-right: auto; }
+  nav a { color: rgba(255,255,255,0.7); text-decoration: none; transition: color 0.2s; white-space: nowrap; }
+  nav a:hover { color: #fff; }
+  /* HERO — matches B1/B2 simple pattern */
   .hero {
     background: var(--navy);
     color: #fff;
-    padding: 8rem 2rem 4rem;
+    padding: 5rem 2rem 4rem;
     position: relative;
-    overflow: hidden;
     text-align: center;
   }
   .hero::after {
@@ -100,93 +85,50 @@
     position: absolute;
     bottom: 0; left: 0; right: 0;
     height: 4px;
-    background: linear-gradient(90deg, var(--coral), var(--teal-mid), var(--amber-light));
+    background: linear-gradient(90deg, var(--coral), var(--teal-mid), var(--amber));
   }
-  .hero::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: radial-gradient(ellipse 80% 60% at 50% 40%, rgba(186,117,23,0.08) 0%, transparent 70%);
-  }
-  .hero-grid {
-    position: absolute;
-    inset: 0;
-    background-image:
-      linear-gradient(rgba(186,117,23,0.04) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(186,117,23,0.04) 1px, transparent 1px);
-    background-size: 60px 60px;
-  }
-  .hero-content {
-    max-width: 860px;
-    text-align: center;
-    position: relative;
-    z-index: 1;
-    margin: 0 auto;
-  }
-  .hero-tag {
-    display: inline-block;
-    font-family: var(--sans);
-    font-size: 0.7rem;
-    letter-spacing: 0.2em;
+  .hero .eyebrow {
+    font-size: 12px;
+    letter-spacing: 0.15em;
     text-transform: uppercase;
-    color: var(--amber-light);
-    border: 1px solid var(--amber-light);
-    padding: 0.3rem 1rem;
-    margin-bottom: 2rem;
+    color: var(--teal-mid);
+    margin-bottom: 1.2rem;
+    font-family: var(--sans);
     font-weight: 700;
   }
   h1 {
     font-family: var(--display);
-    font-size: clamp(2.4rem, 6vw, 4rem);
-    line-height: 1.1;
-    font-weight: 700;
+    font-size: clamp(2rem, 5vw, 3.2rem);
+    line-height: 1.2;
+    font-weight: 600;
     margin-bottom: 1.5rem;
     color: #fff;
+    max-width: 760px;
+    margin-left: auto;
+    margin-right: auto;
   }
-  h1 em { font-style: italic; color: var(--amber-light); }
-  .hero-sub {
+  h1 em { font-style: italic; color: var(--teal-mid); }
+  .hero .subtitle {
     font-family: var(--serif);
-    font-size: 1.15rem;
-    color: rgba(255,255,255,0.75);
+    font-size: 17px;
+    color: rgba(255,255,255,0.65);
     max-width: 620px;
-    margin: 0 auto 2rem;
-    line-height: 1.7;
-    font-style: italic;
+    margin: 0 auto;
     font-weight: 300;
   }
   .hero .part-link {
     font-family: var(--sans);
-    font-size: 0.7rem;
+    font-size: 11px;
     letter-spacing: 0.15em;
     text-transform: uppercase;
     color: rgba(255,255,255,0.5);
-    margin-bottom: 2rem;
+    margin-top: 1.4rem;
   }
   .hero .part-link a { color: var(--teal-mid); text-decoration: none; }
-  .hero .part-link a:hover { color: var(--amber-light); }
-  .hero-nav { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; }
-  .btn {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
-    padding: 0.75rem 1.75rem;
-    font-family: var(--sans);
-    font-size: 0.7rem;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    font-weight: 600;
-    text-decoration: none;
-    transition: all 0.2s;
-    cursor: pointer;
-    border: none;
-    border-radius: 3px;
-  }
-  .btn-primary { background: var(--amber); color: #fff; }
-  .btn-primary:hover { background: var(--amber-light); transform: translateY(-1px); }
-  .btn-secondary { background: transparent; color: #fff; border: 1px solid rgba(255,255,255,0.3); }
-  .btn-secondary:hover { border-color: var(--amber-light); color: var(--amber-light); }
-  .section { max-width: 900px; margin: 0 auto; padding: 4rem 2rem; }
-  .section-divider { border: none; border-top: 1px solid var(--bg-dark); margin: 0 2rem; }
+  .hero .part-link a:hover { color: var(--amber-mid); }
+  /* SECTIONS — container width matches B2 (820px) */
+  .section { max-width: 820px; margin: 0 auto; padding: 4rem 2rem; }
+  .section-divider { border: none; border-top: 1px solid var(--cream-dark); margin: 0 2rem; }
   .section-number {
     font-family: var(--mono);
     font-size: 0.7rem;
@@ -220,7 +162,7 @@
     margin: 2.2rem 0 0.7rem;
     color: var(--teal);
   }
-  p { margin-bottom: 1.1rem; color: var(--cream); }
+  p { margin-bottom: 1.1rem; color: var(--navy); }
   p strong { color: var(--navy); font-weight: 600; }
   p em { color: var(--teal); font-style: italic; }
   .callout {
@@ -258,7 +200,7 @@
     border-radius: 4px;
     font-family: 'JetBrains Mono', monospace;
     font-size: 1.05rem;
-    color: var(--cream);
+    color: var(--navy);
     letter-spacing: 0.03em;
   }
   .formula .formula-label {
@@ -299,7 +241,7 @@
     flex: 1;
     -webkit-appearance: none;
     height: 4px;
-    background: var(--slate);
+    background: var(--cream-dark);
     border-radius: 2px;
     outline: none;
   }
@@ -311,8 +253,24 @@
     border-radius: 50%;
     cursor: pointer;
     transition: background 0.2s;
+    border: none;
   }
   input[type=range]::-webkit-slider-thumb:hover { background: var(--amber-light); }
+  input[type=range]::-moz-range-track {
+    height: 4px;
+    background: var(--cream-dark);
+    border-radius: 2px;
+    border: none;
+  }
+  input[type=range]::-moz-range-thumb {
+    width: 16px;
+    height: 16px;
+    background: var(--amber);
+    border-radius: 50%;
+    cursor: pointer;
+    border: none;
+  }
+  input[type=range]::-moz-range-thumb:hover { background: var(--amber-light); }
   .slider-val {
     font-family: 'JetBrains Mono', monospace;
     font-size: 0.85rem;
@@ -365,7 +323,7 @@
     color: var(--cream-dim);
     vertical-align: top;
   }
-  .compare td:first-child { color: var(--cream); font-weight: 600; }
+  .compare td:first-child { color: var(--navy); font-weight: 600; }
   .compare tr:last-child td { border-bottom: none; }
   .advanced-badge {
     display: inline-block;
@@ -423,9 +381,9 @@
   .scenario-card.random .scenario-label { color: var(--red); }
   .scenario-card.partial .scenario-label { color: var(--amber); }
   .scenario-card p { font-size: 0.82rem; margin: 0; }
-  footer { background: var(--navy); text-align: center; padding: 3rem 2rem; color: rgba(247,243,238,0.55); font-size: 0.8rem; }
+  footer { background: var(--navy); text-align: center; padding: 3rem 2rem; color: rgba(255,255,255,0.55); font-size: 0.8rem; }
   footer strong { color: var(--amber-light); }
-  footer p { color: rgba(247,243,238,0.55); }
+  footer p { color: rgba(255,255,255,0.55); }
   .fade-in { opacity: 0; transform: translateY(20px); transition: opacity 0.6s ease, transform 0.6s ease; }
   .fade-in.visible { opacity: 1; transform: translateY(0); }
   .curve-legend { display: flex; gap: 1.5rem; flex-wrap: wrap; margin-top: 1rem; font-size: 0.78rem; font-family: var(--mono); }
@@ -435,15 +393,13 @@
   /* ── RESPONSIVE ── */
   @media (max-width: 640px) {
     body { font-size: 16px; line-height: 1.65; }
-    nav { padding: 0 1rem; gap: 0; height: 50px; }
-    nav .logo { font-size: 0.6rem; }
-    nav a { padding: 0 0.55rem; font-size: 0.55rem; height: 50px; letter-spacing: 0.06em; }
-    .hero { padding: 4.5rem 1.2rem 3rem; }
-    h1 { font-size: 1.85rem !important; }
-    .hero-tag { font-size: 0.62rem; padding: 0.25rem 0.7rem; margin-bottom: 1.4rem; }
-    .hero-sub { font-size: 0.95rem; margin-bottom: 1.5rem; }
-    .hero-nav { gap: 0.5rem; }
-    .btn { padding: 0.55rem 1rem; font-size: 0.62rem; }
+    nav { padding: 0 1rem; gap: 1rem; height: 46px; font-size: 11px; }
+    nav .brand { font-size: 12px; }
+    nav a { font-size: 11px; white-space: nowrap; }
+    .hero { padding: 3rem 1.2rem 2.5rem; }
+    h1 { font-size: 1.6rem !important; }
+    .hero .eyebrow { font-size: 0.62rem; margin-bottom: 1rem; }
+    .hero .subtitle { font-size: 0.92rem; }
     .section { padding: 2.5rem 1.2rem; }
     h2 { font-size: 1.4rem; margin-bottom: 1rem; }
     h3 { font-size: 1.1rem; margin-top: 1.6rem; }
@@ -478,30 +434,22 @@
 <body>
 
 <nav>
-  <div class="logo">Track B · Part 3</div>
+  <span class="brand">Track B · Part 3</span>
   <a href="#section1">§1 Foundations</a>
   <a href="#section2">§2 Attenuation</a>
   <a href="#section3">§3 Dichotomisation</a>
   <a href="#section4">§4 Signal-to-Noise</a>
-  <a href="psychometrics_teaching_v2.html" style="color:rgba(93,202,165,0.65)">← B2</a>
+  <a href="psychometrics_teaching_v2.html" style="color:rgba(93,202,165,0.85)">← B2</a>
   <a href="measurement_fallacies.html" style="color:rgba(93,202,165,0.45)">B1</a>
 </nav>
 
 <div class="hero">
-  <div class="hero-grid"></div>
-  <div class="hero-content">
-    <div class="hero-tag">Measurement &amp; Psychometrics · Part B3 of 3</div>
-    <h1>The Reliability Problem<br><em>From Attenuation to Signal-to-Noise</em></h1>
-    <p class="hero-sub">A guide to measurement error in psychological research — tracing the history from Spearman's original insight through Classical Test Theory, to a modern signal-to-noise framework that reveals what reliability really is and what it demands of us.</p>
-    <div class="part-link">
-      Continues from <a href="psychometrics_teaching_v2.html">Part B2 — Measuring What We Cannot See</a>.
-      Builds on the LMM machinery from <a href="stats_part2_v2.html#s3">Foundations Part 2 §04</a>.
-    </div>
-    <div class="hero-nav">
-      <a href="#section1" class="btn btn-primary">Begin Reading</a>
-      <a href="#section4" class="btn btn-secondary">Jump to Advanced Section</a>
-    </div>
-  </div>
+  <div class="eyebrow">Measurement &amp; Psychometrics · Part B3 of 3</div>
+  <h1>The Reliability Problem — <em>From Attenuation to Signal-to-Noise</em></h1>
+  <p class="subtitle">A guide to measurement error in psychological research — tracing the history from Spearman's original insight through Classical Test Theory, to a modern signal-to-noise framework that reveals what reliability really is and what it demands of us.</p>
+  <p class="part-link">
+    Continues from <a href="psychometrics_teaching_v2.html">Part B2 — Measuring What We Cannot See</a>. Builds on the LMM machinery from <a href="stats_part2_v2.html#s3">Foundations Part 2 §04</a>.
+  </p>
 </div>
 
 <hr class="section-divider">
@@ -509,20 +457,19 @@
 <div class="section fade-in" id="section1">
   <div class="section-number">Section 01 · Foundations</div>
   <h2>Observed Scores, True Scores,<br>and a Century of Consequences</h2>
-  <p>The reliability problem is not a recent discovery. It was identified in 1904 by Charles Spearman — in the very same paper that introduced the correlation coefficient to psychology. That Spearman recognised the measurement error problem at the moment he invented the tool most affected by it is one of the more elegant ironies in the history of science. And the framework he proposed that year remains the foundation on which all subsequent work, including the most modern approaches, is built.</p>
-  <h3>The Fundamental Decomposition</h3>
-  <p>Spearman's core insight was that every observed score on a psychological test is composed of two distinct parts:</p>
-  <div class="formula">Observed Score = True Score + Measurement Error<div class="formula-label">The fundamental decomposition of Classical Test Theory (Spearman, 1904)</div></div>
-  <p>The <strong>true score</strong> is what we actually care about — the person's genuine, stable standing on whatever latent ability we are trying to measure: their working memory capacity, their face recognition ability, their susceptibility to a visual illusion. The <strong>measurement error</strong> is everything else: random fluctuations in attention on the day, guessing, ambiguous stimuli, fatigue, the particular items that happened to appear on this occasion. In classical test theory, error is treated as random with respect to the true score — that is, it is uncorrelated with the underlying ability we are trying to measure.</p>
+  <p>The previous page (<a href="psychometrics_teaching_v2.html#part-a">B2 §A</a>) was about how to improve the reliability of an individual's aggregate score by ensuring the items on a test "hang together" — high internal consistency, captured by Cronbach's α and its successors, gives us some confidence that the per-person sum reflects that person's true level on the latent construct T rather than item-specific noise. The IRT machinery in <a href="psychometrics_teaching_v2.html#part-b">B2 Part B</a> does related work from a different angle: rather than relying on the sum at all, it uses item-level models to estimate ability θ on a logit scale, and uses item and test information functions to flag where on the ability continuum the test gives precise estimates — and where it does not. Both lines of argument share an implicit deeper goal that B2 did not make fully explicit: we want the <em>distribution</em> of observed scores (whether sums or model-based θ estimates) across our sample of people to track the <em>true distribution</em> of T in the underlying population. A reliable test, in the strongest sense, is one whose observed between-person spread accurately reproduces the real between-person spread in the latent trait.</p>
 
-  <p>One thing CTT itself does not pin down: whether the metric the observed score lives on is a meaningful one in the first place. The decomposition X = T + e is honest only if T can plausibly be treated as a quantity on an interval scale, comparable across people and across instruments. Whether that holds is a measurement-theoretic question developed in <a href="measurement_fallacies.html">B1 — Three Fallacies of Psychological Measurement</a>; the attenuation logic worked through below in §02 assumes those upstream questions have been settled.</p>
-  <p>This decomposition has an immediate and important consequence. Because error is random, it contributes variance to observed scores without contributing any systematic information. As the proportion of error variance grows relative to true score variance, observed scores become increasingly poor guides to individuals' true standing on the latent ability — and, crucially, any statistic we compute from those observed scores inherits that contamination.</p>
-  <h3>Reliability: Quantifying the Signal-to-Noise Balance</h3>
-  <p><strong>Reliability</strong> is the formal index of how much of the observed score variance reflects true score variance versus error. It is defined as the ratio:</p>
-  <div class="formula">Reliability = σ²_true / (σ²_true + σ²_error)<div class="formula-label">True score variance as a proportion of total observed variance</div></div>
-  <p>A reliability of 1.0 means no error — every point of observed variance reflects genuine individual differences. A reliability of 0 means pure noise. Most psychological measures fall somewhere in between, and the practical consequences of that position are severe — not merely in the form of imprecision, but in the form of a systematic, one-directional bias in every effect we estimate. This systematic bias is what Spearman named <strong>attenuation</strong>, and quantifying it was his second major contribution of 1904.</p>
-  <p>Reliability can be estimated in two broad ways: through <strong>test-retest reliability</strong> (correlating two administrations of the same measure) or through <strong>internal consistency</strong> (asking how well items within a single administration agree with each other, as indexed by Cronbach's α, introduced in 1951). Despite their different computational forms, both aim to estimate the same underlying ratio above, but they rely on different assumptions and can diverge in practice. The choice between them is often practical — internal consistency is cheaper to obtain — but they should not be treated as interchangeable in all contexts.</p>
-  <p>A critical implication follows: reliability is not just a property of a measure, but of a design. Tasks that maximise within-person effects often minimise between-person variance, limiting the signal available for individual differences — a tension that becomes central in modern reliability work.</p>
+  <p>That gap — between the spread of observed scores in a sample and the true spread of T in the population — is the reliability problem this page takes up. The question is no longer "is each person's aggregate stable?" but "does the distribution of observed scores across people faithfully represent the distribution of true ability across the population?". The answer, it turns out, is "no, systematically and in one direction": observed individual differences are <em>always</em> attenuated relative to the truth, in proportion to how much measurement error sits between observed and true scores. Quantifying that attenuation, understanding what it does to every effect we estimate, and seeing what a modern signal-to-noise framework reveals that the classical reliability coefficients hide — that is the work of §02 onwards.</p>
+
+  <p>The reliability problem in this sense is not a recent discovery. It was identified in 1904 by Charles Spearman — in the very same paper that introduced the correlation coefficient to psychology. That Spearman recognised the measurement error problem at the moment he invented the tool most affected by it is one of the more elegant ironies in the history of science. The framework he proposed that year remains the foundation on which all subsequent work — including the most modern approaches — is built.</p>
+
+  <p><em>For readers arriving directly:</em> the foundational machinery — Classical Test Theory, the X = T + e decomposition, Cronbach's α and its variants — is developed in detail in <a href="psychometrics_teaching_v2.html#part-a">B2 §A</a>. CTT also does not pin down whether the metric the observed score lives on is a meaningful one in the first place — that measurement-theoretic question is the subject of <a href="measurement_fallacies.html">B1 — Three Fallacies of Psychological Measurement</a>. The attenuation logic worked through below assumes both prior pieces have been settled.</p>
+
+  <h3>Two ways to estimate reliability</h3>
+
+  <p>Reliability — the proportion of observed score variance attributable to true score variance — can be estimated two broad ways: through <strong>internal consistency</strong> (how well items within a single administration agree, as indexed by Cronbach's α) or through <strong>test-retest reliability</strong> (correlating two administrations of the same measure). Both aim at the same underlying ratio σ²<sub>true</sub> / (σ²<sub>true</sub> + σ²<sub>error</sub>) but rely on different assumptions and can diverge in practice. B2 covered the first; this page is largely about the second, and §04 ultimately unifies them under the signal-to-noise framework.</p>
+
+  <p>One implication is worth flagging upfront because it shapes everything that follows: <em>reliability is not just a property of a measure, but of a design</em>. Tasks that maximise within-person effects often minimise between-person variance — a tension at the heart of modern reliability work that the historical arc below sets up.</p>
   <div class="widget" style="padding: 1.5rem 2rem;">
     <div class="widget-title">The Historical Arc — A Century of Reliability Theory</div>
     <div style="position:relative; padding-left: 2rem; margin-top:0.5rem;">
@@ -530,25 +477,25 @@
       <div style="margin-bottom:2rem; position:relative;">
         <div style="position:absolute; left:-1.9rem; top:0.3rem; width:12px; height:12px; border-radius:50%; background:var(--amber); border:2px solid var(--navy);"></div>
         <div style="font-family:'JetBrains Mono',monospace; font-size:0.7rem; color:var(--amber); letter-spacing:0.1em; margin-bottom:0.3rem;">1904 — SPEARMAN</div>
-        <div style="font-family:'Playfair Display',serif; font-size:1rem; font-weight:700; color:var(--cream); margin-bottom:0.3rem;">The Problem Named and First Solution Proposed</div>
+        <div style="font-family:'Playfair Display',serif; font-size:1rem; font-weight:700; color:var(--navy); margin-bottom:0.3rem;">The Problem Named and First Solution Proposed</div>
         <div style="font-size:0.85rem; color:var(--cream-dim);">Introduces the correlation coefficient; immediately recognises that measurement error deflates it (attenuation); derives both the attenuation formula and the disattenuation correction r* = r_xy/√(r_xx·r_yy). Correct in direction — but unstable in practice, since the correction can yield r &gt; 1 when reliability estimates themselves contain sampling error.</div>
       </div>
       <div style="margin-bottom:2rem; position:relative;">
         <div style="position:absolute; left:-1.9rem; top:0.3rem; width:12px; height:12px; border-radius:50%; background:var(--blue); border:2px solid var(--navy);"></div>
         <div style="font-family:'JetBrains Mono',monospace; font-size:0.7rem; color:var(--blue); letter-spacing:0.1em; margin-bottom:0.3rem;">1951 — CRONBACH</div>
-        <div style="font-family:'Playfair Display',serif; font-size:1rem; font-weight:700; color:var(--cream); margin-bottom:0.3rem;">Internal Consistency as a Practical Reliability Estimate</div>
+        <div style="font-family:'Playfair Display',serif; font-size:1rem; font-weight:700; color:var(--navy); margin-bottom:0.3rem;">Internal Consistency as a Practical Reliability Estimate</div>
         <div style="font-size:0.85rem; color:var(--cream-dim);">Coefficient alpha provides a practical way to estimate reliability from a single administration — no retest required. The problem (attenuation) is still Spearman's; alpha simply gives a more convenient way to estimate the reliability values needed for his correction. Dominant for seven decades, but shares Spearman's blind spot: it tells you where you are on the reliability curve, not the shape of the curve itself.</div>
       </div>
       <div style="margin-bottom:2rem; position:relative;">
         <div style="position:absolute; left:-1.9rem; top:0.3rem; width:12px; height:12px; border-radius:50%; background:#2a6b6e; border:2px solid var(--navy);"></div>
         <div style="font-family:'JetBrains Mono',monospace; font-size:0.7rem; color:#2a6b6e; letter-spacing:0.1em; margin-bottom:0.3rem;">2018 — HEDGE, POWELL &amp; SUMNER</div>
-        <div style="font-family:'Playfair Display',serif; font-size:1rem; font-weight:700; color:var(--cream); margin-bottom:0.3rem;">The Reliability Paradox Formally Demonstrated</div>
+        <div style="font-family:'Playfair Display',serif; font-size:1rem; font-weight:700; color:var(--navy); margin-bottom:0.3rem;">The Reliability Paradox Formally Demonstrated</div>
         <div style="font-size:0.85rem; color:var(--cream-dim);">Show empirically that tasks producing robust group-level effects consistently yield poor test-retest reliability for individual differences. The paradox arises because tasks designed to maximise within-person condition differences minimise between-person variance — the very signal needed for individual differences research. Attenuation is not a theoretical worry; it is pervasive and severe.</div>
       </div>
       <div style="margin-bottom:2rem; position:relative;">
         <div style="position:absolute; left:-1.9rem; top:0.3rem; width:12px; height:12px; border-radius:50%; background:#6b4a8e; border:2px solid var(--navy);"></div>
         <div style="font-family:'JetBrains Mono',monospace; font-size:0.7rem; color:#6b4a8e; letter-spacing:0.1em; margin-bottom:0.3rem;">2024–2026 — ROUDER, MEHRVARZ &amp; SCHNUERCH</div>
-        <div style="font-family:'Playfair Display',serif; font-size:1rem; font-weight:700; color:var(--cream); margin-bottom:0.3rem;">Reliability as Signal-to-Noise: The Full Curve Revealed</div>
+        <div style="font-family:'Playfair Display',serif; font-size:1rem; font-weight:700; color:var(--navy); margin-bottom:0.3rem;">Reliability as Signal-to-Noise: The Full Curve Revealed</div>
         <div style="font-size:0.85rem; color:var(--cream-dim);">Reframe reliability as γ² = σ²_B/σ²_W — a trial-size-invariant variance ratio independent of how many trials were run. From γ² alone you can derive the entire reliability curve as a function of trial size. Crucially, their 2026 paper argues that reliability itself is merely an intermediate quantity: the true goal is directly modelling uncertainty in correlations across tasks via hierarchical models, bypassing the reliability bottleneck entirely.</div>
       </div>
     </div>
@@ -565,6 +512,13 @@
   <div class="section-number">Section 02 · Attenuation</div>
   <h2>Attenuation: The Predictable<br>Deflation of Every Effect</h2>
   <p>Section 1 established that observed scores are a mixture of true score and error, and that reliability quantifies how much of the observed variance is signal. The natural next question is: what does this do to the statistics we compute from those scores? The answer — which Spearman derived in the same 1904 paper — is precise and sobering. Low reliability does not merely add imprecision; it introduces a systematic, one-directional bias that pushes every effect we measure <em>toward zero</em>. This bias is called <strong>attenuation</strong>, and it operates on correlations and group differences alike.</p>
+
+  <h3>A note on notation: what is the ICC?</h3>
+
+  <p>From here on, reliability is written as <strong>ICC</strong> — the <em>intraclass correlation coefficient</em>. The name comes from the way the correlation is computed: rather than correlating two distinct variables X and Y (one score per person on each, with each variable playing a clearly different role), the ICC correlates pairs of measurements that come from the same "class" — most commonly two administrations of the same test on the same person, where the labelling of "first" vs "second" measurement is arbitrary. Because there is no natural X / Y distinction, an <em>inter</em>-class correlation does not make sense; an <em>intra</em>-class one does.</p>
+
+  <p>Computationally, the ICC for a test-retest design is exactly the reliability ratio defined in §1: the proportion of total observed variance that is between-person true-score variance, σ²<sub>true</sub> / (σ²<sub>true</sub> + σ²<sub>error</sub>). A test with ICC = 0.80 means that 80% of the spread of observed scores across people reflects genuine differences in T, and 20% reflects measurement error. (There are several variants of the ICC that differ in how they treat raters, occasions, and one-way vs two-way models; for the present purposes the simplest reading — proportion of variance attributable to genuine between-person differences — is the one to keep in mind. The widgets below all use ICC in this sense.)</p>
+
   <h3>Attenuation of Correlations</h3>
   <p>When two measures are both imperfectly reliable, the observed correlation between them is systematically smaller than the true underlying correlation, in expectation. Spearman's attenuation formula gives the exact relationship:</p>
   <div class="formula">r_observed = r_true × √(ICC_x × ICC_y)<div class="formula-label">Spearman's attenuation formula for correlations</div></div>
@@ -575,13 +529,9 @@
   <p>A true effect of d = 0.8 measured with an instrument of reliability .5 yields an observed d of 0.8 × √.5 ≈ <strong>0.57</strong>. A "large" effect becomes a "medium" effect — not because the effect is smaller in reality, but because of how Cohen's d is constructed. Cohen's d is the mean difference between groups divided by the pooled standard deviation: <em>d = (μ₁ − μ₂) / σ_pooled</em>. Measurement error leaves the mean difference in the numerator unaffected — random noise cancels when averaged across participants. But that same noise inflates the pooled standard deviation in the denominator, making it larger than the true population SD. A larger denominator with an unchanged numerator always produces a smaller d. The effect is real and unchanged; the ruler has simply been made noisier, stretching the scale against which the difference is expressed.</p>
   <h3>Why Attenuation Is Always a Lower Bound — Never an Upper One</h3>
   <p>At this point a reasonable question arises: if measurement error is <em>random</em>, why does it always push effects downward? If errors are equally likely to be positive or negative, shouldn't they sometimes inflate an observed correlation and sometimes deflate it — producing a noisy estimate centred on the true value rather than a systematically lower one?</p>
-  <p>This intuition is correct for means — random error cancels across people, leaving group means unbiased. But a correlation is not a mean. It is a <em>ratio</em> of covariance to variance, and error affects the numerator and denominator very differently:</p>
+  <p>As we saw earlier in the resource, this is the intuition that is linked to the principle of the central limit theorem and so is correct when we talk about <em>means</em> — random error cancels across people, leaving group means unbiased. But a correlation is not a mean. It is a <em>ratio</em> of covariance to variance, and error affects the numerator and denominator very differently:</p>
   <div class="formula">r = Covariance(X, Y) / √(Variance(X) × Variance(Y))<div class="formula-label">The correlation as a ratio — and why each component is affected differently by error</div></div>
   <p>When you add random error to both measures, the <strong>covariance in the numerator is unchanged</strong> — provided the errors on measure X and the errors on measure Y are independent of each other. But those same errors <strong>inflate the variance in the denominator</strong> — because each person's observed score now fluctuates around their true score, making both distributions wider. A larger denominator with the same numerator always means a smaller fraction. Always.</p>
-  <div class="callout blue">
-    <div class="callout-label">The Asymmetry in Plain Language</div>
-    <p>Error spreads scores out (inflating variance) without making them track each other any better (covariance unchanged). You have made both distributions noisier without adding any genuine shared signal between them. The ratio of shared signal to total spread therefore shrinks — and this happens every time, in every sample, regardless of direction.</p>
-  </div>
   <h3>Attenuation and Regression to the Mean — The Same Phenomenon</h3>
   <p>This connects to a concept that often surprises students: <strong>attenuation and regression to the mean (RTM) are the same underlying mathematical fact, viewed from different angles.</strong></p>
   <p>RTM describes what happens to a single person across two measurement occasions. If someone scores extremely high on a first measurement, their score on retest tends to be lower — closer to the group mean. The reason is identical to the attenuation argument: their extreme first score is partly driven by error. On retest that error is not repeated, so the expected score shifts back toward the mean. The extreme score regresses toward the mean in proportion to how much of its variance was error — that proportion is precisely 1 − reliability.</p>
@@ -700,10 +650,10 @@
 <div class="section" id="section4">
   <div class="section-number">Section 04 · Advanced</div>
   <h2>A Better Measure of Reliability:<br>The Signal-to-Noise Ratio <span class="advanced-badge">Advanced</span></h2>
-  <p>The previous sections showed that reliability determines the degree of attenuation in both correlations and group differences. But there is a deeper problem with how reliability is conventionally measured that limits our ability to diagnose and fix the problem. This section introduces a more informative framework — due to Rouder and Mehrvarz (2024, 2026) — that reframes reliability as a signal-to-noise ratio, and asks what that framework reveals when placed alongside the richer variance decomposition of linear mixed models.</p>
+  <p>The previous sections showed that reliability determines the degree of attenuation in both correlations and group differences. But there is a deeper problem with how reliability is conventionally <em>measured</em> that limits our ability to diagnose and fix the problem. Reliability has always been a signal-to-noise ratio at heart — the classical definition ρ = σ²_T / (σ²_T + σ²_E) is exactly that. The genuine novelty of the framework introduced in this section — due to Rouder and Mehrvarz (2024, 2026) — is not that it reframes reliability as SNR but that it exposes the <em>trial-size-invariant</em> version of the SNR, separating the task's intrinsic signal-to-noise property from the implementation-dependent reliability coefficient that classical α and ICC actually return.</p>
 
   <h3>The Problem with Conventional Reliability Coefficients</h3>
-  <p>Cronbach's alpha and test-retest ICC are the workhorses of reliability assessment. Both are widely reported and widely interpreted. But they share a critical limitation: <strong>they are not fixed properties of a task — they depend on how many trials or items you administer.</strong></p>
+  <p>That α depends on how many items you administer was the central message of <a href="psychometrics_teaching_v2.html#part-a">B2 §A</a> — large k with positive r̄ pushes α toward 1 by aggregation; low k with the same r̄ leaves α much further from 1. The less-obvious point worth making explicit here is that <strong>test-retest ICC has the same dependence</strong>. Test-retest correlates each person's summed (or averaged) score at time 1 with their summed score at time 2, and both summed scores are noisy estimates of the same underlying true ability — the precision of those estimates depends on how many trials or items you collected on each occasion. More trials → sharper per-person estimates → higher correlation between time-1 and time-2 scores. The aggregation logic Cronbach uses to produce a reliable composite within a single administration is, one level up, exactly what produces a reliable test-retest correlation across two administrations: the rank-ordering of people by summed score is more stable when each person's summed score is itself a more stable estimate of their true ability. So both α and ICC are L-dependent, and for the same underlying reason.</p>
   <p>Consider two labs both studying the Stroop task. Lab A runs 200 trials per person per condition; Lab B runs 20 trials per person per condition. Lab A will report much higher test-retest reliability than Lab B — but the task is identical. The reliability coefficient has told us something about the experimental implementation, not about the task itself.</p>
   <table class="compare">
     <tr><th>Property</th><th>Cronbach's α / ICC</th><th>Signal-to-Noise Ratio γ²</th></tr>
@@ -715,12 +665,21 @@
   </table>
 
   <h3>The Signal-to-Noise Ratio γ²</h3>
-  <p>Rouder and Mehrvarz propose replacing the reliability coefficient with a <strong>signal-to-noise variance ratio</strong>:</p>
-  <div class="formula">γ² = σ²_B / σ²_W<div class="formula-label">Between-person true variance (signal) divided by within-person trial noise (noise)</div></div>
-  <p>Here σ²_B is the genuine variance in people's true ability — how much people actually differ from one another. σ²_W is the trial-by-trial noise — the random fluctuations within a single person's performance. The ratio of these two quantities is a property of the task and the population, entirely independent of how many trials you choose to run.</p>
+  <p>Rouder and Mehrvarz propose a variance ratio defined at the <em>trial</em> level rather than the score level:</p>
+  <div class="formula">γ² = σ²_B / σ²_W<div class="formula-label">Between-person true variance (signal) divided by within-person per-trial noise</div></div>
+  <p>σ²<sub>B</sub> is the genuine variance in people's true ability — how much people actually differ from one another. σ²<sub>W</sub> is the per-trial noise — the variance of a single trial-level observation around the person's true value. The crucial property of σ²<sub>W</sub> is that aggregating trials does not reduce it: collecting more trials reduces the variance of the <em>mean</em> (by σ²<sub>W</sub>/L), but the per-trial noise itself is a property of the task and the participant, unchanged by implementation. That is what makes γ² trial-size-invariant where classical α and ICC are not — they measure the precision of the aggregate (which depends on L), while γ² measures the underlying SNR at the level of a single trial (which doesn't). The reliability you actually measure is what falls out of γ² plus your L choice; the formula on the next line is precisely that derivation.</p>
+
   <p>From γ², the expected test-retest reliability at any trial size L follows directly:</p>
   <div class="formula">E(r) ≈ γ² / (γ² + 2/L)<div class="formula-label">The reliability curve — reliability as a function of γ² and trial size L</div></div>
+
+  <div class="callout">
+    <div class="callout-label">Where does the 2 in 2/L come from?</div>
+    <p>Worth pausing on. Rouder's framework is built around the kind of design that dominates cognitive psychology: a within-subject experimental contrast (Stroop = incongruent − congruent reaction time, flanker effect, congruency effect, etc.). On any given occasion, a person's score is the <em>difference</em> between two condition means. If each condition has L trials, the variance of each condition mean is σ²_W / L. The variance of the <em>difference</em> of two independent means is the sum of their variances — so 2σ²_W / L. That is the noise term in the test-retest formula's denominator: σ²_B + 2σ²_W / L. Pulling σ²_W out of the ratio (so it appears as 2/L next to γ²) is just a rearrangement. The factor of 2 is therefore specific to two-condition contrast designs; for a single-condition design where the score is just one mean, the factor would be 1.</p>
+  </div>
+
   <p>This formula defines an entire <em>curve</em> of reliability as a function of trial size — and the shape of that curve is completely determined by γ². A task with high γ² rises steeply: reasonable reliability is achieved with modest trial counts. A task with low γ² rises slowly and may never reach acceptable reliability within any practical design.</p>
+
+  <p>This is structurally the same problem we have already met, twice, at different levels. <a href="effect_size_power.html#power">Part 4 §5 — Power analysis</a> showed that small Cohen's <em>d</em> requires more participants to detect cleanly: required N scales roughly as 1/<em>d</em>². <a href="psychometrics_teaching_v2.html#part-a">B2 §A — The aggregation principle</a> showed that small Cronbach r̄ requires more items to reach a target α. Now we see that small γ² requires more trials L to reach a target test-retest reliability. (In experimental psychology "item" and "trial" are often used interchangeably — a self-report scale and a Stroop block both involve many within-participant observations being aggregated — so r̄ and γ² differ on framing rather than level.) Three per-unit signal-to-noise quantities, one structural fact: when the per-unit signal is small, more units have to be aggregated, and the aggregation requirement scales with the inverse of the squared SNR. Rouder's framework makes that requirement explicit at the trial level, and his 2026 paper goes further and argues that hierarchical models let you bypass the reliability bottleneck entirely — the topic of the LMM bridge below.</p>
 
   <div class="widget">
     <div class="widget-title">Interactive: The Reliability Curve — γ² in Action</div>
@@ -749,79 +708,32 @@
       <div class="curve-legend-item"><div class="curve-legend-line" style="background:var(--red); opacity:0.7;"></div>Stroop effect</div>
       <div class="curve-legend-item"><div class="curve-legend-line" style="background:var(--green); opacity:0.7;"></div>Mueller-Lyer</div>
       <div class="curve-legend-item"><div class="curve-legend-line" style="background:var(--blue); opacity:0.7;"></div>Poggendorf</div>
-      <div class="curve-legend-item"><div class="curve-legend-line" style="background:rgba(255,255,255,0.2);"></div>r = .70 / .90 targets</div>
+      <div class="curve-legend-item"><div class="curve-legend-line" style="background:rgba(26,37,64,0.35);"></div>r = .70 / .90 targets</div>
     </div>
   </div>
 
-  <h3>Bridging to Linear Mixed Models — and What the Bridge Reveals</h3>
+  <h3>Bridging to Linear Mixed Models</h3>
 
-  <p>A useful way to understand Rouder's framework is to recognise how it maps onto the variance decomposition estimated in linear mixed models — and, crucially, where the two framings diverge in ways that are practically important.</p>
-
-  <p>Rouder's data model is explicitly:</p>
+  <p>LMMs are not new to this resource. They were developed in detail in <a href="stats_part2_v2.html#s2b">Foundations Part 2 §03 — Repeated measures, structured dependence</a> and <a href="stats_part2_v2.html#s3">§04 — Linear Mixed Models: modelling the dependence structure</a>, where we saw how a single likelihood with random effects for participants (and optionally items) can replace ANOVA's blunter machinery, partition variance into between-person and residual components, and stabilise individual estimates via partial pooling. They were also flagged in <a href="measurement_fallacies.html#responses">B1 §5</a> as one of the more honest responses to the measurement problems classical CTT papers tend to leave unaddressed. The bridge built here is a specific one — between Rouder's variance-ratio reliability index and the variance components a fitted LMM gives you for free — and it is what makes Rouder's index practically actionable rather than just conceptually cleaner. Rouder's data model is:</p>
 
   <div class="formula">Y<sub>ikℓ</sub> ~ Normal(α<sub>i</sub> + x<sub>k</sub>θ<sub>i</sub>, τ²)<div class="formula-label">Rouder's model: person effect, condition contrast, and trial noise — no item subscript</div></div>
 
-  <p>Notice there is <em>no item subscript</em> anywhere in this model. The index ℓ runs over replicate trials, and τ² is simply the variance of each trial around the person-by-condition mean. <strong>Items do not exist as a modelled entity — they are absorbed entirely into τ².</strong> This is not an oversight but a deliberate simplification appropriate for the paradigms Rouder considers (Stroop, flanker), where trials are effectively independent random draws from a large pool. The derivation of the test-retest reliability formula requires that noise on Day 1 and Day 2 be statistically independent — random item sampling across occasions is the assumption baked into the whole framework.</p>
+  <p>Reading the symbols out: <strong>Y<sub>ikℓ</sub></strong> is the observation on trial ℓ for person i in condition k. <strong>α<sub>i</sub></strong> is the person-specific intercept — person i's overall level on the task (their baseline reaction time, their average accuracy, etc.). <strong>x<sub>k</sub></strong> is a contrast indicator that codes the experimental condition (typically +1/−1 for the two conditions of a within-subject contrast — e.g. +1 for incongruent, −1 for congruent in a Stroop design). <strong>θ<sub>i</sub></strong> is the person-specific contrast effect — how much person i is slowed by incongruent trials, or whatever the experimental contrast is, treated as an individual-differences quantity. <strong>τ²</strong> is the within-person trial variance — the per-trial noise σ²<sub>W</sub> that appears in γ²'s denominator. In plain words: each observed trial-level response is the person's baseline (α<sub>i</sub>), plus the person's individual contrast effect for that condition (x<sub>k</sub>θ<sub>i</sub>), plus Gaussian trial noise with variance τ². In LMM vocabulary, the two person-indexed quantities α<sub>i</sub> and θ<sub>i</sub> are exactly what a model with a random intercept and a random slope for the condition contrast estimates — one slope per person, drawn from a between-person distribution whose variance σ²<sub>B</sub> is the numerator of γ².</p>
 
-  <p>A linear mixed model separates that lumped noise term into distinct components:</p>
+  <p>Notice there is <em>no item subscript</em> anywhere in this model. The index ℓ runs over replicate trials, and τ² is simply the variance of each trial around the person-by-condition mean. <strong>Items do not exist as a modelled entity — they are absorbed entirely into τ².</strong> This is a deliberate departure from the standard LMM treatment developed in <a href="stats_part2_v2.html#s3">Part 2 §04</a>, where random effects are routinely included for items as well as for participants — random intercepts for item difficulty, and where appropriate random slopes for how strongly each item taps the construct. The crossed LMM in the next equation is exactly that fuller picture. Rouder's model collapses all of the item-level structure into τ² — not an oversight but a simplification appropriate for the paradigms he considers (Stroop, flanker), where trials are effectively independent random draws from a large pool of nominally exchangeable stimuli, and the derivation of the test-retest reliability formula requires that noise on Day 1 and Day 2 be statistically independent. Random item sampling across occasions is the assumption baked into the whole framework.</p>
 
   <div class="formula">y<sub>pi</sub> = μ + u<sub>p</sub> + v<sub>i</sub> + ε<sub>pi</sub><div class="formula-label">Crossed LMM: between-person variance (σ²<sub>person</sub>), item intercept variance (σ²<sub>item</sub>), and residual trial noise (σ²<sub>residual</sub>)</div></div>
 
-  <p>This decomposition is richer — but it also introduces a subtlety that matters for reliability. <strong>Standard item intercepts (v<sub>i</sub>) are shared across all participants.</strong> They shift item difficulty, but they do not by themselves create instability in people's rank ordering across occasions. If everyone is presented with the same items on a given occasion, item intercepts largely shift the grand mean rather than adding noise to person scores. What actually drives person-score instability is different: it is the <em>item-sampling variance</em> — the unpredictability introduced when different subsets of items are drawn on different occasions — plus any <em>person-by-item interaction</em> variance that makes some people systematically better or worse on particular items.</p>
+  <h3>What the LMM bridge actually adds</h3>
 
-  <div class="callout blue">
-    <div class="callout-label">What Actually Enters the Noise Denominator</div>
-    <p>The noise denominator for a Rouder-style γ² should include components that generate <em>instability in person scores across occasions</em>. This means:</p>
-    <p style="margin-top:0.6rem;"><strong>Always contributes:</strong> σ²<sub>residual</sub> — irreducible within-person trial noise, independent across occasions by definition.</p>
-    <p style="margin-top:0.4rem;"><strong>Contributes when items are resampled:</strong> σ²<sub>item-sampling</sub> — the variance attributable to drawing a different item subset each time. This is not simply the LMM's σ²<sub>item</sub> intercept variance, but rather the person-score-level instability introduced by item sampling.</p>
-    <p style="margin-top:0.4rem;"><strong>May contribute:</strong> σ²<sub>person×item</sub> — if people interact differently with specific items, this adds instability that does not average away even with fixed item sets.</p>
-    <p style="margin-top:0.4rem;">Plain item intercept variance (σ²<sub>item</sub> from a crossed LMM) does <em>not</em> directly enter the denominator when items are fixed across occasions, because it is shared structure, not noise.</p>
-  </div>
+  <p>The LMM gives you separate variance components for person, item, and residual. Two distinct things this enables, depending on whether Rouder's design assumptions hold:</p>
 
-  <h3>Three Designs — Three Noise Structures</h3>
+  <p><strong>(a) Diagnostic on τ² — when Rouder's framework applies.</strong> When trials are genuinely exchangeable random draws (Stroop, flanker, RT contrasts — the cognitive paradigms Rouder targets), Rouder's τ² ≈ σ²<sub>residual</sub> + σ²<sub>item-sampling</sub>, and the LMM gives you the <em>same</em> reliability estimate as the τ²-based formula. What the LMM adds in this case is not a different number but a decomposition: τ² is one bucket, and the LMM tells you whether what's inside is mostly residual trial noise (intrinsic to the task — hard to fix without redesign) or mostly item-level variance (potentially fixable by curating better items). Useful for asking <em>why</em> a task has low SNR; redundant for the reliability number itself.</p>
 
-  <p>With this clearer picture of what counts as noise, the three design cases can be stated more precisely:</p>
+  <p><strong>(b) The right tool — when Rouder's framework does not apply.</strong> When items are fixed across occasions (a questionnaire reused on two days, the same word list, the same image set), σ²<sub>item</sub> is shared structure that cancels from the test-retest covariance. Rouder's τ² lumps σ²<sub>item</sub> into the noise denominator anyway and would <em>underestimate</em> reliability. The LMM, by separating σ²<sub>item</sub> from σ²<sub>residual</sub>, lets you correctly treat σ²<sub>item</sub> as shared structure rather than noise. Here the LMM is not a refinement of Rouder's framework but a <em>correction</em> — the right tool because Rouder's is the wrong one.</p>
 
-  <div class="scenario-grid">
-    <div class="scenario-card fixed">
-      <div class="scenario-label">Design A · Fixed Items</div>
-      <p>The same item set used on all occasions. Item intercepts are shared structure — they cancel from the test-retest covariance. Only residual and person×item interaction contribute to noise.</p>
-      <div class="formula" style="font-size:0.85rem; padding: 0.75rem 1rem; margin: 0.75rem 0;">γ² ≈ σ²<sub>person</sub> / (σ²<sub>residual</sub> + σ²<sub>p×i</sub>)</div>
-      <p style="font-size:0.8rem; color:var(--green);">Highest γ² — item difficulty is "free" shared structure</p>
-    </div>
-    <div class="scenario-card random">
-      <div class="scenario-label">Design B · Random Items</div>
-      <p>Fresh items sampled each occasion from a large pool. Item-sampling introduces occasion-specific noise at the person-score level, on top of residual variance.</p>
-      <div class="formula" style="font-size:0.85rem; padding: 0.75rem 1rem; margin: 0.75rem 0;">γ² ≈ σ²<sub>person</sub> / (σ²<sub>residual</sub> + σ²<sub>item-sampling</sub>)</div>
-      <p style="font-size:0.8rem; color:var(--red);">Lowest γ² — recovers Rouder's τ² when item-sampling noise dominates</p>
-    </div>
-    <div class="scenario-card partial">
-      <div class="scenario-label">Design C · Partial Overlap</div>
-      <p>Finite pool of N items; L sampled per occasion. Item-sampling noise scales with the non-overlapping fraction (1 − L/N) of items, giving an intermediate noise level.</p>
-      <div class="formula" style="font-size:0.85rem; padding: 0.75rem 1rem; margin: 0.75rem 0;">γ² ≈ σ²<sub>person</sub> / (σ²<sub>residual</sub> + (1−ρ)·σ²<sub>item-sampling</sub>)</div>
-      <p style="font-size:0.8rem; color:var(--amber);">Intermediate — most realistic design in practice</p>
-    </div>
-  </div>
+  <p>The deeper point is that the design question is not "which formula to pick within Rouder's framework" — it is <em>whether Rouder's framework applies at all</em>. For exchangeable-trial designs (cognitive paradigms with random stimuli): yes, with the LMM as a diagnostic supplement. For fixed-item designs (questionnaires reused across occasions): no, and the LMM is the alternative tool that gets the answer right. There is no design-type flag the analyst sets — the data structure imposes the choice via whether the same item identifiers reappear across occasions, and the analyst's job is to recognise which case they are in and read the variance components accordingly.</p>
 
-  <div class="callout">
-    <div class="callout-label">What Rouder's Framework Can and Cannot Express</div>
-    <p>Rouder's τ² lumps all of these noise sources together into a single within-person trial variance. The LMM can unpack them — but doing so correctly requires identifying which components are stable shared structure (item intercepts, when fixed) and which generate genuine person-score instability (residual noise, item-sampling variance, person×item interactions). The LMM framing is not a correction to Rouder but an elaboration that becomes useful once you want to ask <em>why</em> a task has low SNR and what can be done about it.</p>
-  </div>
-
-  <h3>From Fitted Model to Planning Diagnostic: The Practical Workflow</h3>
-
-  <p>This is where the LMM bridge becomes genuinely actionable. Once a hierarchical model has been fitted and converged, the estimated variance components are already in hand. Rather than simply reporting a reliability coefficient that conflates task quality with trial count, a researcher can compute a Rouder-style signal-to-noise index directly from those components — and use it as a planning diagnostic.</p>
-
-  <div class="callout green">
-    <div class="callout-label">Practical Workflow: From Model Output to Trial Planning</div>
-    <p><strong>Step 1 — Fit the hierarchical model.</strong> A crossed LMM (or Bayesian hierarchical model) yields variance components for persons, items, and residual noise.</p>
-    <p style="margin-top:0.6rem;"><strong>Step 2 — Identify the noise denominator.</strong> Decide which components act as measurement noise for your inferential target: residual variance always counts; item-sampling variance counts if items are resampled across occasions; person×item interaction counts if present.</p>
-    <p style="margin-top:0.6rem;"><strong>Step 3 — Compute γ².</strong> Form the ratio of person signal variance to effective noise variance.</p>
-    <p style="margin-top:0.6rem;"><strong>Step 4 — Consult the reliability curve.</strong> Use E(r) ≈ γ²/(γ² + 2/L) to see what reliability your current trial count achieves, and how many more trials would be needed to reach a target.</p>
-    <p style="margin-top:0.6rem;"><strong>Step 5 — Interpret diagnostically.</strong> Low γ² from high residual noise suggests brute-force trial addition may help. Low γ² from low person signal suggests the task may not discriminate individuals well regardless of trial count — redesign of items may be more effective than simply adding more of them.</p>
-  </div>
-
-  <p>This workflow is very much in the spirit of Rouder's recommendation that task goodness should be expressed in a trial-size-invariant way. The reliability coefficient tells you where you currently are; γ² tells you the shape of the entire curve and whether any practical trial count can get you where you need to be.</p>
 
   <h3>A Worked Example: Face Recognition with a 2×2 Design</h3>
 
@@ -931,11 +843,6 @@
 
   <p>Contrast this with the Poggendorf visual illusion (γ ≈ 1.41). With just 15 trials per person, test-retest reliability exceeds .90. The task is intrinsically high-signal: individual differences in susceptibility to the illusion are large relative to trial noise. The individual differences research programme built on this task is on solid ground regardless of how few trials are used.</p>
 
-  <div class="callout green">
-    <div class="callout-label">The Unifying Principle</div>
-    <p>Both Cronbach's α / ICC and Rouder's γ² are expressions of the same underlying variance logic: stable person signal relative to competing sources of variability. Mixed models make that decomposition explicit by partitioning variance linked to persons, items, and residual fluctuation. Rouder's framework then turns that decomposition into a design tool — and the LMM lens extends it by making item design a quantifiable lever.</p>
-  </div>
-
   <h3>The Connection Back to Attenuation</h3>
 
   <p>The full circle closes here. Recall from Section 2 that attenuation of correlations follows r_observed = r_true × √(ICC_x × ICC_y). The ICC values in that formula are themselves determined by γ² and L. So for any task in any study, the degree of attenuation in reported correlations is:</p>
@@ -964,25 +871,25 @@
 </div>
 
 <footer>
-  <p style="font-family: var(--sans); font-size: 0.78rem; color: rgba(247,243,238,0.7);"><strong style="color: var(--amber-light);">Measurement &amp; Psychometrics · Part B3 of 3</strong> — The Reliability Problem</p>
-  <p style="margin-top:0.6rem; font-family: var(--sans); font-size: 0.7rem; letter-spacing: 0.06em; color: rgba(247,243,238,0.55);">
+  <p style="font-family: var(--sans); font-size: 0.78rem; color: rgba(255,255,255,0.7);"><strong style="color: var(--amber-light);">Measurement &amp; Psychometrics · Part B3 of 3</strong> — The Reliability Problem</p>
+  <p style="margin-top:0.6rem; font-family: var(--sans); font-size: 0.7rem; letter-spacing: 0.06em; color: rgba(255,255,255,0.55);">
     <a href="measurement_fallacies.html" style="color: var(--teal); text-decoration: none">B1 — Three Fallacies</a>
     &nbsp;·&nbsp;
     <a href="psychometrics_teaching_v2.html" style="color: var(--teal); text-decoration: none">B2 — Measuring What We Cannot See</a>
     &nbsp;·&nbsp;
     <strong style="color: var(--teal);">B3</strong>
   </p>
-  <p style="margin-top:0.5rem; font-family: var(--sans); font-size: 0.7rem; letter-spacing: 0.06em; color: rgba(247,243,238,0.55);">
+  <p style="margin-top:0.5rem; font-family: var(--sans); font-size: 0.7rem; letter-spacing: 0.06em; color: rgba(255,255,255,0.55);">
     Foundations series:
-    <a href="lln_website_v2.html" style="color: rgba(247,243,238,0.7); text-decoration: none">Part 1</a>
+    <a href="lln_website_v2.html" style="color: rgba(255,255,255,0.7); text-decoration: none">Part 1</a>
     &nbsp;·&nbsp;
-    <a href="stats_part2_v2.html" style="color: rgba(247,243,238,0.7); text-decoration: none">Part 2</a>
+    <a href="stats_part2_v2.html" style="color: rgba(255,255,255,0.7); text-decoration: none">Part 2</a>
     &nbsp;·&nbsp;
-    <a href="generativestats.html" style="color: rgba(247,243,238,0.7); text-decoration: none">Part 3</a>
+    <a href="generativestats.html" style="color: rgba(255,255,255,0.7); text-decoration: none">Part 3</a>
     &nbsp;·&nbsp;
-    <a href="effect_size_power.html" style="color: rgba(247,243,238,0.7); text-decoration: none">Part 4</a>
+    <a href="effect_size_power.html" style="color: rgba(255,255,255,0.7); text-decoration: none">Part 4</a>
   </p>
-  <p style="margin-top:1rem; font-size: 0.68rem; color: rgba(247,243,238,0.5); opacity:0.85; max-width: 720px; margin-left: auto; margin-right: auto;">Based on: <strong>Karvelis &amp; Diaconescu (2025)</strong> · attenuation of group differences &nbsp;·&nbsp; <strong>Rouder &amp; Mehrvarz (2024)</strong> · signal-to-noise reliability &nbsp;·&nbsp; <strong>Rouder, Mehrvarz &amp; Schnuerch (2026)</strong> · the role of reliability in experiments.</p>
+  <p style="margin-top:1rem; font-size: 0.68rem; color: rgba(255,255,255,0.5); opacity:0.85; max-width: 720px; margin-left: auto; margin-right: auto;">Based on: <strong>Karvelis &amp; Diaconescu (2025)</strong> · attenuation of group differences &nbsp;·&nbsp; <strong>Rouder &amp; Mehrvarz (2024)</strong> · signal-to-noise reliability &nbsp;·&nbsp; <strong>Rouder, Mehrvarz &amp; Schnuerch (2026)</strong> · the role of reliability in experiments.</p>
 </footer>
 
 <script>
@@ -1055,19 +962,19 @@ function updateAttenuation(){
   groups.forEach((g, i) => {
     const x = pad + i * (barW*2 + gap + 30);
     const trueH = (g.true / 1.0) * chartH;
-    ctx.strokeStyle = 'rgba(240,232,216,0.4)';
+    ctx.strokeStyle = 'rgba(26,37,64,0.4)';
     ctx.lineWidth = 2;
     ctx.strokeRect(x, H-40-trueH, barW, trueH);
     const obsH = (g.obs / 1.0) * chartH;
     ctx.fillStyle = g.color;
     ctx.fillRect(x, H-40-obsH, barW, obsH);
-    ctx.fillStyle = 'rgba(240,232,216,0.5)';
+    ctx.fillStyle = 'rgba(26,37,64,0.5)';
     ctx.font = '11px "Source Serif 4", serif';
     ctx.textAlign = 'center';
     ctx.fillText(g.label, x + barW/2, H-10);
-    ctx.fillStyle = '#f0e8d8';
+    ctx.fillStyle = '#1a2540';
     ctx.fillText(g.obs.toFixed(2), x + barW/2, H-42-obsH);
-    ctx.fillStyle = 'rgba(240,232,216,0.4)';
+    ctx.fillStyle = 'rgba(26,37,64,0.4)';
     ctx.fillText(g.true.toFixed(2) + ' (true)', x + barW/2, H-42-trueH-14);
   });
 }
@@ -1127,10 +1034,10 @@ function updateDichotomisation(){
   ctx.fillStyle='rgba(80,144,224,0.25)'; ctx.fill();
   ctx.beginPath();
   for(let x=xMin; x<=xMax; x+=0.05){ const px=toX(x),py=toY(normalPDF(x)); x===xMin?ctx.moveTo(px,py):ctx.lineTo(px,py); }
-  ctx.strokeStyle='rgba(240,232,216,0.7)'; ctx.lineWidth=2; ctx.stroke();
+  ctx.strokeStyle='rgba(26,37,64,0.7)'; ctx.lineWidth=2; ctx.stroke();
   ctx.beginPath(); ctx.moveTo(toX(cutZ),pad.t); ctx.lineTo(toX(cutZ),pad.t+cH);
   ctx.strokeStyle='#e8a020'; ctx.lineWidth=2; ctx.setLineDash([5,4]); ctx.stroke(); ctx.setLineDash([]);
-  ctx.fillStyle='rgba(240,232,216,0.5)'; ctx.font='11px "Source Serif 4",serif'; ctx.textAlign='center';
+  ctx.fillStyle='rgba(26,37,64,0.5)'; ctx.font='11px "Source Serif 4",serif'; ctx.textAlign='center';
   ctx.fillText(`Lower group (${cutPct}%)`, toX((xMin+cutZ)/2), H-10);
   ctx.fillText(`Upper group (${100-cutPct}%)`, toX((cutZ+xMax)/2), H-10);
   ctx.fillStyle='#e8a020'; ctx.fillText('cut', toX(cutZ), pad.t+cH+18);
@@ -1172,7 +1079,7 @@ function drawReliabilityCurve(){
   const cW=W-pad.l-pad.r, cH=H-pad.t-pad.b;
   const toX=L=>pad.l+(Math.log10(L)/3)*cW;
   const toY=r=>pad.t+(1-r)*cH;
-  ctx.strokeStyle='rgba(255,255,255,0.06)'; ctx.lineWidth=1;
+  ctx.strokeStyle='rgba(26,37,64,0.06)'; ctx.lineWidth=1;
   [0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1.0].forEach(r=>{
     ctx.beginPath(); ctx.moveTo(pad.l,toY(r)); ctx.lineTo(pad.l+cW,toY(r)); ctx.stroke();
   });
@@ -1181,8 +1088,8 @@ function drawReliabilityCurve(){
   });
   [0.7,0.9].forEach(r=>{
     ctx.beginPath(); ctx.moveTo(pad.l,toY(r)); ctx.lineTo(pad.l+cW,toY(r));
-    ctx.strokeStyle='rgba(255,255,255,0.25)'; ctx.lineWidth=1; ctx.setLineDash([6,4]); ctx.stroke(); ctx.setLineDash([]);
-    ctx.fillStyle='rgba(255,255,255,0.4)'; ctx.font='10px "JetBrains Mono",monospace';
+    ctx.strokeStyle='rgba(26,37,64,0.25)'; ctx.lineWidth=1; ctx.setLineDash([6,4]); ctx.stroke(); ctx.setLineDash([]);
+    ctx.fillStyle='rgba(26,37,64,0.4)'; ctx.font='10px "JetBrains Mono",monospace';
     ctx.textAlign='right'; ctx.fillText('r='+r, pad.l-4, toY(r)+4);
   });
   [{gamma:0.12,color:'rgba(224,80,80,0.5)'},{gamma:0.72,color:'rgba(80,200,120,0.5)'},{gamma:1.414,color:'rgba(80,144,224,0.5)'}].forEach(task=>{
@@ -1196,15 +1103,15 @@ function drawReliabilityCurve(){
   for(let li=0;li<=300;li++){ const L=Math.pow(10,(li/300)*3); const r=reliabilityAtL(g2,L); li===0?ctx.moveTo(toX(L),toY(r)):ctx.lineTo(toX(L),toY(r)); }
   ctx.strokeStyle='#e8a020'; ctx.lineWidth=3; ctx.stroke();
   [100,500].forEach(L=>{ const r=reliabilityAtL(g2,L); ctx.beginPath(); ctx.arc(toX(L),toY(r),5,0,Math.PI*2); ctx.fillStyle='#e8a020'; ctx.fill(); });
-  ctx.strokeStyle='rgba(240,232,216,0.3)'; ctx.lineWidth=1;
+  ctx.strokeStyle='rgba(26,37,64,0.3)'; ctx.lineWidth=1;
   ctx.beginPath(); ctx.moveTo(pad.l,pad.t); ctx.lineTo(pad.l,pad.t+cH); ctx.stroke();
   ctx.beginPath(); ctx.moveTo(pad.l,pad.t+cH); ctx.lineTo(pad.l+cW,pad.t+cH); ctx.stroke();
-  ctx.fillStyle='rgba(240,232,216,0.6)'; ctx.font='11px "JetBrains Mono",monospace';
+  ctx.fillStyle='rgba(26,37,64,0.6)'; ctx.font='11px "JetBrains Mono",monospace';
   ctx.textAlign='right';
   [0,0.2,0.4,0.6,0.8,1.0].forEach(r=>{ ctx.fillText(r.toFixed(1), pad.l-6, toY(r)+4); });
   ctx.textAlign='center';
   [1,5,10,50,100,500,1000].forEach(L=>{ ctx.fillText(L, toX(L), pad.t+cH+18); });
-  ctx.fillStyle='rgba(240,232,216,0.4)'; ctx.font='11px "Source Serif 4",serif';
+  ctx.fillStyle='rgba(26,37,64,0.4)'; ctx.font='11px "Source Serif 4",serif';
   ctx.fillText('Trials per condition (L) — log scale', pad.l+cW/2, H-8);
   ctx.save(); ctx.translate(14,pad.t+cH/2); ctx.rotate(-Math.PI/2); ctx.fillText('Test-retest reliability',0,0); ctx.restore();
   ctx.fillStyle='#e8a020'; ctx.font='bold 12px "JetBrains Mono",monospace';
@@ -1243,22 +1150,22 @@ function drawRTMPanel(icc){
   const pad={l:40,r:20,t:20,b:40};
   const cW=W-pad.l-pad.r, cH=H-pad.t-pad.b;
   const toX=v=>pad.l+(v+2.5)/5*cW, toY=v=>pad.t+(2.5-v)/5*cH;
-  ctx.strokeStyle='rgba(255,255,255,0.06)'; ctx.lineWidth=1;
+  ctx.strokeStyle='rgba(26,37,64,0.06)'; ctx.lineWidth=1;
   [-2,-1,0,1,2].forEach(v=>{
     ctx.beginPath(); ctx.moveTo(toX(v),pad.t); ctx.lineTo(toX(v),pad.t+cH); ctx.stroke();
     ctx.beginPath(); ctx.moveTo(pad.l,toY(v)); ctx.lineTo(pad.l+cW,toY(v)); ctx.stroke();
   });
   ctx.beginPath(); ctx.moveTo(pad.l,pad.t+cH); ctx.lineTo(pad.l+cW,pad.t);
-  ctx.strokeStyle='rgba(255,255,255,0.15)'; ctx.lineWidth=1; ctx.setLineDash([4,4]); ctx.stroke(); ctx.setLineDash([]);
+  ctx.strokeStyle='rgba(26,37,64,0.15)'; ctx.lineWidth=1; ctx.setLineDash([4,4]); ctx.stroke(); ctx.setLineDash([]);
   ctx.beginPath(); ctx.moveTo(toX(-2.5),toY(-2.5*icc)); ctx.lineTo(toX(2.5),toY(2.5*icc));
   ctx.strokeStyle='#e8a020'; ctx.lineWidth=2.5; ctx.stroke();
   const ts=2.0, er=icc*ts;
-  ctx.beginPath(); ctx.arc(toX(ts),toY(ts),6,0,Math.PI*2); ctx.fillStyle='rgba(240,232,216,0.4)'; ctx.fill();
+  ctx.beginPath(); ctx.arc(toX(ts),toY(ts),6,0,Math.PI*2); ctx.fillStyle='rgba(26,37,64,0.4)'; ctx.fill();
   ctx.beginPath(); ctx.arc(toX(ts),toY(er),6,0,Math.PI*2); ctx.fillStyle='#e8a020'; ctx.fill();
-  ctx.fillStyle='rgba(240,232,216,0.5)'; ctx.font='10px "JetBrains Mono",monospace'; ctx.textAlign='center';
+  ctx.fillStyle='rgba(26,37,64,0.5)'; ctx.font='10px "JetBrains Mono",monospace'; ctx.textAlign='center';
   ctx.fillText('Test 1 score (SDs)', pad.l+cW/2, H-8);
   ctx.save(); ctx.translate(12,pad.t+cH/2); ctx.rotate(-Math.PI/2); ctx.fillText('Expected retest score',0,0); ctx.restore();
-  ctx.fillStyle='rgba(240,232,216,0.4)'; ctx.font='9px "JetBrains Mono",monospace';
+  ctx.fillStyle='rgba(26,37,64,0.4)'; ctx.font='9px "JetBrains Mono",monospace';
   [-2,-1,0,1,2].forEach(v=>{
     ctx.textAlign='right'; ctx.fillText(v,pad.l-4,toY(v)+3);
     ctx.textAlign='center'; ctx.fillText(v,toX(v),pad.t+cH+14);
@@ -1276,7 +1183,7 @@ function drawAttPanel(icc,rtrue,robs){
   const pad={l:40,r:20,t:20,b:40};
   const cW=W-pad.l-pad.r, cH=H-pad.t-pad.b;
   const toX=r=>pad.l+r*cW, toY=r=>pad.t+(1-r)*cH;
-  ctx.strokeStyle='rgba(255,255,255,0.06)'; ctx.lineWidth=1;
+  ctx.strokeStyle='rgba(26,37,64,0.06)'; ctx.lineWidth=1;
   [0,0.2,0.4,0.6,0.8,1.0].forEach(v=>{
     ctx.beginPath(); ctx.moveTo(toX(0),toY(v)); ctx.lineTo(toX(1),toY(v)); ctx.stroke();
     ctx.beginPath(); ctx.moveTo(toX(v),toY(0)); ctx.lineTo(toX(v),toY(1)); ctx.stroke();
@@ -1284,10 +1191,10 @@ function drawAttPanel(icc,rtrue,robs){
   ctx.beginPath(); ctx.moveTo(toX(0),toY(0)); ctx.lineTo(toX(1),toY(icc));
   ctx.strokeStyle='#4a6b9e'; ctx.lineWidth=2.5; ctx.stroke();
   ctx.beginPath(); ctx.moveTo(toX(0),toY(0)); ctx.lineTo(toX(1),toY(1));
-  ctx.strokeStyle='rgba(255,255,255,0.15)'; ctx.lineWidth=1; ctx.setLineDash([4,4]); ctx.stroke(); ctx.setLineDash([]);
-  ctx.beginPath(); ctx.arc(toX(rtrue),toY(rtrue),5,0,Math.PI*2); ctx.fillStyle='rgba(240,232,216,0.3)'; ctx.fill();
+  ctx.strokeStyle='rgba(26,37,64,0.15)'; ctx.lineWidth=1; ctx.setLineDash([4,4]); ctx.stroke(); ctx.setLineDash([]);
+  ctx.beginPath(); ctx.arc(toX(rtrue),toY(rtrue),5,0,Math.PI*2); ctx.fillStyle='rgba(26,37,64,0.3)'; ctx.fill();
   ctx.beginPath(); ctx.arc(toX(rtrue),toY(robs),6,0,Math.PI*2); ctx.fillStyle='#4a6b9e'; ctx.fill();
-  ctx.fillStyle='rgba(240,232,216,0.5)'; ctx.font='10px "JetBrains Mono",monospace'; ctx.textAlign='center';
+  ctx.fillStyle='rgba(26,37,64,0.5)'; ctx.font='10px "JetBrains Mono",monospace'; ctx.textAlign='center';
   ctx.fillText('True correlation', pad.l+cW/2, H-8);
   ctx.save(); ctx.translate(12,pad.t+cH/2); ctx.rotate(-Math.PI/2); ctx.fillText('Observed correlation',0,0); ctx.restore();
   [0,0.2,0.4,0.6,0.8,1.0].forEach(v=>{
@@ -1362,7 +1269,7 @@ function drawLMMBridgeCanvas(personVar, itemVar, residVar, overlap, gamma2, L, r
 
   // LEFT: stacked bar showing variance decomposition
   const leftW = W * 0.40;
-  ctx.fillStyle = 'rgba(255,255,255,0.03)';
+  ctx.fillStyle = 'rgba(26,37,64,0.03)';
   ctx.fillRect(0, 0, leftW, H);
 
   const barMaxH = 160;
@@ -1410,16 +1317,16 @@ function drawLMMBridgeCanvas(personVar, itemVar, residVar, overlap, gamma2, L, r
   ctx.fillText(residVar.toFixed(2), barX+35, barBaseY + 14);
 
   // Legend
-  ctx.fillStyle = 'rgba(240,232,216,0.5)'; ctx.font = '9px "Source Serif 4",serif';
+  ctx.fillStyle = 'rgba(26,37,64,0.5)'; ctx.font = '9px "Source Serif 4",serif';
   ctx.fillText('LMM variance decomposition', leftW/2, 14);
   ctx.fillText('(green = signal · amber/red = noise)', leftW/2, 26);
 
   // X axis
-  ctx.fillStyle = 'rgba(240,232,216,0.4)';
+  ctx.fillStyle = 'rgba(26,37,64,0.4)';
   ctx.fillText('→  overlap increases  →', leftW/2, H - 18);
 
   // Divider
-  ctx.strokeStyle = 'rgba(255,255,255,0.08)';
+  ctx.strokeStyle = 'rgba(26,37,64,0.08)';
   ctx.beginPath(); ctx.moveTo(leftW+8,12); ctx.lineTo(leftW+8,H-12); ctx.stroke();
 
   // RIGHT: reliability curve
@@ -1429,7 +1336,7 @@ function drawLMMBridgeCanvas(personVar, itemVar, residVar, overlap, gamma2, L, r
   const toX = trials => rightX + (Math.log10(trials)/3)*rightW;
   const toY = r => rightTop + (1-r)*rightH;
 
-  ctx.strokeStyle='rgba(255,255,255,0.06)'; ctx.lineWidth=1;
+  ctx.strokeStyle='rgba(26,37,64,0.06)'; ctx.lineWidth=1;
   [0.2,0.4,0.6,0.8,1.0].forEach(rv=>{
     ctx.beginPath(); ctx.moveTo(rightX,toY(rv)); ctx.lineTo(rightX+rightW,toY(rv)); ctx.stroke();
   });
@@ -1438,7 +1345,7 @@ function drawLMMBridgeCanvas(personVar, itemVar, residVar, overlap, gamma2, L, r
   });
   [0.7,0.9].forEach(target=>{
     ctx.beginPath(); ctx.moveTo(rightX,toY(target)); ctx.lineTo(rightX+rightW,toY(target));
-    ctx.strokeStyle='rgba(255,255,255,0.22)'; ctx.setLineDash([5,4]); ctx.stroke(); ctx.setLineDash([]);
+    ctx.strokeStyle='rgba(26,37,64,0.22)'; ctx.setLineDash([5,4]); ctx.stroke(); ctx.setLineDash([]);
   });
   ctx.beginPath();
   for(let li=0;li<=250;li++){
@@ -1449,7 +1356,7 @@ function drawLMMBridgeCanvas(personVar, itemVar, residVar, overlap, gamma2, L, r
   ctx.strokeStyle='#e8a020'; ctx.lineWidth=2.5; ctx.stroke();
   ctx.beginPath(); ctx.arc(toX(L),toY(rL),5,0,Math.PI*2); ctx.fillStyle='#e8a020'; ctx.fill();
 
-  ctx.fillStyle='rgba(240,232,216,0.5)'; ctx.font='10px "Source Serif 4",serif'; ctx.textAlign='center';
+  ctx.fillStyle='rgba(26,37,64,0.5)'; ctx.font='10px "Source Serif 4",serif'; ctx.textAlign='center';
   ctx.fillText('Reliability curve (γ² = '+gamma2.toFixed(2)+')', rightX+rightW/2, 18);
   ctx.fillText('Trials (log scale)', rightX+rightW/2, H-8);
   ctx.save(); ctx.translate(rightX-14,rightTop+rightH/2); ctx.rotate(-Math.PI/2); ctx.fillText('reliability',0,0); ctx.restore();

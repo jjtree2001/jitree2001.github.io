@@ -414,10 +414,7 @@
       Part 1 framed precision as the standard error of a mean: SE = σ/√N. The SE shrinks with N — this is the CLT result that makes large samples give sharp estimates. But σ is a property of our target population from which we have sampled, so we do not have it directly. We have to estimate it from the data, and the estimator is the within-group variance. <strong>MS<sub>within</sub> is ANOVA's estimate of σ²</strong> — pooled across groups on the assumption that each condition shares the same underlying noise level.
     </p>
     <p style="margin-top:0.8rem">
-      Once MS<sub>within</sub> is in hand, the SE of each group mean follows immediately: SE<sub>group</sub> = √(MS<sub>within</sub> / N). This is exactly the σ/√N formula from Part 1, with the estimated σ² dropped in. Larger N per group shrinks this SE just as the CLT predicted. The F-ratio then compares the spread of the group means (MS<sub>between</sub>) against that same noise level (MS<sub>within</sub>) — asking whether the means are further apart than their individual precision would suggest they should be by chance.
-    </p>
-    <p style="margin-top:0.8rem">
-      ANOVA is not a new framework. It is the Part 1 precision story packaged as a variance ratio: estimate σ² from the within-group scatter, use it to set the precision of each group mean, then ask whether the observed separation between means exceeds that precision.
+      Once MS<sub>within</sub> is in hand, the SE of each group mean follows immediately: SE<sub>group</sub> = √(MS<sub>within</sub> / N) — exactly the σ/√N formula from Part 1 with the estimated σ² dropped in. The F-ratio then compares the spread of the group means (MS<sub>between</sub>) against that noise level — asking whether the means are further apart than their individual precision would suggest they should be by chance. ANOVA is the Part 1 precision story packaged as a variance ratio.
     </p>
   </div>
 
@@ -498,9 +495,6 @@
       This is where the argument connects directly back to Part 1. The CLT is the reason we expect errors to be approximately Gaussian in the first place — when an observation is the sum of many small, independent influences and no single source of error dominates, the CLT guarantees the combined error is close to normal. That is also why, before running an ANOVA or a t-test, researchers actively prefer data whose distribution looks approximately normal: the loss function built into the method was chosen for that distribution. The decision to use squared deviations and the expectation that errors will be Gaussian are not two separate assumptions bolted onto the method — they are the same design decision, both resting on the CLT.
     </p>
     <p style="margin-top:0.8rem">
-      Squaring does something geometrically important: it penalises large deviations disproportionately. An error of 4 contributes 16 to the sum of squares, not just 4. This aggressive penalisation of large deviations is precisely what the normal distribution implies — under normality, large errors are exponentially rare, and the estimator should reflect that by being pulled strongly away from them. Under a heavier-tailed distribution, where large errors are more common, squaring overpenalises and a different strategy is superior.
-    </p>
-    <p style="margin-top:0.8rem">
       <strong>The consequence for ANOVA</strong> is that the normality assumption is doing two jobs simultaneously. It makes the F-distribution valid for generating p-values — the standard justification given in textbooks. But it also makes the sum-of-squares approach the <em>right way to measure deviation</em> in the first place. When normality fails, both justifications fail together: the p-values are wrong, and the SS partition is no longer the optimal way to quantify signal and noise.
     </p>
   </div>
@@ -529,14 +523,9 @@
 
   <div class="callout teal">
     <div class="callout-title">Aside — residuals and the "cancelling errors" picture from Part 1</div>
-    <p>Part 1 talked about random errors cancelling out when we average many observations. The word "residual" is the observable version of the same idea.</p>
-    <p style="margin-top:0.8rem">In the CLT framing, each observation is the true mean plus a random error: <span class="math-inline">Y<sub>i</sub> = μ + ε<sub>i</sub></span>. The ε<sub>i</sub>'s are what cancel — positive and negative values balance in expectation, and their average shrinks toward zero at rate 1/√N as N grows.</p>
-    <p style="margin-top:0.8rem">In practice we do not have μ. We estimate it with the sample mean x̄, and write <span class="math-inline">Y<sub>i</sub> = x̄ + r<sub>i</sub></span>. The r<sub>i</sub> here is a <em>residual</em>. By construction, residuals from a least-squares fit sum to <em>exactly</em> zero — not approximately, exactly — because x̄ was chosen to make that happen. That is what being the least-squares estimate of the mean means. An equivalent way to say the same thing in likelihood vocabulary: <strong>x̄ is the value that maximises the Gaussian likelihood of the data</strong>. Under normal errors, the two statements — "the residuals sum to exactly zero because x̄ was chosen to make that happen" and "x̄ is the value that maximises the Gaussian likelihood" — are the same equation, written in different vocabulary.</p>
-    <p style="margin-top:0.8rem">
-      — <strong>Errors ε<sub>i</sub></strong> are deviations from the true mean μ. They cancel <em>in expectation</em> (the CLT result from Part 1).<br>
-      — <strong>Residuals r<sub>i</sub></strong> are deviations from the fitted mean x̄. They cancel <em>mechanically</em> — they sum to zero exactly.
-    </p>
-    <p style="margin-top:0.8rem">Residuals are our best reconstruction of the errors, with one unavoidable caveat: the sample mean has eaten one piece of information out of the data. That is why we divide by N−1 rather than N when estimating variance from residuals — Bessel's correction from Part 1 exists because the residuals have one degree of freedom fewer than the errors did. The CLT says the errors <em>would</em> cancel if we could see them directly; residuals are what appear on the page once we fit x̄ and force the balance.</p>
+    <p>Part 1 talked about random errors cancelling out when we average many observations. The word "residual" is the observable version of the same idea. In the CLT framing each observation is the true mean plus a random error: <span class="math-inline">Y<sub>i</sub> = μ + ε<sub>i</sub></span>. The ε<sub>i</sub>'s are what cancel — positive and negative values balance in expectation, and their average shrinks toward zero at rate 1/√N as N grows.</p>
+    <p style="margin-top:0.8rem">In practice we do not have μ. We estimate it with the sample mean x̄, and write <span class="math-inline">Y<sub>i</sub> = x̄ + r<sub>i</sub></span>. The r<sub>i</sub> here is a <em>residual</em>. By construction, residuals from a least-squares fit sum to <em>exactly</em> zero — not approximately, exactly — because x̄ was chosen to make that happen. So <strong>errors ε<sub>i</sub></strong> are deviations from the true mean μ that cancel <em>in expectation</em> (the CLT result from Part 1); <strong>residuals r<sub>i</sub></strong> are deviations from the fitted mean x̄ that cancel <em>mechanically</em>, summing to zero exactly.</p>
+    <p style="margin-top:0.8rem">Residuals are our best reconstruction of the errors, with one unavoidable caveat: the sample mean has eaten one piece of information out of the data. That is why we divide by N−1 rather than N when estimating variance from residuals — Bessel's correction from Part 1 exists because the residuals have one degree of freedom fewer than the errors did.</p>
   </div>
 
   <h3>ANOVA as a special case of regression</h3>
@@ -704,7 +693,7 @@
   </div>
 
   <p>
-    Recognising this equivalence pays dividends immediately. Adding a continuous covariate to this equation gives you ANCOVA — the same model, one extra predictor. Multiplying two predictors together gives you an interaction term — the same arithmetic, now capturing whether the effect of one variable depends on the level of another. Factorial ANOVA, ANCOVA, and multiple regression are not separate techniques; they are the same linear model with different types of predictors. The F-ratio is just the test for whether the model explains significantly more variance than a flat line at the grand mean — in every case.
+    Recognising this equivalence pays dividends: factorial ANOVA, ANCOVA, and multiple regression are not separate techniques but the same linear model with different types of predictors. The F-ratio in every case is the test for whether the model explains significantly more variance than a flat line at the grand mean.
   </p>
 
   <h3>The slope is an estimate — and it wobbles</h3>
@@ -719,10 +708,6 @@
 
   <p>
     The same "it is an estimate" logic applies to the group means that feed into MS<sub>between</sub> in the first place. Those group means are themselves estimates, with standard errors that depend on each group's internal spread — and if the within-group variances differ, the means are estimated with different precisions. This is the homogeneity of variance assumption from §01 seen from another angle. It was introduced there as the condition under which pooling within-group variances into a single MS<sub>within</sub> is sensible; here we meet the same assumption mattering for a different reason, in the numerator — group means drawn from groups with different within-group spreads are not equally trustworthy estimates, and that is something ANOVA has no machinery to reflect.
-  </p>
-
-  <p>
-    To make the point concrete: consider two groups with the same N but very different within-group spreads — one tight, one diffuse. The mean from the diffuse group has a much larger standard error; it could shift substantially with a different sample. ANOVA enters both means into MS<sub>between</sub> with equal weight and then attempts to compensate by inflating the pooled denominator — a blunt correction that does not actually solve the underlying problem.
   </p>
 
   <div class="callout teal">
@@ -861,11 +846,11 @@
   <h3>The sphericity assumption — what it actually requires</h3>
 
   <p>
-    In a within-subjects design, the same participant contributes one score to each condition. Those scores are not independent of each other. A participant who is fast overall will tend to be fast in every condition; a participant who finds one condition hard may also find a related condition hard. Whenever we have repeated measures, we have to keep track of two things at once: how variable each condition is on its own, and how strongly each pair of conditions moves together across participants. This is what a <strong>covariance matrix</strong> records. It has one row and one column per condition. The diagonal entries are the variances within each condition (written σ², where σ is the standard deviation). The off-diagonal entries are the covariances between pairs of conditions (written ρ, here used as shorthand for the covariance between two conditions rather than a correlation in the narrow sense). With four conditions, the matrix is 4 × 4: four diagonal entries and twelve off-diagonal entries, though each off-diagonal pair is symmetric, so really six distinct pairwise numbers.
+    In a within-subjects design, the same participant contributes one score to each condition, and those scores are not independent. A participant who is fast overall will tend to be fast in every condition. Whenever we have repeated measures, we keep track of two things at once: how variable each condition is on its own, and how strongly each pair of conditions moves together across participants. This is what a <strong>covariance matrix</strong> records — diagonal entries are within-condition variances σ²; off-diagonal entries are pairwise covariances ρ.
   </p>
 
   <p>
-    Sphericity is a constraint on that covariance matrix. The formal statement is that the <em>variance of the differences</em> between any two conditions must be the same for every pair — if you compute (condition 1 − condition 2) across participants and measure its spread, and then do the same for (condition 1 − condition 3), and for every other pair, you must get the same number every time. This is a structural echo of the homogeneity of variance assumption from §01 — both exist because the test statistic is built by pooling several quantities (there, within-group variances pooled into MS<sub>within</sub>; here, the variances of pairwise condition differences pooled into the F-test for repeated measures), and pooling only produces a meaningful summary when the things being pooled are roughly equivalent. An equivalent and easier pattern to read off the matrix is <em>compound symmetry</em>: every condition has the same variance σ², and every pair of conditions has the same covariance ρ. Every diagonal entry is identical. Every off-diagonal entry is identical. The matrix labelled compound symmetry below is exactly this pattern.
+    Sphericity is a constraint on that matrix. The formal statement is that the <em>variance of the differences</em> between any two conditions must be the same for every pair — a structural echo of the homogeneity-of-variance assumption from §01 (both exist because the F-statistic is built by pooling several quantities). An equivalent and easier pattern to read off the matrix is <em>compound symmetry</em>: every condition shares the same variance σ², and every pair of conditions shares the same covariance ρ. The matrix labelled compound symmetry below is exactly this pattern.
   </p>
 
   <div class="two-col" style="margin:1.5rem 0">
@@ -905,11 +890,7 @@
   </p>
 
   <p>
-    The fix follows directly from naming the rigidity. If the model lets participants differ in baseline but not in slope, the obvious extension is to let the slope vary too. Adding a <strong>random slope</strong> does exactly this: each participant gets their own condition effect, drawn from a distribution with its own variance. The parallel-lines picture relaxes — every participant's line can now have its own steepness as well as its own starting point. This single extension does two things at once. It captures the individual differences in the effect that RM-ANOVA cannot see, and it relaxes compound symmetry from the inside of the model — because once subjects have their own slopes, the variances at different conditions and the covariances between them are no longer constrained to be equal.
-  </p>
-
-  <p>
-    Random slopes are a capability RM-ANOVA does not have, and this is where the two frameworks actually diverge. If you never need to fit slopes — if a shared per-subject intercept really is all the individual-level information the data asks for, and if the design is balanced and complete — RM-ANOVA and the random-intercepts LMM give the same answer and there is nothing to choose between them. The case for LMMs is not that they do ANOVA "better". It is that they generalise, and allowing each person an individual slope is the most common and most important way that generalisation shows up in practice.
+    The fix follows directly from naming the rigidity. If the model lets participants differ in baseline but not in slope, the obvious extension is to let the slope vary too. Adding a <strong>random slope</strong> does exactly this: each participant gets their own condition effect, drawn from a distribution with its own variance. The parallel-lines picture relaxes — every participant's line can now have its own steepness as well as its own starting point. This single extension does two things at once: it captures the individual differences in the effect that RM-ANOVA cannot see, and it relaxes compound symmetry from the inside of the model. Random slopes are a capability RM-ANOVA simply does not have, and this is where the two frameworks actually diverge.
   </p>
 
   <div class="recall-box">
@@ -920,15 +901,7 @@
   <h3 class="violet">The deeper move — LMMs let us stop aggregating</h3>
 
   <p>
-    Random slopes change more than the sphericity story. Almost everything in this resource up to here has been about generating <em>summary statistics</em> — means for our participants collapsed across trials, differences of means to consider experimental effects, ratios of variances to compute precision. That was not arbitrary. The CLT is what justified it: with enough independent observations, sample means behave predictably, so inference at the level of aggregates was safe. But every aggregation step threw information away, and every summary came with its own chain of assumptions — independence, normality of residuals, homogeneity, sphericity.
-  </p>
-
-  <p>
-    Linear mixed models let us stop aggregating. Instead of reducing each participant to one or two cell means and then running an F-test on the reduced numbers, we can fit the model to the individual trials directly. Each participant's condition effect becomes a slope estimated from the full set of their trial-level observations — not a straight line between two cell means, but a regression line through the complete distribution of their responses. The within-condition variability that RM-ANOVA would have averaged away is information the model uses to tell how precisely each person's slope is known. A key intuition to take away here for LMMs is that our ultimate goal is to compute estimates of things and we strive to achieve the best <em>precision</em> for such estimates (remember me talking about blurry lines?) — the message throughout so far, the impression you should get, is that LMMs naturally lead to improved precision in the main, if for no other reason than you aren't throwing away information.
-  </p>
-
-  <p>
-    ANOVA asked: is the difference between group means large enough relative to the pooled noise? LMMs ask: what is the structure of the data at the level they were actually generated — trial by trial, participant by participant — and what does that tell us about the effect? The F-ratio is one summary drawn from a richer fit.
+    Random slopes change more than the sphericity story. Up to this point everything has been about generating summary statistics — means collapsed across trials, differences of means, ratios of variances. The CLT licensed that move at every step, but every aggregation also threw information away. Linear mixed models let us stop aggregating: instead of reducing each participant to one or two cell means and running an F-test on the reduced numbers, we fit the model to the individual trials directly. Each participant's condition effect becomes a slope estimated from the full set of their trial-level observations — a regression line through the complete distribution of their responses. The within-condition variability that RM-ANOVA would have averaged away is information the model uses to tell how precisely each person's slope is known. LMMs naturally lead to improved precision, if for no other reason than they do not throw information away.
   </p>
 
   <h3 class="violet">Other places the equivalence breaks down</h3>
@@ -1072,7 +1045,7 @@
   </p>
 
   <p>
-    The consequence for inference is practical. Analyses that ignore item variance tacitly treat the items actually tested as the complete population of items, rather than as a sample drawn from a larger pool — which they almost always are. That produces standard errors that are too narrow and p-values that are too small, because the model is not crediting the item-level variability that a replication with different stimuli would produce. Modelling items explicitly forces the condition effect to hold across participants <em>and</em> across the item sample before it is declared reliable — the inference generalises to both populations, not just to the participant one. The take home message is always the same: we use a better model to get better estimates based on better precision.
+    The consequence for inference is practical. Analyses that ignore item variance tacitly treat the items actually tested as the complete population of items, rather than as a sample drawn from a larger pool — which they almost always are. That produces standard errors that are too narrow and p-values that are too small, because the model is not crediting the item-level variability that a replication with different stimuli would produce. Modelling items explicitly forces the condition effect to hold across participants <em>and</em> across the item sample before it is declared reliable — the inference generalises to both populations, not just to the participant one. The take home message is always the same: we use a better model to get better estimates based on better precision. (The same crossed-random-effects machinery is what <a href="reliability_final.html#section4">B3 §04 — A Better Measure of Reliability</a> picks up to compute Rouder's signal-to-noise ratio γ² directly from a fitted LMM's variance components — the bridge from inference back to measurement reliability.)
   </p>
 
   <p>
@@ -1253,15 +1226,6 @@
     </p>
   </div>
 
-  <div class="callout red">
-    <div class="callout-title">What to take away</div>
-    <p>
-      <strong>ANOVA:</strong> strong assumptions about independence and error structure — often violated.<br><br>
-      <strong>LMM:</strong> weaker assumptions about dependence structure — but still a model with distributional assumptions that must be checked. LMMs solve "my data are clustered." The rest of the residual story — what the CLT does and does not bail you out of — is unpacked in the callout above.<br><br>
-      I hope by this point it is clear now that LMMs can provide substantial structural upgrades over ANOVA. Largely because LMMs move you closer to the structure of the data, not all the way to it. You still have to check residuals, model the right dependencies, and ensure the likelihood is appropriate for the data you actually have.<br><br>
-      The progression is not about statistical fashion — it is about building models that increasingly match how the data were actually generated.
-    </p>
-  </div>
 </section>
 
 <!-- ===== PART MARKER 3 ===== -->
@@ -1373,19 +1337,8 @@
   </p>
 
   <p>
-    The result is a person-level estimate θ̂ that comes with a known standard error — the inverse of the square root of the total information at that point on the trait scale. This is the precision of the measurement, not just assumed but calculated. In regions of the trait scale where the test has many high-discrimination items, estimates are sharp. Where the test has few items or weak items, estimates are blurry — and the model tells you so.
+    The result is a person-level estimate θ̂ that comes with a known, location-specific standard error — the inverse of the square root of the total information at that point on the trait scale. Where the test has many high-discrimination items, estimates are sharp; where it has few or weak items, estimates are blurry, and the model tells you so. CTT cannot do this: a raw score of 18/30 carries a single assumed SE constant across the trait range, even though two people with the same total could have got there from very different subsets of items.
   </p>
-
-  <div class="two-col">
-    <div class="info-card" style="border-top:3px solid var(--violet)">
-      <div class="info-card-title violet">What CTT/summed scores cannot tell you</div>
-      <p>A raw score of 18/30 carries no information about how precisely it estimates the underlying trait level. Two people with the same summed score could have very different true trait levels if they got different subsets of items correct. The SE of a CTT score is assumed constant across the trait range.</p>
-    </div>
-    <div class="info-card" style="border-top:3px solid var(--teal)">
-      <div class="info-card-title">What IRT provides</div>
-      <p>Each θ̂ estimate has its own SE, varying across the trait range according to how much information the test provides there. Measurement precision is not assumed — it is calculated. This connects directly back to the SE logic in Part 1: precision of the measurement has the same structure as precision of the mean estimate.</p>
-    </div>
-  </div>
 
   <div class="callout" style="border-left-color:var(--amber);background:var(--amber-pale)">
     <div class="callout-title">A note on PCA and other summary methods</div>
@@ -1395,11 +1348,7 @@
   <h3 class="violet">The connection upward: measurement precision feeds statistical power</h3>
 
   <p>
-    Poor measurement at Level 1 propagates upward to Level 2. When a summed score is a noisy proxy for the true latent trait, the person-level scores used in ANOVA or LMM carry extra measurement error on top of whatever natural variability exists in the trait itself. That extra error shows up in the statistical model as additional within-group variance — noise that obscures the condition effect, inflates MS<sub>within</sub>, suppresses F, and reduces statistical power. This is the same chain Part 1 established: σ at the item level propagates through σ/√k at the person level, and from there into the SE of every group mean the inferential model consumes. Unreliable measurement at the bottom of the chain weakens every stage above it — no matter how sophisticated the statistical model at the top.
-  </p>
-
-  <p>
-    Improving measurement quality — whether by adding more items (the LLN route), selecting higher-discrimination items (the IRT route), or matching item difficulty to the target population — reduces this contamination. Better measurement means cleaner person-level estimates, smaller residuals in the LMM, and sharper inference at the group level. Precision compounds across levels.
+    Poor measurement at Level 1 propagates upward to Level 2. When a summed score is a noisy proxy for the true latent trait, the person-level scores used in ANOVA or LMM carry extra measurement error on top of whatever natural variability exists in the trait itself. That extra error shows up in the statistical model as additional within-group variance — noise that obscures the condition effect, inflates MS<sub>within</sub>, suppresses F, and reduces statistical power. Improving measurement quality — by adding more items (the LLN route), selecting higher-discrimination items (the IRT route), or matching item difficulty to the target population — reduces this contamination. Precision compounds across levels: σ at the item level propagates through σ/√k at the person level, and from there into the SE of every group mean the inferential model consumes. Unreliable measurement at the bottom of the chain weakens every stage above it.
   </p>
 
   <div class="callout teal">
@@ -1980,3 +1929,4 @@ setTimeout(()=>{
 </script>
 </body>
 </html>
+

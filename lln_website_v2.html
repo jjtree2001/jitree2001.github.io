@@ -603,7 +603,6 @@
     <p style="margin-top:0.6rem"><strong>A true variance σ²</strong> — a measure of how much individuals differ from that mean, computed as the average <em>squared</em> deviation from μ. We more often work with its square root, the <strong>true standard deviation σ</strong>, because σ is expressed in the same units as the data itself: if the trait is measured in milliseconds, σ is in milliseconds, while σ² is in milliseconds². Variance and standard deviation carry the same information — σ² is the bookkeeping form, σ is the readable form.</p>
     <p style="margin-top:0.8rem">Both μ and σ are real features of the population — facts about the world, present whether or not anyone samples them. The CLT tells us how well we can estimate μ from a sample. It does not collapse σ away — true individual differences remain, and quantifying them is a separate scientific goal we return to in Part 2.</p>
     <p style="margin-top:0.8rem">A wider point worth flagging: the fact that μ and σ² are <em>independent</em> parameters of the Gaussian — knowing one tells you nothing about the other — is itself a property of the Gaussian, not of distributions in general. Most other distributions you will meet in behavioural data (Bernoulli, binomial, Poisson) tie the variance to the mean. <a href="generativestats.html#independence">Part 3 §03</a> develops this directly and explains why it is the property that makes ANOVA work for Gaussian data and breaks for the rest.</p>
-    <p style="margin-top:0.8rem">Before we leave σ behind, a point to keep in mind: σ will resurface almost immediately in a <em>second</em> role. Not as a target of estimation in its own right, but as the quantity that enters the formula for how <em>precisely</em> we can estimate μ from a finite sample. The same σ will therefore be doing two jobs in what follows — describing real variability between individuals in the population, and governing the error in our estimate of the mean. These are different things, and teaching routinely muddles them, so we will keep them apart deliberately.</p>
   </div>
 
   <h3>What is the standard error, and why does it shrink?</h3>
@@ -630,7 +629,7 @@
   <h3>Two kinds of variability: world vs. estimation error</h3>
 
   <p>
-    The σ that appears in SE = σ/√n is the same σ introduced in the <em>Mean vs. Variance</em> box above — the true standard deviation of the population. Here, however, it plays a different role, and the distinction is worth noting. σ and SE may look similar on the page: both are standard deviations, both are associated with a mean, and σ appears in both formulas. Yet they describe fundamentally different kinds of uncertainty. σ represents the real variability in the population, while SE measures the error in our estimate of μ. One describes how individuals differ; the other describes the uncertainty in our inference procedure — which is why σ is fixed while SE decreases as the sample size increases.
+    σ and SE may look similar on the page — both are standard deviations, both are associated with a mean, and σ appears in both formulas — but they describe fundamentally different kinds of uncertainty.
   </p>
 
   <div class="def-grid" style="margin:1rem 0 0.3rem 0; display:grid; grid-template-columns: minmax(13rem,max-content) 1fr; gap: 0.9rem 1.3rem; font-size:0.95rem; align-items:start">
@@ -779,20 +778,10 @@
     <div style="margin-top:1.2rem; background:#111; border-radius:4px; padding:1.1rem 1.2rem; font-size:0.9rem; color:#c8c0b4; line-height:1.7; font-family: var(--serif);">
       <span style="color:#e8a44a; font-family:var(--sans); font-size:0.65rem; font-weight:700; letter-spacing:0.15em; text-transform:uppercase; display:block; margin-bottom:0.7rem;">Two levers, two different jobs</span>
       <p style="margin:0 0 0.7rem 0;">
-        <strong style="color:#e8a44a">n</strong> (sample size per experiment) sets the width of the <em>right panel</em> — the sampling distribution of single-experiment means has spread σ/√n. Raise <span style="font-family:var(--mono)">n</span> and that histogram narrows: each individual experiment's mean estimate is sharper.
-      </p>
-      <p style="margin:0 0 1rem 0;">
-        <strong style="color:#e8a44a">k</strong> (number of experiments) does two things. It <em>reveals</em> the shape of that sampling distribution — as <span style="font-family:var(--mono)">k</span> grows the histogram fills in and its Gaussian form becomes visible (CLT). And it sharpens our <em>pooled</em> estimate of μ: the Current mean estimate uses all <span style="font-family:var(--mono)">k·n</span> observations, so its uncertainty shrinks like σ/√(k·n). That is the SE reported in the chip, and that is why it keeps decreasing.
-      </p>
-      <span style="color:#e8a44a; font-family:var(--sans); font-size:0.65rem; font-weight:700; letter-spacing:0.15em; text-transform:uppercase; display:block; margin-bottom:0.7rem;">Reading the chips above</span>
-      <p style="margin:0 0 0.7rem 0;">
-        <strong style="color:#6bbbbf">Current mean estimate</strong> — running average of the sample means. Converges on μ = 1.0 as <span style="font-family:var(--mono)">k</span> grows.
-      </p>
-      <p style="margin:0 0 0.7rem 0;">
-        <strong style="color:#aaa">Population SD (σ)</strong> — spread of raw observations pooled across experiments. Wobbly at first, then stabilises at the true σ = 1.0 as observations accumulate; does not shrink further. This is variability in the <em>world</em> — a property of the population, not an inference error.
+        <strong style="color:#e8a44a">n</strong> (sample size per experiment) sets the width of the right panel — the sampling distribution of single-experiment means has spread σ/√n. Raise <span style="font-family:var(--mono)">n</span> and that histogram narrows. <strong style="color:#e8a44a">k</strong> (number of experiments) does two things: it <em>reveals</em> the shape of that sampling distribution as the histogram fills in (the CLT made visible), and it sharpens the pooled estimate of μ, whose uncertainty shrinks like σ/√(k·n).
       </p>
       <p style="margin:0;">
-        <strong style="color:#7ec87e">SE of μ estimate</strong> — σ̂/√(k·n), the uncertainty in the Current mean estimate. Steadily decreases as <span style="font-family:var(--mono)">k</span> grows. This is <em>inference error</em> — it shrinks as we collect more data. Note this is <em>not</em> the visual width of the right panel (which stays at σ/√n); it is the SE of our pooled μ estimate.
+        <strong style="color:#6bbbbf">Current mean estimate</strong> converges on μ = 1.0 as <span style="font-family:var(--mono)">k</span> grows. <strong style="color:#aaa">Population SD (σ)</strong> stabilises at the true σ = 1.0 — variability in the <em>world</em>, not inference error. <strong style="color:#7ec87e">SE of μ estimate</strong> = σ̂/√(k·n) — inference error, which shrinks as data accumulate. Note that this last one is <em>not</em> the visual width of the right panel (which stays at σ/√n); it is the SE of the pooled estimate.
       </p>
     </div>
   </div>
@@ -917,24 +906,6 @@
     </p>
   </div>
 
-  <h3>Why the weird interpretation is the honest one</h3>
-
-  <p>
-    It is tempting to read all of this as a bookkeeping technicality — to note the unusual interpretation and then revert, in practice, to treating the CI as "probably where μ is." But the weirdness is pointing at something real. The frequentist framework is committed to an austere ontology: probability is a long-run frequency property of a repeatable procedure, not a degree of belief about a fixed-but-unknown quantity. Under that commitment, μ is not a random variable. The interval is. And the only probability statement you get to make is about the <em>behaviour of the procedure</em> — not about the truth.
-  </p>
-
-  <p>
-    This forces two things to be <em>binary</em> at the same time, and it is worth keeping them distinct. The <em>procedural assumptions</em> — that the sampling distribution of the mean really is approximately normal, that observations are independent, that the sample SD is a reasonable substitute for σ — either hold for the population and design you drew from, or they do not. There is no partial credit; you were sampling from the right kind of world, or you were not. Separately, the <em>realisation on your single run</em> is also binary: μ is either inside the interval you just computed, or it is outside. The 95% does not apply to this interval. It applies to the long-run behaviour of the procedure across hypothetical repetitions.
-  </p>
-
-  <p>
-    A direct consequence follows, and it is worth stating plainly: under this framework, when you are wrong, you are <em>totally</em> wrong. The interval either contains μ or it does not. There is no "close to μ" partial credit for a near miss, no sliding scale of being wrong by a little. The procedure has an advertised coverage rate of 95%, but the output on any particular run is one of two things — a hit or a miss — and you have no way of telling which kind yours is without knowing μ, which by definition you do not. You ran a procedure whose long-run behaviour is well-characterised; you received one draw from that long-run behaviour; and the event on that draw is binary. This is part of why the Bayesian alternative, which attaches probability directly to μ and so admits degrees of being close, feels so natural to people the first time they meet it.
-  </p>
-
-  <p>
-    The substitute-then-adjust structure is the price of inference without priors. You construct the interval by plugging sample estimates into the CLT's formula (otherwise you have nothing to work with), and you interpret it under the rule that those estimates were a calculation device, not a claim of equality with the population values. The resulting interval is useful and principled — but its formal frequentist interpretation is narrower than the intuitive, Bayesian-flavoured reading many people reach for on first encounter.
-  </p>
-
   <div class="foreshadow-box">
     <span class="recall-label" style="font-family:var(--sans);font-size:0.6rem;font-weight:700;letter-spacing:0.2em;text-transform:uppercase;color:var(--teal);margin-bottom:0.5rem;display:block">Looking ahead</span>
     The CLT + CI machinery is what makes t-tests and ANOVA work — the next section shows how the same logic of "mean ± precision" generates the t-statistic and the F-ratio. The odd interpretation of a single CI is the same odd interpretation that sits behind every p-value you will ever compute.
@@ -1037,19 +1008,7 @@
   </p>
 
   <p>
-    Although the LLN gives us some sense that the observed individual mean is <em>probably</em> a reasonable proxy for the individual's <em>true score</em>, there are a bunch of assumptions at play under the hood. Three are worth touching on.
-  </p>
-
-  <p>
-    <strong>First</strong>, that errors across items are uncorrelated and random — the <em>key</em> assumption of the LLN. For psychometric measures this <em>may not be true</em>: items with similar wording, shared response formats, or carry-over effects from one item to the next can introduce correlated error, at which point the cancelling logic of the LLN no longer holds.
-  </p>
-
-  <p>
-    <strong>Second</strong>, that all items contribute to the observed estimate of a participant's ability <em>equally</em>. This is called <em>tau-equivalence</em>, and we return to it in a later discussion. If some items are much stronger or weaker indicators than others, the averaging is not cleanly estimating one latent quantity.
-  </p>
-
-  <p>
-    <strong>Third</strong>, that all the numbers we are combining represent a <em>single construct</em> — for instance, the participant's singular latent ability on whatever is being tested. If this is wrong, we are combining apples and pears and thinking we have only apples, when in fact we have a fruit salad.
+    Although the LLN gives us some sense that the observed individual mean is <em>probably</em> a reasonable proxy for the individual's <em>true score</em>, this rests on a stack of assumptions: that errors across items are uncorrelated (independence — the key LLN assumption), that all items contribute equally (<em>tau-equivalence</em>), and that the items collectively represent a single construct rather than a fruit-salad mix of related-but-distinct ones. Each assumption can fail in real psychometric data — items with similar wording introduce correlated error; items with very different loadings violate tau-equivalence; multidimensional scales mix several latent quantities into one sum. All three are unpacked properly in <a href="psychometrics_teaching_v2.html#part-a">B2 §A</a>; the point here is just that the LLN-based reliability story is contingent.
   </p>
 
   <p>
@@ -1173,22 +1132,11 @@
   <h3>Error is not one thing</h3>
 
   <p>
-    Alongside the observations of the LLN and the CLT is a wider psychometric philosophy called <em>Classical test theory</em> which I will discuss in a later website. For now it is worth highlighting another key underlying assumption. Classical test theory bundles all imprecision into a single term — E, the error. This was evident throughout this web-page: that measurement error is out there, but you can try to deal with it through repeated sampling. But in practice, "error" is not a single undifferentiated quantity. The deviation between an observed score and some true value can come from many sources simultaneously:
+    Alongside the LLN/CLT machinery sits the broader Classical Test Theory framework, which bundles all imprecision into a single error term E. In practice E is not one thing — observed scores deviate from true values for multiple structured reasons (item-level differences in difficulty, person-level baselines, session-level fluctuations, context effects), and rolling them into a single E discards information the analyst often has a priori. Models that partition these sources separately — Linear Mixed Models (Part 2 §04, partitioning person / item / residual variance) and Generalisability Theory — sit closer to the structure of the data. The full CTT apparatus is developed in <a href="psychometrics_teaching_v2.html#part-a">B2 §A</a> and <a href="reliability_final.html">B3</a>.
   </p>
 
-  <div class="two-col">
-    <div class="info-card">
-      <div class="info-card-title">Sources of error in a typical study</div>
-      <p><strong>Item variance</strong> — some items are harder, more ambiguous, or tap slightly different sub-facets of the construct. <strong>Person variance</strong> — individuals differ in their baseline levels and in how consistently they respond. <strong>Session variance</strong> — performance fluctuates across time of day, fatigue, motivation. <strong>Context variance</strong> — the experimenter, the setting, the order of conditions all introduce systematic differences that CTT folds silently into E.</p>
-    </div>
-    <div class="info-card">
-      <div class="info-card-title">Why it matters</div>
-      <p>When error comes from multiple structured sources, rolling them into a single E is not just imprecise — it is actively misleading. Some of what CTT calls "error" is actually systematic and predictable variation. A model that knows where the variance comes from can separate these sources, producing sharper estimates at each level. This is the core motivation for Linear Mixed Models (which partition person, item, and residual variance) and for Generalizability Theory (which formally estimates variance components from each source).</p>
-    </div>
-  </div>
-
   <p>
-    The same logic applies to the inference chain built in this page. When the LLN averages across items or across people, it cancels <em>random</em> error. But if some of the apparent error is actually structured — the same items always harder, the same people always more variable — averaging doesn't cancel it, it obscures it. The error term in CTT is not a scientific description of noise; it is a confession that the model does not know where the noise came from. What is ironic is that researchers often <em>do</em> know about sources of this error <em>a priori</em> — that is, they know about different participants, or that participants have repeated some things but not others, or that the means they derived come from a certain set of items, etc. So why not <em>specify</em> such parameter details in your <em>statistical model</em>? This will be a major theme for why we want to argue to step away from ANOVA in the first place!
+    The same logic applies to the inference chain built in this page. When the LLN averages across items or across people, it cancels <em>random</em> error. But if some of the apparent error is actually structured — the same items always harder, the same people always more variable — averaging doesn't cancel it, it obscures it. Researchers often <em>do</em> know about sources of this error <em>a priori</em>: that participants have repeated some things but not others, that the means came from a certain set of items, etc. The case for stepping away from ANOVA toward LMMs in Part 2 is essentially the case for putting that prior knowledge into the model rather than burying it in E.
   </p>
 
   <div class="callout callout-teal">
@@ -1673,3 +1621,4 @@ setTimeout(()=>{
 </script>
 </body>
 </html>
+

@@ -1,0 +1,705 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Linear Mixed Models Workshop — Pre-workshop Questionnaire</title>
+<style>
+  :root {
+    --ink: #1a1a1a;
+    --muted: #5b5b5b;
+    --line: #d8d8d8;
+    --accent: #2a4d7a;
+    --soft: #f4f4f1;
+    --warn: #c0552a;
+  }
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0;
+    padding: 0;
+    background: #fafaf7;
+    color: var(--ink);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    font-size: 16px;
+    line-height: 1.55;
+  }
+  .wrap {
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 48px 28px 96px;
+  }
+  header {
+    border-bottom: 1px solid var(--line);
+    padding-bottom: 18px;
+    margin-bottom: 32px;
+  }
+  h1 {
+    font-size: 1.6rem;
+    margin: 0 0 6px;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+  }
+  header .sub {
+    color: var(--muted);
+    font-size: 0.95rem;
+  }
+  .intro {
+    background: var(--soft);
+    border-left: 3px solid var(--accent);
+    padding: 14px 18px;
+    margin-bottom: 36px;
+    font-size: 0.95rem;
+  }
+  .intro p { margin: 0 0 8px; }
+  .intro p:last-child { margin-bottom: 0; }
+  section {
+    margin-bottom: 36px;
+  }
+  section > h2 {
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--accent);
+    font-weight: 600;
+    margin: 0 0 4px;
+  }
+  section > .section-sub {
+    color: var(--muted);
+    font-size: 0.9rem;
+    margin: 0 0 18px;
+    padding-bottom: 14px;
+    border-bottom: 1px solid var(--line);
+  }
+  .q {
+    margin-bottom: 24px;
+  }
+  .q .label {
+    display: block;
+    font-weight: 500;
+    margin-bottom: 10px;
+  }
+  .q .help {
+    display: block;
+    color: var(--muted);
+    font-size: 0.88rem;
+    margin: -6px 0 10px;
+  }
+  .num {
+    display: inline-block;
+    color: var(--muted);
+    font-variant-numeric: tabular-nums;
+    margin-right: 6px;
+    font-weight: 500;
+  }
+  .opts {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .opt {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 8px 10px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background 0.1s;
+    border: 1px solid transparent;
+  }
+  .opt:hover {
+    background: #efeee9;
+  }
+  .opt input[type="radio"],
+  .opt input[type="checkbox"] {
+    margin-top: 3px;
+    accent-color: var(--accent);
+    flex-shrink: 0;
+  }
+  .opt span {
+    flex: 1;
+  }
+  input[type="text"], textarea {
+    width: 100%;
+    border: 1px solid var(--line);
+    background: white;
+    padding: 9px 11px;
+    font: inherit;
+    color: inherit;
+    border-radius: 4px;
+    resize: vertical;
+  }
+  input[type="text"]:focus, textarea:focus {
+    outline: none;
+    border-color: var(--accent);
+    box-shadow: 0 0 0 2px rgba(42, 77, 122, 0.15);
+  }
+  textarea { min-height: 70px; }
+
+  .actions {
+    margin-top: 40px;
+    padding-top: 24px;
+    border-top: 1px solid var(--line);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  button {
+    font: inherit;
+    padding: 9px 16px;
+    border: 1px solid var(--accent);
+    background: var(--accent);
+    color: white;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  button.secondary {
+    background: white;
+    color: var(--accent);
+  }
+  button:hover { opacity: 0.9; }
+  button:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+
+  #output-area {
+    display: none;
+    margin-top: 24px;
+    padding: 18px;
+    background: white;
+    border: 1px solid var(--line);
+    border-radius: 4px;
+  }
+  #output-area h3 {
+    margin: 0 0 10px;
+    font-size: 1rem;
+  }
+  #output-text {
+    width: 100%;
+    min-height: 240px;
+    font-family: "SF Mono", Consolas, Menlo, monospace;
+    font-size: 0.85rem;
+    line-height: 1.45;
+    white-space: pre;
+  }
+  .output-actions {
+    margin-top: 12px;
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+  .toast {
+    display: inline-block;
+    margin-left: 8px;
+    color: var(--accent);
+    font-size: 0.85rem;
+    opacity: 0;
+    transition: opacity 0.2s;
+  }
+  .toast.show { opacity: 1; }
+  .send-status {
+    display: inline-block;
+    padding: 6px 12px;
+    border-radius: 4px;
+    font-size: 0.88rem;
+    margin-left: 2px;
+    opacity: 0;
+    transition: opacity 0.2s;
+  }
+  .send-status.show { opacity: 1; }
+  .send-status.sending { color: var(--muted); }
+  .send-status.success { color: #2a7a2a; background: #e6f4e6; }
+  .send-status.error   { color: var(--warn); background: #fbeae0; }
+  .alt-line {
+    margin: 10px 0 0;
+    font-size: 0.88rem;
+    color: var(--muted);
+  }
+  .matrix {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+  .matrix-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 6px 10px;
+    border-radius: 4px;
+  }
+  .matrix-row:hover {
+    background: #efeee9;
+  }
+  .matrix-label {
+    min-width: 70px;
+    font-weight: 500;
+    flex-shrink: 0;
+  }
+  .matrix-opts {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px 14px;
+    flex: 1;
+  }
+  .opt-inline {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    cursor: pointer;
+    font-size: 0.92rem;
+    padding: 2px 0;
+  }
+  .opt-inline input[type="radio"] {
+    accent-color: var(--accent);
+    margin: 0;
+  }
+  @media (max-width: 540px) {
+    .matrix-row { flex-direction: column; align-items: flex-start; gap: 4px; }
+    .matrix-label { min-width: 0; }
+  }
+
+  footer {
+    margin-top: 60px;
+    padding-top: 20px;
+    border-top: 1px solid var(--line);
+    color: var(--muted);
+    font-size: 0.82rem;
+  }
+
+  @media print {
+    body { background: white; }
+    .actions, #output-area, footer { display: none; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <h1>Linear Mixed Models Workshop</h1>
+  <div class="sub">Pre-workshop questionnaire &mdash; takes about 4 minutes</div>
+</header>
+
+<div class="intro">
+  <p>This short survey helps us pitch the workshop at the right level. It asks about the kinds of studies you typically run and the statistical methods you've used. Most questions let you tick more than one option &mdash; do, where it fits, because you've probably run several kinds of designs across your work.</p>
+  <p>When you're done, click <strong>Generate my responses</strong> at the bottom to review your answers, then click <strong>Send to Jeremy</strong> and they'll be emailed straight across.</p>
+</div>
+
+<form id="form">
+
+<!-- SECTION A: Statistical methods -->
+<section>
+  <h2>A. Statistical methods you've used</h2>
+  <div class="section-sub">Tick what you've used yourself &mdash; even one-off use counts.</div>
+
+  <div class="q">
+    <span class="label"><span class="num">1.</span>Which of the following have you used yourself? <em>(tick all that apply)</em></span>
+    <div class="opts">
+      <label class="opt"><input type="checkbox" name="q1" value="t-test"><span>t-tests</span></label>
+      <label class="opt"><input type="checkbox" name="q1" value="ANOVA-1way"><span>One-way ANOVA</span></label>
+      <label class="opt"><input type="checkbox" name="q1" value="ANOVA-factorial"><span>Factorial / two-way ANOVA</span></label>
+      <label class="opt"><input type="checkbox" name="q1" value="ANOVA-RM"><span>Repeated-measures ANOVA</span></label>
+      <label class="opt"><input type="checkbox" name="q1" value="ANCOVA"><span>ANCOVA</span></label>
+      <label class="opt"><input type="checkbox" name="q1" value="Regression"><span>Linear / multiple regression</span></label>
+      <label class="opt"><input type="checkbox" name="q1" value="Logistic"><span>Logistic regression</span></label>
+      <label class="opt"><input type="checkbox" name="q1" value="GLM"><span>Generalised linear models (e.g. Poisson, gamma)</span></label>
+      <label class="opt"><input type="checkbox" name="q1" value="Nonparametric"><span>Non-parametric tests (Wilcoxon, Mann&ndash;Whitney&hellip;)</span></label>
+      <label class="opt"><input type="checkbox" name="q1" value="Bayesian"><span>Bayesian methods</span></label>
+      <label class="opt"><input type="checkbox" name="q1" value="SEM"><span>SEM / factor analysis</span></label>
+      <label class="opt"><input type="checkbox" name="q1" value="None1"><span>None of these yet</span></label>
+    </div>
+  </div>
+
+  <div class="q">
+    <span class="label"><span class="num">2.</span>Have you ever fitted a linear mixed model (a.k.a. multilevel model, hierarchical linear model)?</span>
+    <div class="opts">
+      <label class="opt"><input type="radio" name="q2" value="Never-heard"><span>Never heard of them</span></label>
+      <label class="opt"><input type="radio" name="q2" value="Heard"><span>Heard of them, never used one</span></label>
+      <label class="opt"><input type="radio" name="q2" value="Read"><span>Read about them but haven't fitted one myself</span></label>
+      <label class="opt"><input type="radio" name="q2" value="Tried"><span>Tried once or twice</span></label>
+      <label class="opt"><input type="radio" name="q2" value="Regular"><span>Use them regularly</span></label>
+    </div>
+  </div>
+
+  <div class="q">
+    <span class="label"><span class="num">3.</span>The phrase "random effect" &mdash; what's your comfort level?</span>
+    <div class="opts">
+      <label class="opt"><input type="radio" name="q3" value="Nothing"><span>Means nothing to me yet</span></label>
+      <label class="opt"><input type="radio" name="q3" value="Vague"><span>Vaguely familiar &mdash; couldn't define it</span></label>
+      <label class="opt"><input type="radio" name="q3" value="Could-explain"><span>I could explain it in plain English</span></label>
+      <label class="opt"><input type="radio" name="q3" value="Confident"><span>Confident I'd use it correctly in a model</span></label>
+    </div>
+  </div>
+
+  <div class="q">
+    <span class="label"><span class="num">4.</span>Do you think of ANOVA as a special case of linear regression?</span>
+    <span class="help">Either answer is fine &mdash; this is just to determine how familiar you may be with the fundamental principles of the GLM framework.</span>
+    <div class="opts">
+      <label class="opt"><input type="radio" name="q4" value="Yes4"><span>Yes &mdash; they're the same model with different framings</span></label>
+      <label class="opt"><input type="radio" name="q4" value="No4"><span>No &mdash; they feel like separate things</span></label>
+      <label class="opt"><input type="radio" name="q4" value="Not-thought"><span>I hadn't thought about it that way before</span></label>
+    </div>
+  </div>
+
+  <div class="q">
+    <span class="label"><span class="num">5.</span>What is your familiarity with JAMOVI and/or R?</span>
+    <div class="matrix">
+      <div class="matrix-row">
+        <span class="matrix-label">JAMOVI</span>
+        <div class="matrix-opts">
+          <label class="opt-inline"><input type="radio" name="q5_jamovi" value="Never"><span>Never used</span></label>
+          <label class="opt-inline"><input type="radio" name="q5_jamovi" value="Tried"><span>Tried it</span></label>
+          <label class="opt-inline"><input type="radio" name="q5_jamovi" value="Sometimes"><span>Use sometimes</span></label>
+          <label class="opt-inline"><input type="radio" name="q5_jamovi" value="Regularly"><span>Use regularly</span></label>
+        </div>
+      </div>
+      <div class="matrix-row">
+        <span class="matrix-label">R</span>
+        <div class="matrix-opts">
+          <label class="opt-inline"><input type="radio" name="q5_r" value="Never"><span>Never used</span></label>
+          <label class="opt-inline"><input type="radio" name="q5_r" value="Tried"><span>Tried it</span></label>
+          <label class="opt-inline"><input type="radio" name="q5_r" value="Sometimes"><span>Use sometimes</span></label>
+          <label class="opt-inline"><input type="radio" name="q5_r" value="Regularly"><span>Use regularly</span></label>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SECTION B: Designs and data structures -->
+<section>
+  <h2>B. The kinds of studies you run</h2>
+  <div class="section-sub">Across the studies you've run (not just your most recent one), which of the following apply? Tick as many as fit.</div>
+
+  <div class="q">
+    <span class="label"><span class="num">6.</span>What does the per-participant data structure look like in your studies? <em>(tick all that apply)</em></span>
+    <div class="opts">
+      <label class="opt"><input type="checkbox" name="q6" value="One"><span>One measure per participant</span></label>
+      <label class="opt"><input type="checkbox" name="q6" value="FewConditions"><span>A few measures &mdash; e.g. one score per condition</span></label>
+      <label class="opt"><input type="checkbox" name="q6" value="ManyTrials"><span>Many trials per participant (tens or hundreds)</span></label>
+      <label class="opt"><input type="checkbox" name="q6" value="Longitudinal"><span>Repeated measures over time (longitudinal)</span></label>
+      <label class="opt"><input type="checkbox" name="q6" value="Continuous"><span>Continuous physiological / time-series data (eye-tracking, EEG, etc.)</span></label>
+    </div>
+  </div>
+
+  <div class="q">
+    <span class="label"><span class="num">7.</span>When your studies use stimuli (words, faces, images, scenarios&hellip;), which of the following describe them? <em>(tick all that apply)</em></span>
+    <span class="help">i.e. how the stimulus items relate to participants &mdash; relevant for crossed-design considerations.</span>
+    <div class="opts">
+      <label class="opt"><input type="checkbox" name="q7" value="SameItems"><span>All participants see the same set of items</span></label>
+      <label class="opt"><input type="checkbox" name="q7" value="DifferentItems"><span>Different participants see different items</span></label>
+      <label class="opt"><input type="checkbox" name="q7" value="Sampled"><span>Items sampled from a larger pool (counterbalanced, randomised, etc.)</span></label>
+      <label class="opt"><input type="checkbox" name="q7" value="NoItems"><span>My studies don't really use item-based stimuli</span></label>
+    </div>
+  </div>
+
+  <div class="q">
+    <span class="label"><span class="num">8.</span>Does your data ever have a <em>nested / clustered</em> structure? <em>(tick all that apply)</em></span>
+    <div class="opts">
+      <label class="opt"><input type="checkbox" name="q8" value="SchoolsClasses"><span>Participants within schools, classes, or year groups</span></label>
+      <label class="opt"><input type="checkbox" name="q8" value="Clinicians"><span>Participants within clinics, therapists, or practitioners</span></label>
+      <label class="opt"><input type="checkbox" name="q8" value="Sessions"><span>Participants within testing sessions, labs, or experimenters</span></label>
+      <label class="opt"><input type="checkbox" name="q8" value="Dyads"><span>Dyads / triads / families / couples</span></label>
+      <label class="opt"><input type="checkbox" name="q8" value="Blocks"><span>Observations clustered within trials, blocks, or runs</span></label>
+      <label class="opt"><input type="checkbox" name="q8" value="NoNesting"><span>No nesting &mdash; participants are independent units</span></label>
+      <label class="opt"><input type="checkbox" name="q8" value="Unsure8"><span>I'm not sure what counts as nesting</span></label>
+    </div>
+  </div>
+
+  <div class="q">
+    <span class="label"><span class="num">9.</span>When you have many trials per participant, what have you done with them? <em>(tick all that apply)</em></span>
+    <div class="opts">
+      <label class="opt"><input type="checkbox" name="q9" value="Aggregate"><span>Averaged across trials to get one score per person, then analysed those scores</span></label>
+      <label class="opt"><input type="checkbox" name="q9" value="TrialLevel"><span>Analysed the trial-level data directly</span></label>
+      <label class="opt"><input type="checkbox" name="q9" value="ByItem"><span>Aggregated by item instead of (or as well as) by participant</span></label>
+      <label class="opt"><input type="checkbox" name="q9" value="NA9"><span>Not applicable &mdash; I don't usually have many trials</span></label>
+    </div>
+  </div>
+
+  <div class="q">
+    <span class="label"><span class="num">10.</span>How often do your designs end up unbalanced (unequal cell sizes, dropouts, missing trials)?</span>
+    <div class="opts">
+      <label class="opt"><input type="radio" name="q10" value="Common"><span>Often &mdash; that's normal in my field</span></label>
+      <label class="opt"><input type="radio" name="q10" value="Sometimes10"><span>Sometimes</span></label>
+      <label class="opt"><input type="radio" name="q10" value="Rare"><span>Rarely &mdash; I design to avoid this</span></label>
+      <label class="opt"><input type="radio" name="q10" value="Unsure10"><span>Not sure</span></label>
+    </div>
+  </div>
+</section>
+
+<!-- SECTION C: Goals -->
+<section>
+  <h2>C. Your goals for the workshop</h2>
+  <div class="section-sub">Two open questions &mdash; brief is fine.</div>
+
+  <div class="q">
+    <label class="label" for="q11"><span class="num">11.</span>What's the main thing you'd like to take away from this workshop?</label>
+    <textarea id="q11" name="q11" placeholder="A sentence or two is plenty."></textarea>
+  </div>
+
+  <div class="q">
+    <label class="label" for="q12"><span class="num">12.</span>Is there a specific study or dataset of your own you'll have in mind during the workshop? <em>(optional)</em></label>
+    <span class="help">Helps us pick examples that connect to real work you're doing.</span>
+    <textarea id="q12" name="q12" placeholder="Optional &mdash; brief description of design, e.g. 'lexical decision task, 40 participants, 120 items each'."></textarea>
+  </div>
+</section>
+
+<div class="actions">
+  <button type="button" id="generate-btn">Generate my responses</button>
+  <button type="button" id="reset-btn" class="secondary">Reset form</button>
+</div>
+
+<div id="output-area">
+  <h3>Your responses</h3>
+  <p style="margin: 0 0 10px; color: var(--muted); font-size: 0.9rem;">Have a quick look, then click <strong>Send to Jeremy</strong> &mdash; it'll be emailed straight to him.</p>
+  <textarea id="output-text" readonly></textarea>
+  <div class="output-actions">
+    <button type="button" id="send-btn">Send to Jeremy</button>
+    <span id="send-status" class="send-status"></span>
+  </div>
+  <p class="alt-line">
+    If you'd rather not use the Send button:
+    <button type="button" id="copy-btn" class="secondary">Copy</button>
+    <button type="button" id="download-btn" class="secondary">Download</button>
+    <button type="button" id="email-btn" class="secondary">Open in email</button>
+    <span id="toast" class="toast">Copied</span>
+  </p>
+</div>
+
+</form>
+
+<footer>
+  Pre-workshop questionnaire &mdash; Linear Mixed Models workshop. No data leaves this page until you choose to send it.
+</footer>
+
+</div>
+
+<script>
+  // === CONFIG =======================================================
+  // 1. Paste your Google Apps Script web app URL here (the one ending
+  //    in /exec). See apps-script-email-handler.gs for setup steps.
+  //    Leaving this empty disables the "Send to Jeremy" button — the
+  //    Copy / Download / Email fallbacks still work.
+  const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzkAuP5PbcVoByD4vrS6-LZT57SB6KoKDre_EKOtwPTEkhYMhEr0iiPNYKgpokj0QjK/exec";
+
+  // 2. The mailto: fallback button uses this address.
+  const RECIPIENT_EMAIL = "treejeremy@googlemail.com";
+  // ==================================================================
+
+  const QUESTIONS = [
+    { id: "q1",  type: "check",  label: "Methods used" },
+    { id: "q2",  type: "radio",  label: "LMM experience" },
+    { id: "q3",  type: "radio",  label: "\"Random effect\" comfort" },
+    { id: "q4",  type: "radio",  label: "ANOVA as regression?" },
+    { id: "q5",  type: "matrix", label: "Familiarity with JAMOVI / R",
+      rows: [
+        { name: "q5_jamovi", label: "JAMOVI" },
+        { name: "q5_r",      label: "R" }
+      ] },
+    { id: "q6",  type: "check",  label: "Per-participant data structure" },
+    { id: "q7",  type: "check",  label: "Stimulus structure" },
+    { id: "q8",  type: "check",  label: "Nested / clustered structure" },
+    { id: "q9",  type: "check",  label: "Handling of many trials per participant" },
+    { id: "q10", type: "radio",  label: "Frequency of unbalanced designs" },
+    { id: "q11", type: "text",   label: "Main take-away wanted" },
+    { id: "q12", type: "text",   label: "Specific study/dataset in mind (optional)" }
+  ];
+
+  function getValue(q) {
+    if (q.type === "text") {
+      const el = document.getElementById(q.id);
+      return (el && el.value.trim()) || "(no answer)";
+    }
+    if (q.type === "radio") {
+      const checked = document.querySelector(`input[name="${q.id}"]:checked`);
+      if (!checked) return "(no answer)";
+      const label = checked.closest("label").querySelector("span").textContent;
+      return label.replace(/\s+/g, " ").trim();
+    }
+    if (q.type === "check") {
+      const boxes = document.querySelectorAll(`input[name="${q.id}"]:checked`);
+      if (boxes.length === 0) return "(no answer)";
+      return Array.from(boxes).map(b => {
+        return b.closest("label").querySelector("span").textContent.replace(/\s+/g, " ").trim();
+      }).join("; ");
+    }
+    if (q.type === "matrix") {
+      const parts = q.rows.map(row => {
+        const checked = document.querySelector(`input[name="${row.name}"]:checked`);
+        const val = checked
+          ? checked.closest("label").querySelector("span").textContent.replace(/\s+/g, " ").trim()
+          : "(no answer)";
+        return row.label + ": " + val;
+      });
+      return parts.join("; ");
+    }
+    return "";
+  }
+
+  function buildResponseText() {
+    const stamp = new Date().toLocaleString();
+    let out = "LINEAR MIXED MODELS WORKSHOP — PRE-WORKSHOP RESPONSES\n";
+    out += "Submitted: " + stamp + "\n";
+    out += "=".repeat(60) + "\n\n";
+    QUESTIONS.forEach((q, i) => {
+      const n = (i + 1).toString().padStart(2, " ");
+      const val = getValue(q);
+      out += `Q${n}. ${q.label}\n`;
+      val.split("\n").forEach(line => {
+        out += "    " + line + "\n";
+      });
+      out += "\n";
+    });
+    return out;
+  }
+
+  function showToast(msg) {
+    const t = document.getElementById("toast");
+    t.textContent = msg || "Copied";
+    t.classList.add("show");
+    clearTimeout(showToast._t);
+    showToast._t = setTimeout(() => t.classList.remove("show"), 1800);
+  }
+
+  document.getElementById("generate-btn").addEventListener("click", () => {
+    const text = buildResponseText();
+    const out = document.getElementById("output-area");
+    const ta = document.getElementById("output-text");
+    ta.value = text;
+    out.style.display = "block";
+    out.scrollIntoView({ behavior: "smooth", block: "start" });
+  });
+
+  document.getElementById("reset-btn").addEventListener("click", () => {
+    if (confirm("Clear all answers?")) {
+      document.getElementById("form").reset();
+      document.getElementById("output-area").style.display = "none";
+      const s = document.getElementById("send-status");
+      s.className = "send-status";
+      s.textContent = "";
+      document.getElementById("send-btn").disabled = false;
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+  });
+
+  function setSendStatus(state, msg) {
+    const s = document.getElementById("send-status");
+    s.className = "send-status show " + state;
+    s.textContent = msg;
+  }
+
+  // Hidden-iframe form POST — works from file:// origins where fetch
+  // gets blocked by browser security policies. Apps Script reads the
+  // payload via e.parameter.payload.
+  function postToAppsScript(payload) {
+    return new Promise((resolve) => {
+      let iframe = document.getElementById("lmm-submit-iframe");
+      if (!iframe) {
+        iframe = document.createElement("iframe");
+        iframe.id = "lmm-submit-iframe";
+        iframe.name = "lmm-submit-iframe";
+        iframe.style.display = "none";
+        document.body.appendChild(iframe);
+      }
+      let form = document.getElementById("lmm-submit-form");
+      if (!form) {
+        form = document.createElement("form");
+        form.id = "lmm-submit-form";
+        form.method = "POST";
+        form.target = "lmm-submit-iframe";
+        form.style.display = "none";
+        const input = document.createElement("input");
+        input.type = "hidden";
+        input.name = "payload";
+        form.appendChild(input);
+        document.body.appendChild(form);
+      }
+
+      form.action = APPS_SCRIPT_URL;
+      form.querySelector('input[name="payload"]').value = JSON.stringify(payload);
+
+      let settled = false;
+      const finish = () => {
+        if (settled) return;
+        settled = true;
+        iframe.removeEventListener("load", finish);
+        clearTimeout(timeoutId);
+        resolve();
+      };
+      iframe.addEventListener("load", finish);
+      // Safety net: if the iframe never fires 'load' (rare), treat as sent
+      // after 10s — the request itself will have been delivered.
+      const timeoutId = setTimeout(finish, 10000);
+
+      form.submit();
+    });
+  }
+
+  document.getElementById("send-btn").addEventListener("click", async () => {
+    const text = document.getElementById("output-text").value;
+    if (!text) return;
+
+    if (!APPS_SCRIPT_URL) {
+      setSendStatus("error",
+        "Sender not configured — please use Copy / Download / Email instead.");
+      return;
+    }
+
+    const btn = document.getElementById("send-btn");
+    btn.disabled = true;
+    setSendStatus("sending", "Sending…");
+
+    try {
+      await postToAppsScript({
+        subject: "LMM workshop — pre-workshop questionnaire response",
+        body: text
+      });
+      setSendStatus("success", "✓ Sent — thanks!");
+    } catch (err) {
+      btn.disabled = false;
+      setSendStatus("error",
+        "Send failed. Please use Copy or Download below as a backup.");
+    }
+  });
+
+  document.getElementById("copy-btn").addEventListener("click", async () => {
+    const ta = document.getElementById("output-text");
+    try {
+      await navigator.clipboard.writeText(ta.value);
+      showToast("Copied to clipboard");
+    } catch (e) {
+      ta.select();
+      try {
+        document.execCommand("copy");
+        showToast("Copied to clipboard");
+      } catch (e2) {
+        showToast("Copy failed — select the text manually");
+      }
+    }
+  });
+
+  document.getElementById("download-btn").addEventListener("click", () => {
+    const text = document.getElementById("output-text").value;
+    const blob = new Blob([text], { type: "text/plain;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    const stamp = new Date().toISOString().replace(/[:.]/g, "-").slice(0, 19);
+    a.href = url;
+    a.download = `lmm-workshop-prequestionnaire-${stamp}.txt`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    showToast("Downloaded");
+  });
+
+  document.getElementById("email-btn").addEventListener("click", () => {
+    const text = document.getElementById("output-text").value;
+    const subject = encodeURIComponent("LMM workshop — pre-workshop questionnaire response");
+    const body = encodeURIComponent(text);
+    const to = RECIPIENT_EMAIL || "";
+    window.location.href = `mailto:${to}?subject=${subject}&body=${body}`;
+  });
+</script>
+</body>
+</html>

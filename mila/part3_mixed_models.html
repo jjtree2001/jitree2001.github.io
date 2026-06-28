@@ -1,0 +1,685 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Part 3: What a mixed model reveals</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --navy: #1e2e5c; --blue: #314e8b; --mid: #5b75ad;
+    --light-blue: #edf3ff; --bg: #f5f5f2; --card: #ffffff;
+    --border: #d5dae8; --text: #1a2030; --muted: #5a6480;
+    --green: #1a7a4a; --green-bg: #eaf5ef;
+    --amber: #92570a; --amber-bg: #fff8ee;
+    --red: #8b1a1a; --red-bg: #fff0f0;
+    --teal: #0e6e6e; --teal-bg: #e6f5f5;
+    --purple: #4a2e7a; --purple-bg: #f2eeff;
+  }
+  body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+    background: var(--bg); color: var(--text); line-height: 1.6; font-size: 16px; }
+  .wrap { max-width: 1060px; margin: 0 auto; padding: 36px 22px 80px; }
+
+  .hero { background: linear-gradient(135deg, #1a3a5c, #4a6a9f);
+    color: white; padding: 44px 40px; border-radius: 20px;
+    box-shadow: 0 12px 32px rgba(0,0,0,.18); margin-bottom: 28px; }
+  .hero .tag { font-size: .8rem; font-weight: 600; letter-spacing: .08em;
+    text-transform: uppercase; opacity: .75; margin-bottom: 10px; }
+  .hero h1 { font-size: 2rem; line-height: 1.15; margin-bottom: 12px; }
+  .hero p { font-size: 1.05rem; opacity: .92; max-width: 780px; }
+  .hero .stage-links { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 18px; }
+  .hero .stage-links a {
+    padding: 5px 16px; border-radius: 20px; font-size: .82rem; text-decoration: none;
+    border: 1px solid rgba(255,255,255,.35); color: rgba(255,255,255,.75); transition: all .2s; }
+  .hero .stage-links a.active { background: rgba(255,255,255,.25); color: white; border-color: rgba(255,255,255,.6); }
+  .hero .stage-links a:hover:not(.active) { background: rgba(255,255,255,.1); color: white; }
+
+  section { background: var(--card); border: 1px solid var(--border);
+    border-radius: 18px; padding: 30px 32px; margin-bottom: 22px;
+    box-shadow: 0 6px 18px rgba(30,46,92,.06); }
+  h2 { color: var(--blue); font-size: 1.3rem; margin-bottom: 14px; }
+  h3 { color: var(--navy); font-size: 1.05rem; margin: 22px 0 8px; }
+  p { margin-bottom: 12px; }
+  p:last-child { margin-bottom: 0; }
+
+  .callout { border-radius: 12px; padding: 14px 18px; margin: 16px 0;
+    border-left: 4px solid; font-size: .97rem; }
+  .callout.blue  { background: var(--light-blue); border-color: var(--mid); }
+  .callout.green { background: var(--green-bg);   border-color: var(--green); }
+  .callout.amber { background: var(--amber-bg);   border-color: var(--amber); }
+  .callout.teal  { background: var(--teal-bg);    border-color: var(--teal); }
+  .callout.purple{ background: var(--purple-bg);  border-color: var(--purple); }
+  .callout strong { display: block; margin-bottom: 4px; }
+
+  .formula { background: #f0f2f8; border: 1px solid var(--border);
+    border-radius: 12px; padding: 16px 20px; margin: 14px 0;
+    font-family: "SFMono-Regular", Consolas, monospace; font-size: .92rem;
+    overflow-x: auto; line-height: 1.9; }
+
+  /* Component cards grid */
+  .comp-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin: 16px 0; }
+  @media (max-width: 660px) { .comp-grid { grid-template-columns: 1fr 1fr; } }
+  @media (max-width: 420px) { .comp-grid { grid-template-columns: 1fr; } }
+  .comp-card { border: 1.5px solid var(--border); border-radius: 14px;
+    padding: 14px 16px; background: #fafbff; position: relative; overflow: hidden; }
+  .comp-card .top-bar { position: absolute; top: 0; left: 0; right: 0; height: 3px; }
+  .comp-card .pct { font-size: 1.6rem; font-weight: 700; line-height: 1; margin-bottom: 4px; }
+  .comp-card .name { font-size: .78rem; font-weight: 700; text-transform: uppercase;
+    letter-spacing: .06em; color: var(--muted); margin-bottom: 6px; font-family: Consolas, monospace; }
+  .comp-card .desc { font-size: .82rem; color: var(--muted); line-height: 1.45; }
+
+  /* Variance bar chart */
+  .var-bar-wrap { margin: 16px 0; }
+  .var-bar-row { display: flex; align-items: center; gap: 10px; margin: 6px 0; }
+  .var-bar-label { min-width: 190px; font-size: .85rem; color: var(--muted); text-align: right; flex-shrink: 0; }
+  .var-bar-track { flex: 1; background: #eef0f6; border-radius: 6px; height: 28px; overflow: hidden; }
+  .var-bar-fill { height: 100%; border-radius: 6px; display: flex; align-items: center;
+    padding-left: 8px; font-size: .8rem; font-weight: 600; color: white; }
+  .var-bar-num { min-width: 42px; font-size: .88rem; font-weight: 700; }
+
+  /* Effective variance table */
+  .eff-table { width: 100%; border-collapse: collapse; font-size: .88rem; margin: 16px 0; }
+  .eff-table th { background: var(--navy); color: white; padding: 8px 12px;
+    font-weight: 600; font-size: .82rem; text-align: left; }
+  .eff-table th:not(:first-child) { text-align: center; }
+  .eff-table td { padding: 8px 12px; border-bottom: 1px solid var(--border); }
+  .eff-table td:not(:first-child) { text-align: center; }
+  .eff-table tr.signal td { background: var(--purple-bg); font-weight: 600; color: var(--purple); }
+  .eff-table tr:last-child td { border-bottom: none; font-weight: 700; background: var(--light-blue); border-top: 2px solid var(--border); }
+
+  /* Component reliability table */
+  .rel-table { width: 100%; border-collapse: collapse; font-size: .88rem; margin: 16px 0; }
+  .rel-table th { background: var(--teal); color: white; padding: 8px 12px;
+    font-weight: 600; font-size: .82rem; text-align: left; }
+  .rel-table th:not(:first-child) { text-align: center; }
+  .rel-table td { padding: 10px 12px; border-bottom: 1px solid var(--border); }
+  .rel-table td:not(:first-child) { text-align: center; }
+  .rel-table tr:last-child td { border-bottom: none; }
+  .rel-table .good { color: var(--green); font-weight: 700; }
+  .rel-table .mod  { color: var(--amber); font-weight: 700; }
+
+  details { border: 1px solid var(--border); border-radius: 12px; margin: 16px 0; overflow: hidden; }
+  summary { padding: 12px 16px; cursor: pointer; font-size: .93rem; color: var(--blue);
+    background: var(--light-blue); list-style: none; display: flex; align-items: center; gap: 8px; }
+  summary::before { content: '▶'; font-size: .68rem; transition: transform .2s; flex-shrink: 0; }
+  details[open] summary::before { transform: rotate(90deg); }
+  details > *:not(summary) { padding: 18px 20px; background: #fafbff; font-size: .93rem; }
+
+  @media (max-width: 640px) {
+    .hero { padding: 28px 22px; } .hero h1 { font-size: 1.55rem; }
+    section { padding: 22px 18px; }
+    .var-bar-label { min-width: 120px; font-size: .78rem; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<div class="hero">
+  <div class="tag">Part 3 of 4</div>
+  <h1>What a linear mixed model reveals</h1>
+  <p>The ICC approach rolls every source of disagreement around the ordering into a single residual term and averages it away. A mixed model gives each source of variance its own labelled bucket — and what we find inside those buckets turns out to be more interesting than the ICC alone could tell us.</p>
+  <div class="stage-links">
+    <a href="part1_icc.html">Part 1: ICC</a>
+    <a href="part2_aggregation.html">Part 2: Aggregation</a>
+    <a class="active" href="#">Part 3: Mixed models</a>
+    <a href="part4_generalisability.html">Part 4: Generalisability</a>
+  </div>
+</div>
+
+<!-- SECTION 1: WHY LOOK DEEPER -->
+<section>
+  <h2>1 — Why look deeper than the ICC?</h2>
+
+  <p>By the end of Part 2 we have established that our paradigm works well. The ICC(C,47) ≈ 0.95 and the test-retest correlation ≈ 0.98 confirm that the rank ordering of this particular set of 20 identities is highly stable and reliably recovered. A researcher working with this data can be confident in the measurement.</p>
+
+  <p>But the ICC achieved this with a coarse, two-way split: between-target signal versus one undifferentiated residual, which it then averaged into insignificance with 47 raters and 5 clips. It never asked how that residual was composed — only that, as a whole, it shrinks.</p>
+
+  <p>The question we want to ask is: what is actually in that residual? Is it all the same kind of noise, or does it have structure? Does any of it correspond to real, interpretable phenomena — things a researcher might actually want to understand rather than merely average away?</p>
+
+  <p>This is where a linear mixed model (LMM) offers something qualitatively different. Rather than partitioning ratings into just two bins — identity signal and everything else — the LMM partitions them into as many bins as there are identifiable sources of systematic variance. Each source gets its own labelled bucket, with its own estimated size.</p>
+</section>
+
+<!-- SECTION 2: HOW LMMs WORK -->
+<section>
+  <h2>2 — How a linear mixed model works</h2>
+
+  <p>A linear mixed model contains two types of effects. <em>Fixed effects</em> estimate a single value for something we treat as having a consistent direction across the data — for example, the overall grand mean of all ratings. In most research using LMMs, fixed effects generally are the focus of interest. In our case, we are not testing a fixed-effect hypothesis; we are primarily interested in the variance structure.</p>
+
+  <p><em>Random effects</em> model systematic variation that is specific to particular levels of a grouping factor. Instead of estimating a single number, a random effect estimates a distribution — specifically, the variance of a set of intercepts (or slopes) across all the units in that group. Each unit (each identity, each rater, each clip) gets its own intercept, and the model estimates how much those intercepts vary.</p>
+
+  <div class="callout blue">
+    <strong>Random effects as variance buckets</strong>
+    Think of each random effect as a labelled bucket that captures one specific source of systematic variation. The model estimates how large each bucket is — that is, how much variance each source contributes to the total. The identity bucket captures how much identities differ from each other on average. The rater bucket captures how much raters differ from each other in their overall generosity. And so on.
+  </div>
+
+  <details>
+    <summary>Why an ordinal model rather than a standard linear model?</summary>
+    <div>
+      <p style="margin-bottom:10px">The rating scale runs from 1 to 9 with no guarantee that the psychological distance between 1 and 2 is the same as between 5 and 6. An ordinal model respects this by working on an underlying latent (continuous) scale and modelling the observed categories as thresholds on that scale. This is more statistically honest than treating the 1–9 numbers as if they were continuous measurements.</p>
+      <p>The practical consequence is that the variance components are estimated on the latent scale rather than the observed rating scale. The relative proportions — how much variance each source contributes — are the key information, and these are interpretable regardless of the scale. The residual in an ordinal cumulative-logit model has a fixed component (π²/3 ≈ 3.29) built into the model's parameterisation, which is why the residual appears large relative to the other components.</p>
+    </div>
+  </details>
+
+  <details>
+    <summary>Random intercepts and random slopes</summary>
+    <div>
+      <p style="margin-bottom:10px">A <em>random intercept</em> for a grouping factor (say, Identity) means each identity is allowed its own baseline level — some identities are rated higher overall than others. All six random effects in our model are random intercepts.</p>
+      <p>The PID×Identity interaction is a random intercept for each rater-identity combination — one estimated deviation per cell in a 47 × 20 matrix. It captures whether a specific rater rates a specific identity higher or lower than would be predicted from that rater's overall generosity and that identity's consensus standing. We call this taste: a rater's idiosyncratic preferences for particular faces that the group does not share.</p>
+    </div>
+  </details>
+</section>
+
+<!-- SECTION 3: THE VARIANCE BUCKETS -->
+<section>
+  <h2>3 — The six variance buckets</h2>
+
+  <p>Our model includes the following random effects, each corresponding to a distinct source of systematic variance in the ratings:</p>
+
+  <div class="comp-grid">
+    <div class="comp-card">
+      <div class="top-bar" style="background:#4a2e7a"></div>
+      <div class="pct" style="color:#4a2e7a">10.7%</div>
+      <div class="name">(1 | Identity)</div>
+      <div class="desc">Stable differences in how friendly each of the 20 people appears — the signal we want to recover.</div>
+    </div>
+    <div class="comp-card">
+      <div class="top-bar" style="background:#0e6e6e"></div>
+      <div class="pct" style="color:#0e6e6e">12.5%</div>
+      <div class="name">(1 | File)</div>
+      <div class="desc">Clip-specific effects — some video clips of the same person look friendlier than others, independent of any rater. This is one of the sources contributing to the within-identity spread visible in the Part 1 figure. Each clip is of course a clip of one particular person; this component captures the stable clip-to-clip deviations <em>within</em> an identity, once that identity's average level is removed. It is real, but it is not itself a person-level signal.</div>
+    </div>
+    <div class="comp-card">
+      <div class="top-bar" style="background:#314e8b"></div>
+      <div class="pct" style="color:#314e8b">20.5%</div>
+      <div class="name">(1 | PID)</div>
+      <div class="desc">Rater scale-use — some raters are consistently more generous or strict than others across all faces. This is the source of variance that motivated our choice of ICC(C) over ICC(A) in Parts 1–2: by using the consistency variant, we removed it from the error term rather than treating it as noise about the identities.</div>
+    </div>
+    <div class="comp-card">
+      <div class="top-bar" style="background:#92570a"></div>
+      <div class="pct" style="color:#92570a">14.5%</div>
+      <div class="name">(1 | PID:Identity)</div>
+      <div class="desc">Idiosyncratic taste — a rater's preference for a specific face, over and above their general generosity and the face's average friendliness. This is the component we flagged in Part 2 as the most psychologically interesting piece of the "noise" — not random error, but genuine individual differences in who finds which faces friendly.</div>
+    </div>
+    <div class="comp-card">
+      <div class="top-bar" style="background:#5b75ad"></div>
+      <div class="pct" style="color:#5b75ad">3.0%</div>
+      <div class="name">(1 | PID:Session)</div>
+      <div class="desc">Session-to-session drift in rater scale-use — raters shift their overall level slightly between measurement occasions.</div>
+    </div>
+    <div class="comp-card">
+      <div class="top-bar" style="background:#5b75ad"></div>
+      <div class="pct" style="color:#5b75ad">0.2%</div>
+      <div class="name">(1 | Identity:Session)</div>
+      <div class="desc">Small fluctuation in how a particular face is perceived across sessions — negligible in size. This is precisely why the test-retest correlation of r = 0.98 established in Part 2 is so high: the rank ordering of identities is almost identical across sessions because virtually no variance is attributable to which session the ratings came from.</div>
+    </div>
+  </div>
+
+  <p>The remaining variance — after accounting for all six random effects — is the residual: <strong>38.7%</strong> of total latent variance. In the ordinal model, a substantial portion of this is the fixed π²/3 floor inherent to the cumulative-logit parameterisation; it represents within-cell response variability that no random effect specification can absorb.</p>
+
+  <div class="var-bar-wrap">
+    <div class="var-bar-row">
+      <div class="var-bar-label">Identity — signal</div>
+      <div class="var-bar-track"><div class="var-bar-fill" style="width:10.7%;background:#4a2e7a">10.7%</div></div>
+      <div class="var-bar-num" style="color:#4a2e7a">10.7%</div>
+    </div>
+    <div class="var-bar-row">
+      <div class="var-bar-label">PID — rater scale-use</div>
+      <div class="var-bar-track"><div class="var-bar-fill" style="width:20.5%;background:#314e8b">20.5%</div></div>
+      <div class="var-bar-num" style="color:#314e8b">20.5%</div>
+    </div>
+    <div class="var-bar-row">
+      <div class="var-bar-label">PID × Identity — taste</div>
+      <div class="var-bar-track"><div class="var-bar-fill" style="width:14.5%;background:#92570a">14.5%</div></div>
+      <div class="var-bar-num" style="color:#92570a">14.5%</div>
+    </div>
+    <div class="var-bar-row">
+      <div class="var-bar-label">File — clip effects</div>
+      <div class="var-bar-track"><div class="var-bar-fill" style="width:12.5%;background:#0e6e6e">12.5%</div></div>
+      <div class="var-bar-num" style="color:#0e6e6e">12.5%</div>
+    </div>
+    <div class="var-bar-row">
+      <div class="var-bar-label">PID × Session</div>
+      <div class="var-bar-track"><div class="var-bar-fill" style="width:3.0%;background:#5b75ad"></div></div>
+      <div class="var-bar-num" style="color:#5b75ad">3.0%</div>
+    </div>
+    <div class="var-bar-row">
+      <div class="var-bar-label">Identity × Session</div>
+      <div class="var-bar-track"><div class="var-bar-fill" style="width:0.2%;background:#5b75ad"></div></div>
+      <div class="var-bar-num" style="color:#5b75ad">0.2%</div>
+    </div>
+    <div class="var-bar-row">
+      <div class="var-bar-label">Residual</div>
+      <div class="var-bar-track"><div class="var-bar-fill" style="width:38.7%;background:#9aa4bf">38.7%</div></div>
+      <div class="var-bar-num" style="color:#9aa4bf">38.7%</div>
+    </div>
+  </div>
+
+  <div class="callout purple">
+    <strong>The striking result</strong>
+    The stable identity signal — what we actually want to measure — accounts for only <span style="font-weight:700">10.7%</span> of the latent variance underlying a single rating. The remaining 89.3% is distributed across six distinct sources. This is not a problem with the study; it is what face-rating data looks like. The ICC approach works precisely because averaging across 47 raters and 5 clips suppresses most of that 89.3% — but it does so without ever naming it.
+  </div>
+
+</section>
+
+<!-- SECTION 4: WHAT AGGREGATION DOES TO EACH BUCKET -->
+<section>
+  <h2>4 — What aggregation does to each bucket</h2>
+
+  <p>The high ICC from Part 2 makes sense once you see the variance structure. The lever in Part 2 was k — each point on the consensus line was a mean of k raters, and its error shrank as SD/√k. Dividing a variance by the number of observations is that same law seen on the variance scale (the variance of a mean falls as σ²/k, so its SD falls as σ/√k). What the decomposition adds is that this was never a single noise term divided by a single k: each component is divided by the number of observations it actually varies over. Rater-borne noise (scale-use, taste) is divided by the number of raters — Part 2's k; clip-borne noise is divided by the number of clips; and the residual, fresh on every rating, by both. The identity signal — a property of the faces, not of the raters or clips — is divided by nothing. Part 2's single √k lever was really several of these divisions happening at once, which the table below makes explicit (as a design-based approximation) for averaging across 47 raters and 5 clips per identity.</p>
+
+  <table class="eff-table">
+    <thead>
+      <tr>
+        <th>Variance source</th>
+        <th>Raw %</th>
+        <th>What averaging does</th>
+        <th>Approx. effective % after 47 × 5</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr class="signal">
+        <td>Identity — signal</td>
+        <td>10.7%</td>
+        <td>Unaffected — property of the people</td>
+        <td>10.7%</td>
+      </tr>
+      <tr>
+        <td>PID — rater scale-use</td>
+        <td>20.5%</td>
+        <td>÷ 47 raters</td>
+        <td>0.44%</td>
+      </tr>
+      <tr>
+        <td>PID × Identity — taste</td>
+        <td>14.5%</td>
+        <td>÷ 47 raters</td>
+        <td>0.31%</td>
+      </tr>
+      <tr>
+        <td>File — clip effects</td>
+        <td>12.5%</td>
+        <td>÷ 5 clips</td>
+        <td>2.50%</td>
+      </tr>
+      <tr>
+        <td>Residual</td>
+        <td>38.7%</td>
+        <td>÷ 235 (raters × clips)</td>
+        <td>0.16%</td>
+      </tr>
+      <tr>
+        <td>PID × Session, Identity × Session</td>
+        <td>3.2%</td>
+        <td>Small to begin with</td>
+        <td>&lt; 0.1%</td>
+      </tr>
+      <tr>
+        <td colspan="3">Combined noise after aggregation</td>
+        <td>≈ 3.5%</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p>Signal (10.7%) relative to combined noise (≈ 3.5%) gives a signal-to-noise ratio of about 3:1 in the averaged identity mean. That is why the ICC is high: not because the raw signal is large — it is only 10.7% of a single rating — but because aggregation has shrunk the noise to a fraction of its size while leaving the signal untouched. It is the lesson that ran through Part 2, now quantified: even a weak per-observation signal becomes a reliable measure once enough observations divide the noise down.</p>
+
+  <p>Notice also that the largest surviving noise source after aggregation is not rater-related at all — it is the clip effect (2.5%). Scale-use (0.44%) and taste (0.31%) are trivial after 47 raters. This tells us something the Spearman-Brown formula could not: further gains from adding raters would likely be marginal, whereas the same might not be true of clips given there are only five available — remember this for what we discuss in Part 4.</p>
+
+  <div class="callout blue">
+    <strong>A note on sessions:</strong> these variance components were estimated with both sessions' ratings pooled. Is that legitimate? Part 2 gave the condition — aggregating observations is safe only when what you collapse away is pure, random error, not shared structure that averaging cannot touch. That is exactly the case here: session variation carries almost no structure. The Identity × Session component is negligible (0.2%), so the rank ordering of identities barely moves between sessions, and the session-to-session residual correlation is near zero (≈ 0.09) — what differs from one session to the next is essentially random re-sampling. Because what we are collapsing is error and not signal, pooling appears reasonable for estimating the main variance structure, and simply gives the model more observations to estimate each component from — provided there are no sizeable session-specific effects the model has omitted, which the negligible session terms make unlikely.
+  </div>
+</section>
+
+<!-- SECTION 5: THE COMPONENTS AS PHENOMENA -->
+<section>
+  <h2>5 — The noise has structure worth investigating</h2>
+
+  <p>Now consider those noise components not as problems to be averaged away, but as phenomena in their own right. Each labelled bucket corresponds to something real about how people perceive faces — something that the ICC approach, by design, is completely blind to.</p>
+
+  <p><span style="font-weight:700">Clip effects (12.5%)</span> tell us that some video clips of the same person look meaningfully friendlier than others. In a sense we have already seen this: the Part 1 figure laid out all 100 clips and they varied substantially from one to the next, and Part 1 even flagged that this clip-level spread mixed genuine identity differences with clip-to-clip differences within a person. What is new here is that we now have an explicit bucket — the File component — that isolates the within-person part. It is a real finding about the construct: perceived friendliness as judged from video clips is sensitive to clip-level characteristics. If you could measure what varies across the 5 video clips — smiling intensity, gaze direction, head angle, naturalness of expression — you could ask which of these properties drives the clip effect: is it smiling that matters most, or something subtler about the eyes? This is a substantive question about face perception that the LMM makes possible to address, because it has separated clip variance from everything else.</p>
+
+  <p><span style="font-weight:700">Taste (14.5%)</span> tells us that raters disagree not just in overall generosity but in their specific rank orderings of faces. Rater A finds Face X particularly friendly — more so than the consensus — while Rater B does not share this preference. This idiosyncratic component of face perception is larger than the identity signal itself (14.5% vs 10.7%). That is striking: there is more variance in <em>who disagrees about which faces</em> than there is in <em>what faces are agreed to be</em>. What explains this taste variance? Rater personality, their own attractiveness, their cultural background, their mood? Again, these are empirical questions — but only once the LMM has given taste variance its own bucket can we even see that there is something to explain.</p>
+
+  <div class="callout teal">
+    <strong>Suppressing variance is not the same as understanding it.</strong> The 47-rater average suppresses taste and clip variance effectively — but it discards them. The LMM names them, sizes them, and provides a means for investigating them.
+  </div>
+</section>
+
+<!-- SECTION 6: COMPONENT RELIABILITY -->
+<section>
+  <h2>6 — How reliably are these components estimated?</h2>
+
+  <p>Notice the target has shifted: until now we asked whether the <em>identity mean</em> is reliable; now we ask whether the individual variance components are themselves precisely <em>estimated</em>. By partitioning variance, the previous section revealed that two components — clip effects (12.5%) and taste (14.5%) — could be interesting to investigate further. But naming a variance component is not the same as being able to use it. We are back to a familiar question: how reliable is the estimate? The signal here is no longer the identity mean — it is the clip effect itself, or the taste cell itself — and we need to ask how much noise surrounds each one given the observations available.</p>
+
+  <p>As we saw in Part 2, to apply Spearman-Brown we need k — the number of observations that went into estimating each component. You might expect k = 5 for clip effects, since we have 5 clips per identity. But that figure (dividing by 5) was about averaging clip noise away to recover a reliable identity mean. Here the question is different: how many ratings did the model have to work with when estimating one specific clip's effect? Every rating of that clip — from any of the 47 raters, across both sessions — is independent evidence about what is particular to that clip. So k = 47 × 2 = <strong>94 ratings per clip</strong>. For taste cells — a specific rater's response to a specific identity — k is the number of ratings that rater gave to clips of that identity: 5 clips × 2 sessions = <strong>10 ratings per cell</strong>. Applying the same Spearman-Brown logic to both — as an approximation to the model-based precision of these random effects — gives:</p>
+
+  <table class="rel-table">
+    <thead>
+      <tr>
+        <th>Component</th>
+        <th>Raw %</th>
+        <th>Estimated from</th>
+        <th>Reliability</th>
+        <th>Amenable to covariate analysis?</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Clip effects (File)</td>
+        <td>12.5%</td>
+        <td>94 ratings per clip</td>
+        <td class="good">≈ 0.97</td>
+        <td>Yes — with clip-level predictors</td>
+      </tr>
+      <tr>
+        <td>Taste (PID × Identity)</td>
+        <td>14.5%</td>
+        <td>10 ratings per cell</td>
+        <td class="mod">≈ 0.68</td>
+        <td>Yes, with caution — aggregate patterns stronger than single cells</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p>The difference between 0.97 and 0.68 is not a property of the components themselves — again as a consistent theme, it is a direct consequence of k (the number of observations our key target signal of interest is being aggregated across). Clip effects had 94 observations each; taste cells had only 10. The same Spearman-Brown logic that ran through Parts 1 and 2 is at work here: reliability is a function of how many observations you have relative to the signal-to-noise ratio of each single observation. With 94 observations, clip effects are precisely determined — if clip-level covariates were available (smiling intensity, gaze direction, expression naturalness), this data would support those analyses comfortably. With only 10, taste estimates are moderate: individual cells are usable, but aggregate patterns — averaging a rater's deviations across all 20 identities — are a stronger basis for downstream work than relying on any single cell.</p>
+
+  <div class="callout green">
+    <strong>The broader point:</strong> the LMM does not just confirm that the paradigm is reliable — it reveals a map of where the unexplained variance lives, how large each component is, and whether the current design is adequate to investigate it. The question is not just "does the paradigm work?" but "what can we learn from the variance it generates?" — and that is a question only the LMM can begin to answer.
+  </div>
+</section>
+
+<!-- SECTION 7: TASTE IN PRACTICE -->
+<section>
+  <h2>7 — Taste in practice: what the BLUPs reveal</h2>
+
+  <p>Section 6 established that taste (PID×Identity) accounts for 14.5% of the latent variance underlying individual ratings — sizeable, reliably estimated at ≈ 0.68, and psychologically meaningful. That percentage tells us taste exists, but not what it actually looks like across raters. We have, though, already half-seen it: the individual rater lines in Parts 1 and 2 each traced their own path across the clips, zig-zagging around the consensus and sitting at their own overall height. Taste is what is left of one of those lines once its two shared parts are removed — the rater's overall height (their generosity) and the consensus shape every rater roughly follows. The BLUPs (Best Linear Unbiased Predictors) make this concrete: collapsing each identity's clips together, each of the 47 raters × 20 identities = 940 cells gets its own estimate of how much that rater deviated from the rating their generosity and the consensus would predict. For this individual-profile view we read the random effects from a linear fit of the same model, so the BLUPs are in rating-point units rather than on the latent scale of Sections 3–6.</p>
+
+  <p>Consequentially, the BLUPs form a 47 × 20 matrix — one estimated deviation per rater-identity cell, each derived from the 10 observations that rater gave to that identity (5 clips × 2 sessions). A BLUP of +1 for rater A on identity 7 means the model estimates that rater A gave identity 7 about one extra rating point above what their overall generosity and identity 7's consensus friendliness would predict. A BLUP of −1 means the opposite. How reliably those cell estimates are pinned down is what Section 6 addressed (≈ 0.68); the BLUP itself is simply the point estimate for each cell.</p>
+
+  <p>Across all 940 rater×identity cells, taste BLUPs range from −2.52 to +2.47 on the 1–9 scale (SD = 0.55). At the extremes, some raters give a specific face over two full points more than expected; others give the same face two points less. In the figure below we illustrate this with a heatmap for 12 of the 47 participants from the sample.</p>
+
+  <div style="margin:20px 0;background:var(--light-blue);border:1px solid var(--border);border-radius:14px;padding:20px">
+    <canvas id="taste-heatmap-canvas" height="340" style="width:100%;display:block;border-radius:8px"></canvas>
+    <div style="text-align:center;font-size:.76rem;color:var(--muted);margin-top:8px">Taste BLUPs for 12 of the 47 raters × 20 identities, from actual model estimates. Raters are ordered by ascending variability (flattest at top, most variable at bottom); identities are ordered left to right by group consensus mean. Orange = rated more than predicted; blue = rated less. Rows with vivid colour show raters with strong idiosyncratic preferences; pale rows show raters whose deviations are near zero throughout. Crucially, the column patterns differ across raters — face 2 for example, is not universally preferred, only preferred by some.</div>
+  </div>
+
+  <p>To read the heatmap correctly it helps to understand what the BLUPs are residuals from. Before computing each cell, the model has already removed two things: the rater's overall generosity (their PID intercept — how high or low they score everyone on average) and each identity's consensus standing (how friendly that face is rated across all raters on average). What remains in each cell is the part of that rater's rating that is explained by neither. So Rater A — the flattest row — is not necessarily the rater whose raw ratings are closest to the group mean; they could be a harsh rater who scores everyone lower. What the near-zero BLUPs say is that once generosity and consensus are stripped out, Rater A has no strong idiosyncratic pull toward or away from any particular face. Their pattern of which faces they rate relatively higher versus lower tracks the consensus closely. Rater L at the bottom is the opposite: even after removing generosity and consensus, they still deviate by up to 2.5 points on specific faces — a genuine individual preference that the group does not share.</p>
+
+  <p>Taste is distinct from generosity, which the PID intercept captures separately. It is the face-specific, rater-specific residual: the part of rating behaviour that is simultaneously individual and targeted at a particular identity.</p>
+
+  <div class="callout amber">
+    <strong>Why aggregation cannot do this</strong>
+    The averaged identity means — the output of the approach in Parts 1 and 2 — contain no rater-level information at all. Once you take the mean across 47 raters, the individual BLUP profiles are gone. The rater who gives one face an extra 2.4 points is cancelled by raters who give it 2.4 fewer. The LMM, by modelling the full rating matrix rather than collapsing it, preserves and explicitly estimates the individual-level structure that aggregation discards.
+  </div>
+
+  <div class="callout green">
+    <strong>From variance component to individual profile</strong>
+    The variance decomposition told us taste accounts for 14.5% of latent variance — interesting but abstract. The BLUP analysis makes it tangible: individual raters really do have consistent preferences for specific faces, with some profiles swinging over two rating points in either direction. They are unlikely to be mere noise — the model puts a substantial rater × identity component behind them — though each individual BLUP is a shrinkage estimate carrying its own uncertainty. The question now is whether any of that variation is predictable.
+  </div>
+</section>
+
+<!-- SECTION 8: TASTE AND GENDER -->
+<section>
+  <h2>8 — Does taste show in-group favoritism?</h2>
+
+  <p>Taste varies substantially across raters — but how much of that variation is random (a rater happens to like face 7 for no predictable reason) versus systematic (certain demographic combinations consistently produce higher or lower deviations)? Given in this study we have information both on the gender of the participants and the gender of the face identities, we can ask a concrete question: do raters give idiosyncratically higher ratings to same-gender faces?</p>
+
+  <h3>The model</h3>
+
+  <div class="formula">rating ~ rater_gender * identity_gender +
+         (1 | PID) +
+         (1 | identity) +
+         (1 | PID_identity) +
+         (1 | file) +
+         (1 | PID:session)</div>
+
+  <p>The fixed effects — rater_gender, identity_gender, and their interaction — absorb any systematic tendency for a given rater_gender × face_gender combination to deviate from zero. The <code>(1 | PID_identity)</code> random effect then captures the residual idiosyncratic variation around those group patterns: the part of taste that is genuinely individual and unpredictable from demographics alone. The question is whether the fixed interaction is non-trivial.</p>
+
+  <h3>Model comparison</h3>
+  <p>We compared three nested models using likelihood ratio tests: a null model (random effects only), an additive model (rater gender + face gender, no interaction), and the full interaction model. Adding rater gender and face gender as main effects did not significantly improve fit — Δχ²(2) = 3.50, p = .17. Adding the rater gender × face gender interaction did — Δχ²(1) = 12.22, p &lt; .001. The story is not about either gender variable in isolation, but about how they interact.</p>
+
+  <h3>The pattern</h3>
+
+  <div style="margin:20px 0;background:var(--light-blue);border:1px solid var(--border);border-radius:14px;padding:20px">
+    <canvas id="taste-gender-canvas" height="240" style="width:100%;display:block;border-radius:8px"></canvas>
+    <div style="display:flex;gap:24px;flex-wrap:wrap;margin-top:10px;justify-content:center;font-size:.8rem;color:var(--muted)">
+      <span style="display:flex;align-items:center;gap:6px"><span style="display:inline-block;width:14px;height:14px;background:#5b75ad;border-radius:3px"></span>Female rater</span>
+      <span style="display:flex;align-items:center;gap:6px"><span style="display:inline-block;width:14px;height:14px;background:#314e8b;border-radius:3px"></span>Male rater</span>
+    </div>
+    <div style="text-align:center;font-size:.76rem;color:var(--muted);margin-top:6px">Mean taste BLUP by rater gender × face gender. Values above zero = idiosyncratic preference above prediction; below zero = below prediction. Dashed line = zero reference.</div>
+  </div>
+
+  <p>The 2×2 table tells a clear story. Male raters give male faces +0.15 above prediction and female faces −0.15 below — a gap of 0.30 rating points consistent with in-group favoritism. Female raters show the same directional pattern but far more weakly: +0.03 for female faces and −0.03 for male faces. The interaction coefficient captures this asymmetry directly: male raters give male faces 0.48 rating points more than female raters do, relative to their ratings of female faces (β = 0.48, SE = 0.14, t = 3.51, p &lt; .001). There is no significant main effect of rater gender (β = −0.15, p = .63) — male raters do not rate higher or lower overall. The difference is specifically in which faces they favour.</p>
+
+  <div class="callout amber">
+    <strong>Treat these findings as exploratory</strong>
+    The rater sample is unbalanced: the great majority of raters are female, with only a small number of male raters. The interaction effect is estimated from within-rater contrasts — each rater rated both male and female faces — which improves power relative to a between-subjects design. But the male rater group is too small to support confident generalisation. These results motivate a follow-up study with a more balanced rater sample, not a strong substantive conclusion.
+  </div>
+
+  <div class="callout green">
+    <strong>What the full analysis adds up to</strong>
+    Starting from a simple reliability question — can we trust the rank ordering of these 20 identities? — the LMM has opened up a richer picture. The 47-rater average produces a highly reliable ordering. But beneath that average, raters differ not just in how generous they are overall, but in which specific faces they find friendly — and that idiosyncratic taste varies systematically with the match between rater gender and face gender. None of this is visible in the aggregate. It only becomes accessible once you model the full rating matrix rather than collapsing it to means.
+  </div>
+
+  <div class="teaser">
+    <h3 style="color: #dc2626;">Part 4 — Planning the optimal study</h3>
+    <p>The variance decomposition from Part 3 does more than reveal the structure of the data — it is the input to a design question we have not yet asked. Our study used 47 raters and 5 clips. Was that the optimal <em>design</em> choice? Part 4 uses the variance components as a G-study and asks: what combination of raters and clips would give us the best return?</p>
+    <a href="part4_generalisability.html">Go to Part 4 →</a>
+  </div>
+</section>
+
+<script>
+// ── Section 7: Taste BLUP heatmap ────────────────────────────────────────────
+(function() {
+  const canvas = document.getElementById('taste-heatmap-canvas');
+  if (!canvas) return;
+
+  // 20 identities ordered by consensus mean (left = least friendly)
+  const idLabels = ["11","2","3","13","12","16","17","15","19","6","18","5","7","8","14","9","4","20","10","1"];
+
+  // 12 raters selected evenly across the variability range (flat → most variable)
+  // Real BLUPs from the fitted lmer model (ranef PID_identity)
+  const raters = [
+    {label:'Rater A', sd:0.273, blups:[-0.066,0.173,0.482,0.457,0.09,0.586,-0.024,0.295,0.132,0.245,0.084,-0.25,-0.427,0.263,0.398,-0.083,-0.174,-0.133,-0.067,-0.208]},
+    {label:'Rater B', sd:0.308, blups:[0.253,-0.715,-0.708,0.022,0.333,-0.076,0.219,-0.065,0.224,-0.191,0.025,0.295,0.118,-0.248,-0.264,0.01,-0.232,0.11,0.101,0.412]},
+    {label:'Rater C', sd:0.327, blups:[0.782,-0.035,-0.33,0.475,0.032,-0.076,0.145,0.313,-0.001,-0.115,0.252,-0.384,-0.259,-0.097,0.039,-0.292,-0.609,0.337,-0.125,-0.266]},
+    {label:'Rater D', sd:0.396, blups:[0.065,0.38,-0.292,-0.091,-0.458,-0.415,-0.044,-0.178,-0.416,0.678,-0.464,0.409,1.062,-0.059,-0.225,0.124,0.335,-0.002,-0.012,-0.077]},
+    {label:'Rater E', sd:0.42,  blups:[-0.225,0.694,0.474,-0.23,-0.069,-0.101,-0.484,-0.166,0.275,0.237,-0.151,0.119,0.395,0.632,-0.741,-0.317,0.573,-0.594,0.453,-0.141]},
+    {label:'Rater F', sd:0.447, blups:[-0.647,-1.087,-0.477,-0.124,-0.417,0.08,0.149,-0.211,0.531,-0.11,0.257,-0.077,0.048,-0.243,0.496,0.166,-0.001,0.417,0.709,0.568]},
+    {label:'Rater G', sd:0.484, blups:[0.78,0.416,0.574,0.549,0.483,-0.001,-0.158,-0.066,-0.229,-0.418,-0.504,0.898,-0.335,-0.023,-0.264,-0.293,-0.685,-0.796,-0.126,-0.343]},
+    {label:'Rater H', sd:0.503, blups:[0.795,0.958,0.814,0.111,0.12,0.39,0.308,0.627,-0.215,-0.026,-0.112,-0.22,0.056,-0.235,-0.326,-0.43,-0.369,-0.933,-0.489,-0.479]},
+    {label:'Rater I', sd:0.532, blups:[-0.436,0.256,0.489,-0.742,-0.205,-0.916,-0.318,-0.301,0.215,0.026,-0.06,0.36,0.938,-0.032,-0.575,0.603,0.286,-0.352,0.77,0.855]},
+    {label:'Rater J', sd:0.548, blups:[0.186,-0.405,-0.549,-0.498,0.416,-0.37,0.001,-0.585,0.459,-0.258,0.41,-0.301,-0.402,1.042,-1.161,-0.058,0.304,0.721,0.184,0.722]},
+    {label:'Rater K', sd:0.636, blups:[0.481,-0.035,-0.707,-1.109,-0.345,0.378,-0.534,-0.215,-0.453,0.112,0.404,-0.685,-0.107,-0.926,-0.338,0.539,0.071,0.79,0.177,1.545]},
+    {label:'Rater L', sd:1.291, blups:[-2.524,2.468,1.645,-1.473,-0.634,-1.118,-1.049,-0.655,-1.119,0.88,-0.413,0.686,1.037,1.501,-1.004,1.683,0.687,-0.781,0.341,0.351]},
+  ];
+
+  // Diverging colour scale: blue → white → orange  (clamped at ±2.5)
+  function blupColor(v) {
+    const t = Math.max(-1, Math.min(1, v / 2.5)); // -1 to +1
+    if (t < 0) {
+      // blue: #2166ac → white
+      const s = -t;
+      const r = Math.round(255 + (33  - 255) * s);
+      const g = Math.round(255 + (102 - 255) * s);
+      const b = Math.round(255 + (172 - 255) * s);
+      return `rgb(${r},${g},${b})`;
+    } else {
+      // white → orange/red: #d6604d
+      const r = Math.round(255 + (214 - 255) * t);
+      const g = Math.round(255 + (96  - 255) * t);
+      const b = Math.round(255 + (77  - 255) * t);
+      return `rgb(${r},${g},${b})`;
+    }
+  }
+
+  function draw() {
+    const dpr = window.devicePixelRatio || 1;
+    const W = canvas.parentElement.clientWidth - 40;
+    const H = 340;
+    canvas.width = W * dpr; canvas.height = H * dpr;
+    canvas.style.width = W + 'px'; canvas.style.height = H + 'px';
+    const ctx = canvas.getContext('2d');
+    ctx.scale(dpr, dpr);
+
+    const padL = 60, padR = 110, padT = 14, padB = 46;
+    const plotW = W - padL - padR;
+    const plotH = H - padT - padB;
+    const nR = raters.length, nI = idLabels.length;
+    const cellW = plotW / nI;
+    const cellH = plotH / nR;
+
+    // Draw cells
+    raters.forEach((rater, ri) => {
+      rater.blups.forEach((v, ci) => {
+        const x = padL + ci * cellW;
+        const y = padT + ri * cellH;
+        ctx.fillStyle = blupColor(v);
+        ctx.fillRect(x + 0.5, y + 0.5, cellW - 1, cellH - 1);
+        // Value text if cell is large enough
+        if (cellW > 22 && cellH > 14) {
+          ctx.fillStyle = Math.abs(v) > 1.2 ? '#fff' : '#444';
+          ctx.font = `${Math.min(9, cellH * 0.55)}px Arial`;
+          ctx.textAlign = 'center';
+          ctx.fillText(v.toFixed(1), x + cellW / 2, y + cellH / 2 + 3);
+        }
+      });
+    });
+
+    // Row labels (rater labels on left)
+    ctx.textAlign = 'right'; ctx.font = '10px Arial'; ctx.fillStyle = '#5a6480';
+    raters.forEach((rater, ri) => {
+      ctx.fillText(rater.label, padL - 6, padT + ri * cellH + cellH / 2 + 3.5);
+    });
+
+    // Column labels (identity numbers on bottom)
+    ctx.textAlign = 'center'; ctx.font = '10px Arial'; ctx.fillStyle = '#5a6480';
+    idLabels.forEach((lbl, ci) => {
+      ctx.fillText(lbl, padL + ci * cellW + cellW / 2, padT + plotH + 14);
+    });
+    ctx.font = '11px Arial'; ctx.fillStyle = '#5a6480';
+    ctx.fillText('Identity (ordered by consensus  ←  least friendly · · · most friendly  →)', padL + plotW / 2, H - 4);
+
+    // Y axis label
+    ctx.save();
+    ctx.translate(10, padT + plotH / 2); ctx.rotate(-Math.PI / 2);
+    ctx.font = '10px Arial'; ctx.textAlign = 'center'; ctx.fillStyle = '#5a6480';
+    ctx.fillText('← more variable                 Raters                less variable →', 0, 0);
+    ctx.restore();
+
+    // Colour legend (right side)
+    const legX = W - padR + 14;
+    const legH = plotH * 0.75;
+    const legY = padT + plotH * 0.125;
+    const legW = 14;
+    const steps = 60;
+    for (let i = 0; i < steps; i++) {
+      const t = i / (steps - 1);          // 0 = bottom (most negative), 1 = top (most positive)
+      const v = 2.5 * (1 - 2 * (1 - t)); // maps 0→-2.5, 1→+2.5
+      ctx.fillStyle = blupColor(v);
+      ctx.fillRect(legX, legY + (steps - 1 - i) * (legH / steps), legW, legH / steps + 0.5);
+    }
+    ctx.strokeStyle = '#ccc'; ctx.lineWidth = 0.5;
+    ctx.strokeRect(legX, legY, legW, legH);
+
+    ctx.fillStyle = '#5a6480'; ctx.font = '9px Arial'; ctx.textAlign = 'left';
+    [['−2.5', legY + legH + 3], ['0', legY + legH / 2 + 3], ['+2.5', legY - 2]].forEach(([lbl, y]) => {
+      ctx.fillText(lbl, legX + legW + 4, y);
+    });
+    ctx.save();
+    ctx.translate(legX + legW + 28, legY + legH / 2);
+    ctx.rotate(Math.PI / 2);
+    ctx.textAlign = 'center'; ctx.font = '9px Arial';
+    ctx.fillText('BLUP (rating points)', 0, 0);
+    ctx.restore();
+  }
+
+  window.addEventListener('load', draw);
+  window.addEventListener('resize', draw);
+})();
+
+// ── Section 8: Mean taste BLUP by rater gender × face gender ─────────────────
+(function() {
+  const canvas = document.getElementById('taste-gender-canvas');
+  if (!canvas) return;
+
+  // Actual values from the R output
+  const cells = [
+    { raterG: 'Female rater', faceG: 'Female face', val:  0.031, color: '#5b75ad' },
+    { raterG: 'Female rater', faceG: 'Male face',   val: -0.032, color: '#5b75ad' },
+    { raterG: 'Male rater',   faceG: 'Female face', val: -0.146, color: '#314e8b' },
+    { raterG: 'Male rater',   faceG: 'Male face',   val:  0.152, color: '#314e8b' },
+  ];
+
+  function draw() {
+    const dpr = window.devicePixelRatio || 1;
+    const W = canvas.parentElement.clientWidth - 40;
+    const H = 240;
+    canvas.width = W * dpr; canvas.height = H * dpr;
+    canvas.style.width = W + 'px'; canvas.style.height = H + 'px';
+    const ctx = canvas.getContext('2d');
+    ctx.scale(dpr, dpr);
+
+    const padL = 52, padR = 20, padT = 20, padB = 60;
+    const plotW = W - padL - padR;
+    const plotH = H - padT - padB;
+    const yMin = -0.25, yMax = 0.25;
+
+    function yp(v) { return padT + plotH * (1 - (v - yMin) / (yMax - yMin)); }
+
+    // Gridlines + y labels
+    [-0.2,-0.1,0,0.1,0.2].forEach(v => {
+      ctx.strokeStyle = v === 0 ? '#b0b8cc' : '#e8ecf4';
+      ctx.setLineDash(v === 0 ? [4,3] : []);
+      ctx.lineWidth = 1;
+      ctx.beginPath(); ctx.moveTo(padL, yp(v)); ctx.lineTo(W - padR, yp(v)); ctx.stroke();
+      ctx.setLineDash([]);
+      ctx.fillStyle = '#8a94aa'; ctx.font = '10px Arial'; ctx.textAlign = 'right';
+      ctx.fillText(v.toFixed(1), padL - 6, yp(v) + 3.5);
+    });
+
+    // Y axis label
+    ctx.save();
+    ctx.translate(12, padT + plotH / 2); ctx.rotate(-Math.PI / 2);
+    ctx.fillStyle = '#5a6480'; ctx.font = '10px Arial'; ctx.textAlign = 'center';
+    ctx.fillText('Mean taste BLUP', 0, 0);
+    ctx.restore();
+
+    // Bars
+    const n = cells.length;
+    const groupW = plotW / n;
+    const barW = groupW * 0.55;
+    const zero = yp(0);
+
+    cells.forEach(({ val, color, raterG, faceG }, i) => {
+      const cx = padL + (i + 0.5) * groupW;
+      const top = yp(Math.max(val, 0));
+      const bot = yp(Math.min(val, 0));
+      ctx.fillStyle = color;
+      ctx.fillRect(cx - barW / 2, top, barW, bot - top);
+
+      // Value label
+      ctx.fillStyle = '#2c3550'; ctx.font = 'bold 11px Arial'; ctx.textAlign = 'center';
+      const labelY = val >= 0 ? top - 5 : bot + 14;
+      ctx.fillText((val >= 0 ? '+' : '') + val.toFixed(3), cx, labelY);
+
+      // X axis labels (two lines)
+      ctx.fillStyle = '#5a6480'; ctx.font = '11px Arial';
+      ctx.fillText(raterG, cx, padT + plotH + 18);
+      ctx.fillStyle = '#8a94aa'; ctx.font = '10px Arial';
+      ctx.fillText(faceG, cx, padT + plotH + 32);
+    });
+
+    // Same-gender annotation brackets
+    ctx.strokeStyle = '#888'; ctx.lineWidth = 1; ctx.setLineDash([3,2]);
+    // Female same-gender pair (bars 0 and 2 are female face; but actually group by same-gender: bar 0 F×F and bar 3 M×M)
+    ctx.setLineDash([]);
+  }
+
+  window.addEventListener('load', draw);
+  window.addEventListener('resize', draw);
+})();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Part 1: What ICC is and what it tells us</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --navy: #1e2e5c; --blue: #314e8b; --mid: #5b75ad;
+    --light-blue: #edf3ff; --bg: #f5f5f2; --card: #ffffff;
+    --border: #d5dae8; --text: #1a2030; --muted: #5a6480;
+    --green: #1a7a4a; --green-bg: #eaf5ef;
+    --amber: #92570a; --amber-bg: #fff8ee;
+    --red: #8b1a1a; --red-bg: #fff0f0;
+    --teal: #0e6e6e; --teal-bg: #e6f5f5;
+    --purple: #4a2e7a; --purple-bg: #f2eeff;
+  }
+  body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+    background: var(--bg); color: var(--text); line-height: 1.6; font-size: 16px; }
+  .wrap { max-width: 1060px; margin: 0 auto; padding: 36px 22px 80px; }
+
+  .hero { background: linear-gradient(135deg, #1a3a5c, #4a6a9f);
+    color: white; padding: 44px 40px; border-radius: 20px;
+    box-shadow: 0 12px 32px rgba(0,0,0,.18); margin-bottom: 28px; }
+  .hero .tag { font-size: .8rem; font-weight: 600; letter-spacing: .08em;
+    text-transform: uppercase; opacity: .75; margin-bottom: 10px; }
+  .hero h1 { font-size: 2rem; line-height: 1.15; margin-bottom: 12px; }
+  .hero p { font-size: 1.05rem; opacity: .92; max-width: 780px; }
+  .hero .stage-links { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 18px; }
+  .hero .stage-links a {
+    padding: 5px 16px; border-radius: 20px; font-size: .82rem; text-decoration: none;
+    border: 1px solid rgba(255,255,255,.35); color: rgba(255,255,255,.75); transition: all .2s; }
+  .hero .stage-links a.active { background: rgba(255,255,255,.25); color: white; border-color: rgba(255,255,255,.6); }
+  .hero .stage-links a:hover:not(.active) { background: rgba(255,255,255,.1); color: white; }
+
+  section { background: var(--card); border: 1px solid var(--border);
+    border-radius: 18px; padding: 30px 32px; margin-bottom: 22px;
+    box-shadow: 0 6px 18px rgba(30,46,92,.06); }
+  h2 { color: var(--blue); font-size: 1.3rem; margin-bottom: 14px; }
+  h3 { color: var(--navy); font-size: 1.05rem; margin: 22px 0 8px; }
+  p { margin-bottom: 12px; }
+  p:last-child { margin-bottom: 0; }
+
+  .callout { border-radius: 12px; padding: 14px 18px; margin: 16px 0;
+    border-left: 4px solid; font-size: .97rem; }
+  .callout.blue  { background: var(--light-blue); border-color: var(--mid); }
+  .callout.green { background: var(--green-bg);   border-color: var(--green); }
+  .callout.amber { background: var(--amber-bg);   border-color: var(--amber); }
+  .callout.red   { background: var(--red-bg);     border-color: var(--red); }
+  .callout.teal  { background: var(--teal-bg);    border-color: var(--teal); }
+  .callout.purple{ background: var(--purple-bg);  border-color: var(--purple); }
+  .callout strong { display: block; margin-bottom: 4px; }
+
+  .formula { background: #f0f2f8; border: 1px solid var(--border);
+    border-radius: 12px; padding: 16px 20px; margin: 14px 0;
+    font-family: "SFMono-Regular", Consolas, monospace; font-size: .92rem;
+    overflow-x: auto; line-height: 1.9; }
+
+  /* Stacked-fraction equation */
+  .eqn { display: flex; align-items: center; justify-content: center; gap: 16px;
+    flex-wrap: wrap; background: #f0f2f8; border: 1px solid var(--border);
+    border-radius: 12px; padding: 22px 20px; margin: 14px 0; overflow-x: auto;
+    font-family: "SFMono-Regular", Consolas, monospace; }
+  .eqn .lhs { font-size: 1.05rem; font-weight: 700; color: var(--navy); white-space: nowrap; }
+  .frac { display: inline-flex; flex-direction: column; text-align: center; }
+  .frac .num { padding: 0 16px 7px; }
+  .frac .bar { height: 2px; background: var(--navy); width: 100%; }
+  .frac .den { padding: 7px 16px 0; }
+  .frac .num, .frac .den { font-size: .95rem; color: var(--text); white-space: nowrap; }
+  .eqn sub { font-size: .68em; }
+  .eqn-note { font-size: .85rem; color: var(--muted); text-align: center; margin: -2px 0 14px; }
+
+  /* Dot plot widget */
+  #profileplot-wrap { margin: 20px 0; background: var(--light-blue);
+    border: 1px solid var(--border); border-radius: 14px; padding: 20px; }
+  #profileplot { width: 100%; display: block; }
+
+  /* ICC bar widget */
+  .icc-split { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 16px 0; }
+  @media (max-width: 560px) { .icc-split { grid-template-columns: 1fr; } }
+  .icc-bar-card { border: 1.5px solid var(--border); border-radius: 14px; padding: 18px; background: #fafbff; }
+  .icc-bar-card h4 { font-size: .88rem; font-weight: 700; color: var(--muted);
+    text-transform: uppercase; letter-spacing: .06em; margin-bottom: 14px; }
+  .prop-bar { height: 36px; border-radius: 8px; overflow: hidden;
+    display: flex; margin-bottom: 10px; }
+  .prop-seg { display: flex; align-items: center; justify-content: center;
+    font-size: .78rem; font-weight: 700; color: white; transition: width .5s ease; }
+  .prop-label { display: flex; gap: 16px; flex-wrap: wrap; margin-top: 6px; }
+  .prop-item { display: flex; align-items: center; gap: 5px; font-size: .8rem; color: var(--muted); }
+  .prop-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+
+  /* Notation table */
+  .notation-table { width: 100%; border-collapse: collapse; font-size: .88rem; margin: 12px 0; }
+  .notation-table th { background: var(--navy); color: white; padding: 8px 12px;
+    font-weight: 600; font-size: .82rem; text-align: left; }
+  .notation-table td { padding: 8px 12px; border-bottom: 1px solid var(--border); }
+  .notation-table tr:last-child td { border-bottom: none; }
+  .notation-table tr:hover td { background: var(--light-blue); }
+
+  /* Teaser */
+  .teaser { background: linear-gradient(135deg, #1e2e5c 0%, #314e8b 100%);
+    color: white; border-radius: 16px; padding: 26px 28px; margin-top: 22px; }
+  .teaser h3 { color: white; margin: 0 0 8px; font-size: 1.1rem; }
+  .teaser p { opacity: .88; font-size: .97rem; margin-bottom: 14px; }
+  .teaser a { display: inline-block; background: rgba(255,255,255,.2);
+    color: white; text-decoration: none; padding: 8px 20px;
+    border-radius: 20px; font-size: .88rem; border: 1px solid rgba(255,255,255,.4);
+    transition: background .2s; }
+  .teaser a:hover { background: rgba(255,255,255,.3); }
+
+  /* Details/expandable */
+  details { border: 1px solid var(--border); border-radius: 12px; margin: 16px 0; overflow: hidden; }
+  summary { padding: 12px 16px; cursor: pointer; font-size: .93rem; color: var(--blue);
+    background: var(--light-blue); list-style: none; display: flex; align-items: center; gap: 8px; }
+  summary::before { content: '▶'; font-size: .68rem; transition: transform .2s; flex-shrink: 0; }
+  details[open] summary::before { transform: rotate(90deg); }
+  details > *:not(summary) { padding: 18px 20px; background: #fafbff; font-size: .93rem; }
+
+  @media (max-width: 640px) {
+    .hero { padding: 28px 22px; } .hero h1 { font-size: 1.55rem; }
+    section { padding: 22px 18px; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<div class="hero">
+  <div class="tag">Part 1 of 4</div>
+  <h1>Reliability and the ICC — what they actually measure</h1>
+  <p>We have 20 people, 5 video clips each, and 47 raters scoring perceived friendliness on a 1–9 scale. Before we can say anything useful about who appears more or less friendly, we need to ask: how much of a raw rating actually reflects the person being rated?</p>
+  <div class="stage-links">
+    <a class="active" href="#">Part 1: ICC</a>
+    <a href="part2_aggregation.html">Part 2: Aggregation</a>
+    <a href="part3_mixed_models.html">Part 3: Mixed models</a>
+    <a href="part4_generalisability.html">Part 4: Generalisability</a>
+  </div>
+</div>
+
+<!-- SECTION 1: THE STUDY -->
+<section>
+  <h2>1 — The study and the question</h2>
+
+  <p>The study asked 47 raters to score video clips of 20 people on perceived friendliness, using a scale from 1 (not at all friendly) to 9 (extremely friendly). Each of the 20 people was represented by 5 video clips, giving 100 clips in total. Raters scored all 100 clips across two sessions — so each rater produced 200 ratings in total, and each of the 100 clips received 47 ratings per session (94 across the two sessions).</p>
+
+  <p>The goal is to recover a stable <em>rank ordering</em> of the 20 people by perceived friendliness — not to measure the absolute level, but to say with confidence that Person A is seen as friendlier than Person B, who is friendlier than Person C, and so on. This rank ordering is what we would then want to use as a measure in subsequent research — for example, correlating perceived friendliness with personality traits, social outcomes, or cognitive variables.</p>
+
+  <p>The central question is: how much can we trust that rank ordering? If we repeated the study with a different set of 47 raters, or a different set of video clips of the same people, would we get the same ordering? Or is a rating of perceived friendliness so noisy and idiosyncratic that the ordering would look quite different each time?</p>
+
+  <div class="callout blue">
+    <strong>The reliability question</strong>
+    Reliability, in the psychometric sense used here, is not about whether our ratings are "correct" in some absolute sense. It is about consistency: does the measurement instrument — in this case, our rating procedure — produce the same answer when applied to the same thing more than once? A rank ordering that is stable across raters, video clips, and occasions is a reliable one.
+  </div>
+</section>
+
+<!-- SECTION 2: SIGNAL AND NOISE -->
+<section>
+  <h2>2 — Signal and noise in a single rating</h2>
+
+  <p>Consider what happens when a single rater looks at a single video clip and gives a friendliness score. Their rating will reflect several things simultaneously: the stable cues that make the person appear friendly (the signal we want), their own idiosyncratic preferences and standards (some raters are more generous than others), features of that particular video clip (a slightly awkward angle, an unusually bright smile), and moment-to-moment variation in attention and judgment.</p>
+
+  <p>All of these contribute to the number the rater writes down. Only one source of the observed variance — the person's stable perceived friendliness, the part that comes through consistently across clips and raters — is what we actually want to measure. Everything else is noise: real, systematic, but irrelevant to our research question.</p>
+
+  <p>We can see this across the whole stimulus set. In the figure below, the 100 clips are ordered left-to-right by their consensus score — the 47-rater average, the bold line — with three individual raters' profiles overlaid. The consensus climbs smoothly: that steady rise is the <em>between</em>-clip variance, the signal. But each rater's line zig-zags by several points from clip to clip, and sits at its own overall height. The zig-zag — disagreement about which clip outranks which — is the <em>within</em>-clip noise that matters for recovering an ordering; the differences in overall height (some raters simply more generous than others) we set aside shortly, because they leave the ordering intact. So a single rater's score for any one clip is an unstable estimate — and a stable, representative summary is exactly what we need. Every downstream use of these data depends on each aggregate — each clip's score, and ultimately each person's — faithfully representing what we are trying to measure. Making those aggregates as stable and representative as possible is the entire point of reliability, and it is what the rest of this series is about.</p>
+
+  <div id="profileplot-wrap">
+    <canvas id="profileplot" height="290" role="img" aria-label="Line chart of 100 video clips ordered by consensus rating, shown as a bold line rising from about 3.3 to 7.3. Three individual raters' profiles are overlaid; each trends upward but zig-zags by several rating points between adjacent clips and sits at a different overall height, showing large within-clip disagreement around the consensus."></canvas>
+    <div style="text-align:center;font-size:.78rem;color:var(--muted);margin-top:8px">
+      The 100 video clips ordered left → right by consensus (47-rater mean, bold line), with three individual raters' full profiles overlaid (strict, mid and generous by overall level). All lines trend upward — the between-clip signal. Each rater also zig-zags clip-to-clip and sits at its own overall height; for our ordering goal it is the zig-zag — disagreement about which clip outranks which — that counts as noise, while the differences in overall height (some raters simply more generous) are set aside by the consistency ICC. A single rater's score for any one clip is still an unstable estimate of its consensus. Session 1 ratings.
+    </div>
+  </div>
+  <script>
+  window.addEventListener('load', function () {
+    var canvas = document.getElementById('profileplot');
+    if (!canvas) return;
+    var consensus = [3.26,3.34,3.96,4.04,4.09,4.13,4.17,4.26,4.3,4.34,4.36,4.38,4.38,4.4,4.43,4.43,4.43,4.47,4.53,4.53,4.57,4.62,4.64,4.64,4.7,4.83,4.83,4.85,4.87,4.87,4.91,4.91,4.94,4.94,4.98,5.0,5.04,5.06,5.06,5.09,5.17,5.21,5.26,5.26,5.28,5.28,5.28,5.28,5.28,5.32,5.34,5.43,5.45,5.45,5.45,5.45,5.47,5.47,5.47,5.53,5.53,5.62,5.62,5.64,5.64,5.66,5.81,5.81,5.87,5.87,5.87,5.96,5.98,6.0,6.02,6.02,6.09,6.13,6.19,6.19,6.28,6.28,6.3,6.3,6.43,6.49,6.53,6.53,6.57,6.6,6.6,6.64,6.68,6.72,6.87,6.87,6.91,7.15,7.23,7.26];
+    var strict = [1,1,2,3,4,5,3,2,4,3,3,2,2,5,2,3,3,3,4,4,3,5,3,4,3,3,5,3,4,2,4,3,6,4,3,4,4,5,4,4,5,4,4,4,3,2,3,4,4,4,5,3,4,4,5,4,5,3,3,4,6,5,4,4,5,5,6,5,2,4,5,4,3,6,4,6,5,6,4,5,6,6,6,7,5,4,5,7,4,7,7,7,5,6,6,7,7,6,7,8];
+    var mid = [2,2,6,6,2,2,3,3,2,4,5,1,7,5,6,4,3,6,4,2,4,2,3,5,7,2,6,5,4,5,5,3,6,5,5,4,5,5,8,7,4,4,5,2,7,7,5,3,3,6,5,5,3,7,7,6,4,7,7,4,5,9,9,6,8,6,7,7,7,7,4,5,8,7,8,5,8,6,8,8,5,6,7,8,8,6,4,8,6,6,9,9,7,9,7,6,9,9,8,9];
+    var gen = [3,4,6,5,4,6,5,7,8,5,5,5,5,5,5,4,4,7,7,5,6,6,6,5,7,6,6,7,6,6,6,6,6,6,6,6,5,5,6,8,7,6,6,6,5,7,7,6,7,7,6,6,8,6,8,7,6,7,6,6,8,5,8,7,5,6,7,7,6,8,8,7,6,7,6,8,6,6,7,7,6,7,6,6,7,6,7,8,7,5,7,7,7,7,8,6,8,8,9,7];
+    var dpr = window.devicePixelRatio || 1;
+    var W = canvas.parentElement.clientWidth - 40, H = 290;
+    canvas.width = W * dpr; canvas.height = H * dpr;
+    canvas.style.width = W + 'px'; canvas.style.height = H + 'px';
+    var ctx = canvas.getContext('2d'); ctx.scale(dpr, dpr);
+    var nI = consensus.length;
+    var padL = 32, padR = 14, padT = 30, padB = 32;
+    var plotW = W - padL - padR, plotH = H - padT - padB;
+    function xPos(i) { return padL + (i / (nI - 1)) * plotW; }
+    function yPos(v) { return padT + plotH * (1 - (v - 1) / 8); }
+    ctx.strokeStyle = '#e2e6f0'; ctx.lineWidth = 1;
+    ctx.font = '11px -apple-system, Arial, sans-serif'; ctx.fillStyle = '#8a94aa'; ctx.textAlign = 'right';
+    for (var v = 1; v <= 9; v++) { var y = yPos(v); ctx.beginPath(); ctx.moveTo(padL, y); ctx.lineTo(W - padR, y); ctx.stroke(); ctx.fillText(v, padL - 4, y + 4); }
+    function drawLine(arr, color, wd, alpha) {
+      ctx.globalAlpha = alpha; ctx.strokeStyle = color; ctx.lineWidth = wd; ctx.lineJoin = 'round'; ctx.beginPath();
+      for (var i = 0; i < arr.length; i++) { var x = xPos(i), yy = yPos(arr[i]); if (i) ctx.lineTo(x, yy); else ctx.moveTo(x, yy); }
+      ctx.stroke(); ctx.globalAlpha = 1;
+    }
+    drawLine(strict, '#314e8b', 1.2, 0.65);
+    drawLine(mid, '#0e6e6e', 1.2, 0.65);
+    drawLine(gen, '#92570a', 1.2, 0.65);
+    drawLine(consensus, '#1e2e5c', 2.8, 1);
+    ctx.fillStyle = '#5a6480'; ctx.font = '11px -apple-system, Arial, sans-serif'; ctx.textAlign = 'center';
+    ctx.fillText('100 video clips, ordered left → right by consensus (47-rater mean)', padL + plotW / 2, H - 6);
+    var legend = [['47-rater consensus', '#1e2e5c', 2.8], ['strict rater', '#314e8b', 1.6], ['mid rater', '#0e6e6e', 1.6], ['generous rater', '#92570a', 1.6]];
+    var lx = padL, ly = 14; ctx.font = '11px -apple-system, Arial, sans-serif'; ctx.textAlign = 'left';
+    legend.forEach(function (e) {
+      ctx.strokeStyle = e[1]; ctx.lineWidth = e[2]; ctx.beginPath(); ctx.moveTo(lx, ly); ctx.lineTo(lx + 18, ly); ctx.stroke();
+      ctx.fillStyle = '#5a6480'; ctx.fillText(e[0], lx + 22, ly + 4); lx += 22 + ctx.measureText(e[0]).width + 16;
+    });
+  });
+  </script>
+
+  <div class="callout teal">
+    <strong>The split that defines reliability.</strong> Every rating's variance is between-clip (signal) plus within-clip (noise) — push the within part to zero and all raters agree perfectly, so a summary based on them is stable and meaningful; push the between part to zero and there is nothing to recover, so any summary is unstable and meaningless. Real data sits in between, and the ICC in Section 3 is simply the between share: signal ÷ (signal + noise). Everything after it — averaging raters, the mixed model, the design question in Part 4 — works by shrinking the within part to enlarge that share.
+  </div>
+</section>
+
+<!-- SECTION 3: THE ICC -->
+<section>
+  <h2>3 — Formalising the ratio — the ICC</h2>
+
+  <p>The intraclass correlation coefficient (ICC) puts a single number on exactly the split we have just been looking at. It is computed from an ANOVA decomposition: so following our earlier example, we can take the 100 video clips as the unit, and partition the total variance in ratings into a between-clip component (the signal) and everything else (the noise).</p>
+
+  <div class="eqn">
+    <span class="lhs">ICC(C,1)&nbsp;=</span>
+    <span class="frac">
+      <span class="num">MS<sub>Between</sub> − MS<sub>Within</sub></span>
+      <span class="bar"></span>
+      <span class="den">MS<sub>Between</sub> + (k − 1) × MS<sub>Within</sub></span>
+    </span>
+  </div>
+  <p class="eqn-note">k = number of raters &nbsp;·&nbsp; MS<sub>Between</sub> = between-clip mean square &nbsp;·&nbsp; MS<sub>Within</sub> = residual (within-clip) mean square</p>
+
+  <p>(You will spot the <em>k</em> − 1 in the denominator: <em>k</em> is simply the number of raters. We flag it now because it becomes the central lever from Part 2 onward — the "1" in ICC(C,1) means we are judging a <em>single</em> rater, and averaging over many raters, ICC(C,<em>k</em>), is what turns a modest single-rating ICC into a reliable measure.)</p>
+
+  <p>The numerator captures how much clips differ over and above random error; the denominator scales it by the total. Put simply, the larger the signal (the numerator), the more of the observed variance reflects the rank ordering we actually care about. The result runs from 0 (all noise) to 1 (all signal).</p>
+
+  <p>Applied to our data — a single rater scoring a single clip — the ICC comes out at <strong>0.271</strong>: about 27% of the variance in a single rating is stable between-clip signal, the other 73% noise. This is exactly the split the Section 2 figure showed — the gentle climb of the consensus against the wide scatter of each rater's profile around it — now reduced to a single number.</p>
+
+  <div class="icc-split">
+    <div class="icc-bar-card">
+      <h4>Single rating — ICC(C,1) = 0.271</h4>
+      <div class="prop-bar">
+        <div class="prop-seg" style="width:27.1%;background:#314e8b">27%</div>
+        <div class="prop-seg" style="width:72.9%;background:#d5dae8;color:#5a6480">73%</div>
+      </div>
+      <div class="prop-label">
+        <div class="prop-item"><div class="prop-dot" style="background:#314e8b"></div>Between-clip signal</div>
+        <div class="prop-item"><div class="prop-dot" style="background:#d5dae8"></div>Within-clip noise (rater×clip, residual)</div>
+      </div>
+    </div>
+    <div class="icc-bar-card">
+      <h4>What this means practically</h4>
+      <p style="font-size:.88rem;color:var(--muted);margin:0">The square root, √0.271 ≈ <strong>0.52</strong>, is roughly how well one rater's score of one clip tracks that clip's consensus (47-rater) value. Moderate — and far from reliable enough to use as a measurement instrument.</p>
+    </div>
+  </div>
+
+  <div class="callout amber">
+    <strong>How to read 0.271 — a starting point, not a verdict.</strong> By the thresholds often quoted (e.g., Koo &amp; Li, 2016: &gt;0.75 = good, 0.5–0.75 = moderate, &lt;0.5 = poor) a single-rating ICC of 0.271 looks "poor" — but that misses the point. This is the signal density of one rater scoring one clip, not the reliability of the measure as we intend to use it. Concretely: in that single rating the signal we care about — the part that tracks the rank ordering of our 100 clips — is largely <em>washed out</em> by everything else — the raters' idiosyncratic clip-by-clip preferences and momentary noise. So to trust the ordering we recover, we cannot lean on single observations; we have to <em>aggregate</em> across many raters (and later across clips too). That is a natural intuition: any estimate is only as good as the number of observations that feed it. (And because the unit here is the clip, that signal is not even purely about the <em>people</em> yet — it mixes genuine identity differences with clip-to-clip differences within a person.) The build-up — and the reliable <em>person</em>-level score it produces — is the subject of Part 2.
+  </div>
+</section>
+
+<!-- SECTION 4: NOTATION -->
+<section>
+  <h2>4 — A note on what kind of ICC</h2>
+
+  <p>The ICC family contains several distinct variants, and the differences matter. The two main distinctions are between one-way and two-way designs, and between absolute agreement and consistency.</p>
+
+  <p>A <em>one-way</em> design uses different raters for each target — each person is rated by a unique, non-overlapping group. A <em>two-way</em> design uses the same raters for all targets, so rater effects can be separated out as their own source of variance. Our study is two-way: all 47 raters scored all 20 identities.</p>
+
+  <p><em>Absolute agreement</em> (ICC(A)) asks whether raters give the same absolute scores — if Rater A gives 6 and Rater B gives 4 to the same face, that disagreement counts against reliability. <em>Consistency</em> (ICC(C)) asks only whether raters rank the targets the same way — if Rater A gives 6 and Rater B gives 4 but they both put Face X above Face Y, that counts as consistent. Since our goal is rank ordering rather than absolute level, consistency is the appropriate variant we have selected (hence C in the ICC(C,1)!).</p>
+
+  <table class="notation-table">
+    <thead>
+      <tr><th>Notation</th><th>Shrout &amp; Fleiss (1979)</th><th>McGraw &amp; Wong (1996)</th><th>Our use</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>Two-way, consistency, single rater</td><td>ICC(3,1)</td><td>ICC(C,1)</td><td>✓ ICC(C,1) = 0.271</td></tr>
+      <tr><td>Two-way, consistency, mean of k raters</td><td>ICC(3,k)</td><td>ICC(C,k)</td><td>✓ ICC(C,47) — Part 2</td></tr>
+      <tr><td>Two-way, absolute agreement, single rater</td><td>ICC(2,1)</td><td>ICC(A,1)</td><td>— (not our goal)</td></tr>
+    </tbody>
+  </table>
+
+  <p>Throughout these materials we use the McGraw &amp; Wong (1996) letter notation — ICC(C,1), ICC(C,k) — as it is more descriptive. The subscript after the comma refers to the number of raters: 1 for a single rater, k for the mean of k raters.</p>
+
+  <details>
+    <summary>Why does the design (one-way vs two-way) change the ICC value?</summary>
+    <div>
+      <p style="margin-bottom:10px">In a one-way design, variance due to rater differences cannot be separated from other error — it all goes into the denominator. In a two-way crossed design (same raters for all targets), the rater main effect can be identified and, for the consistency ICC, removed from the denominator entirely. This is why ICC(C) is always at least as large as the equivalent one-way ICC: it treats scale-use differences between raters as irrelevant to the rank-ordering question, which is appropriate when that is genuinely our goal.</p>
+      <p>The practical implication: if you use a one-way ICC for data collected in a two-way design, you will get a lower (more conservative) reliability estimate than the consistency ICC. Both are technically valid — they answer slightly different questions about what counts as agreement.</p>
+    </div>
+  </details>
+</section>
+
+<!-- SECTION 5: CLOSING -->
+<section>
+  <h2>5 — Where we are</h2>
+
+  <p>A single rater scoring a single clip gives a rating that is about 27% signal and 73% noise, and the rank ordering implied by single ratings correlates only about 0.52 with the true underlying ordering. That is not good enough to build research on.</p>
+
+  <p>The Section 2 figure makes the reason intuitive: each rater's line wanders several points around the consensus from one clip to the next, so any single rater's score for a clip lands well off that clip's true value. Each rating is a single draw from the scores different raters give that clip, and one draw is a poor estimate of the clip's mean — exactly as a single observation drawn from a population is a noisy estimate of the population mean. You do not characterise a distribution with one data point, and the fix is the same here: take more draws, and as they accumulate the random fluctuations average out and the mean converges on the true value.</p>
+
+  <p>Crucially, 0.271 is not the reliability of our measure — it is the reliability of its smallest unit, one rater judging one clip. That single-rating value is fixed, but the reliability we can <em>achieve</em> is not: it depends on how many observations we average. So 0.271 says nothing about what averaging many will do — which is exactly where the story turns. The Spearman-Brown formula shows how the ICC grows as we aggregate across raters, and how many we need to reach a reliability fit for purpose. That is Part 2.</p>
+
+  <div class="teaser">
+    <h3>Part 2 — What aggregation does</h3>
+    <p>Our example so far used all 100 clips to show the ICC at the level of a single clip. But the real target is the 20 identities — the people — and their rank ordering by friendliness, with five clips for each person. What happens once we aggregate across raters <em>and</em> across those five clips, and how reliably does that recover the ordering of our 20 identities?</p>
+    <a href="part2_aggregation.html">Go to Part 2 →</a>
+  </div>
+</section>
+
+</div>
+
+<script>
+// Wrap wide tables so they scroll horizontally on narrow screens instead of distorting the layout
+document.querySelectorAll('table').forEach(function (t) {
+  if (t.parentElement && t.parentElement.classList.contains('table-scroll')) return;
+  var w = document.createElement('div');
+  w.className = 'table-scroll';
+  w.style.overflowX = 'auto';
+  w.style.webkitOverflowScrolling = 'touch';
+  t.parentNode.insertBefore(w, t);
+  w.appendChild(t);
+});
+</script>
+
+</body>
+</html>

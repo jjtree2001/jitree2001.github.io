@@ -1,0 +1,720 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Part 4: From Reliability to Generalisability</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --navy: #1e2e5c; --blue: #314e8b; --mid: #5b75ad;
+    --light-blue: #edf3ff; --bg: #f5f5f2; --card: #ffffff;
+    --border: #d5dae8; --text: #1a2030; --muted: #5a6480;
+    --green: #1a7a4a; --green-bg: #eaf5ef;
+    --amber: #92570a; --amber-bg: #fff8ee;
+    --red: #8b1a1a; --red-bg: #fff0f0;
+    --teal: #0e6e6e; --teal-bg: #e6f5f5;
+    --purple: #4a2e7a; --purple-bg: #f2eeff;
+    --placeholder: #6b3a00; --placeholder-bg: #fdf3e3; --placeholder-border: #d4840a;
+  }
+  body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+    background: var(--bg); color: var(--text); line-height: 1.6; font-size: 16px; }
+  .wrap { max-width: 1060px; margin: 0 auto; padding: 36px 22px 80px; }
+
+  .hero { background: linear-gradient(135deg, #1a3a5c, #4a6a9f);
+    color: white; padding: 44px 40px; border-radius: 20px;
+    box-shadow: 0 12px 32px rgba(0,0,0,.18); margin-bottom: 28px; }
+  .hero .tag { font-size: .8rem; font-weight: 600; letter-spacing: .08em;
+    text-transform: uppercase; opacity: .75; margin-bottom: 10px; }
+  .hero h1 { font-size: 2rem; line-height: 1.15; margin-bottom: 12px; }
+  .hero p { font-size: 1.05rem; opacity: .92; max-width: 780px; }
+  .hero .stage-links { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 18px; }
+  .hero .stage-links a {
+    padding: 5px 16px; border-radius: 20px; font-size: .82rem; text-decoration: none;
+    border: 1px solid rgba(255,255,255,.35); color: rgba(255,255,255,.75); transition: all .2s; }
+  .hero .stage-links a.active { background: rgba(255,255,255,.25); color: white; border-color: rgba(255,255,255,.6); }
+  .hero .stage-links a:hover:not(.active) { background: rgba(255,255,255,.1); color: white; }
+
+  section { background: var(--card); border: 1px solid var(--border);
+    border-radius: 18px; padding: 30px 32px; margin-bottom: 22px;
+    box-shadow: 0 6px 18px rgba(30,46,92,.06); }
+  h2 { color: var(--blue); font-size: 1.3rem; margin-bottom: 14px; }
+  h3 { color: var(--navy); font-size: 1.05rem; margin: 22px 0 8px; }
+  p { margin-bottom: 12px; }
+  p:last-child { margin-bottom: 0; }
+
+  .callout { border-radius: 12px; padding: 14px 18px; margin: 16px 0;
+    border-left: 4px solid; font-size: .97rem; }
+  .callout.blue   { background: var(--light-blue); border-color: var(--mid); }
+  .callout.green  { background: var(--green-bg);   border-color: var(--green); }
+  .callout.amber  { background: var(--amber-bg);   border-color: var(--amber); }
+  .callout.teal   { background: var(--teal-bg);    border-color: var(--teal); }
+  .callout.purple { background: var(--purple-bg);  border-color: var(--purple); }
+  .callout strong { display: block; margin-bottom: 4px; }
+
+  .formula { background: #f0f2f8; border: 1px solid var(--border);
+    border-radius: 12px; padding: 16px 20px; margin: 14px 0;
+    font-family: "SFMono-Regular", Consolas, monospace; font-size: .92rem;
+    overflow-x: auto; line-height: 1.9; white-space: pre; }
+
+  /* Three-level cards */
+  .level-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin: 18px 0; }
+  @media (max-width: 700px) { .level-grid { grid-template-columns: 1fr; } }
+  .level-card { border-radius: 14px; padding: 18px 18px 16px; border: 1.5px solid; }
+  .level-card .lnum { font-size: .72rem; font-weight: 700; letter-spacing: .09em;
+    text-transform: uppercase; margin-bottom: 6px; }
+  .level-card .ltitle { font-size: 1rem; font-weight: 700; margin-bottom: 6px; line-height: 1.25; }
+  .level-card .lq { font-style: italic; font-size: .88rem; margin-bottom: 8px; }
+  .level-card .ltools { font-size: .82rem; }
+  .level-card.l1 { background: var(--light-blue); border-color: var(--mid); }
+  .level-card.l1 .lnum { color: var(--mid); }
+  .level-card.l2 { background: var(--teal-bg); border-color: var(--teal); }
+  .level-card.l2 .lnum { color: var(--teal); }
+  .level-card.l3 { background: var(--purple-bg); border-color: var(--purple); }
+  .level-card.l3 .lnum { color: var(--purple); }
+  .level-card.l3 .ltitle { color: var(--purple); }
+
+  /* Rouder table */
+  .rtable { width: 100%; border-collapse: collapse; font-size: .88rem; margin: 16px 0; }
+  .rtable th { background: var(--navy); color: white; padding: 9px 12px;
+    font-weight: 600; font-size: .82rem; text-align: left; }
+  .rtable th:not(:first-child):not(:nth-child(2)) { text-align: center; }
+  .rtable td { padding: 9px 12px; border-bottom: 1px solid var(--border); vertical-align: top; }
+  .rtable td:not(:first-child):not(:nth-child(2)) { text-align: center; }
+  .rtable tr:last-child td { border-bottom: none; }
+  .rtable .hi { color: var(--green); font-weight: 700; }
+  .rtable .lo { color: var(--red); font-weight: 700; }
+  .rtable tr.section-head td { background: #f0f2f8; font-weight: 600; font-size: .8rem;
+    color: var(--muted); letter-spacing: .04em; text-transform: uppercase; }
+
+  /* Design table */
+  .dtable { width: 100%; border-collapse: collapse; font-size: .88rem; margin: 16px 0; }
+  .dtable th { background: var(--teal); color: white; padding: 9px 12px;
+    font-weight: 600; font-size: .82rem; text-align: left; }
+  .dtable th:not(:first-child) { text-align: center; }
+  .dtable td { padding: 9px 12px; border-bottom: 1px solid var(--border); }
+  .dtable td:not(:first-child) { text-align: center; }
+  .dtable tr:last-child td { border-bottom: none; }
+  .dtable tr.current td { background: var(--light-blue); font-weight: 600; color: var(--blue); }
+  .dtable tr.highlight td { background: var(--green-bg); font-weight: 700; color: var(--green); }
+
+  /* Canvas figures */
+  .fig-wrap { margin: 20px 0; }
+  .fig-row { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; margin: 20px 0; }
+  @media (max-width: 660px) { .fig-row { grid-template-columns: 1fr; } }
+  .fig-panel { border: 1px solid var(--border); border-radius: 14px;
+    padding: 18px; background: #fafbff; }
+  .fig-panel h4 { font-size: .88rem; color: var(--navy); margin-bottom: 10px; }
+  .fig-panel canvas { width: 100%; display: block; }
+  .fig-caption { font-size: .85rem; color: var(--muted); margin-top: 8px; line-height: 1.45; }
+
+  /* Slider */
+  .slider-row { display: flex; align-items: center; gap: 12px; margin: 12px 0; }
+  .slider-row label { font-size: .88rem; color: var(--muted); min-width: 130px; }
+  .slider-row input[type=range] { flex: 1; accent-color: var(--blue); }
+  .slider-row .val { font-size: .9rem; font-weight: 700; color: var(--blue); min-width: 36px; }
+
+  .rel-display { display: flex; gap: 22px; flex-wrap: wrap; margin: 14px 0; }
+  .rel-box { flex: 1; min-width: 140px; border: 1.5px solid var(--border); border-radius: 14px;
+    padding: 14px 16px; background: #fafbff; text-align: center; }
+  .rel-box .rval { font-size: 2.2rem; font-weight: 700; color: var(--blue); line-height: 1; }
+  .rel-box .rlabel { font-size: .78rem; color: var(--muted); margin-top: 4px; text-transform: uppercase;
+    letter-spacing: .05em; }
+  .rel-box .rtarget { font-size: .78rem; margin-top: 6px; }
+
+  details { border: 1px solid var(--border); border-radius: 12px; margin: 16px 0; overflow: hidden; }
+  summary { padding: 12px 16px; cursor: pointer; font-size: .93rem; color: var(--blue);
+    background: var(--light-blue); list-style: none; display: flex; align-items: center; gap: 8px; }
+  summary::before { content: '▶'; font-size: .68rem; transition: transform .2s; flex-shrink: 0; }
+  details[open] summary::before { transform: rotate(90deg); }
+  details > *:not(summary) { padding: 18px 20px; background: #fafbff; font-size: .93rem; }
+  details pre { background: #111827; color: #eef2ff; padding: 16px; border-radius: 10px;
+    overflow-x: auto; font-size: .84rem; line-height: 1.5; white-space: pre; }
+
+  cite-block { display: block; background: var(--light-blue); border: 1px solid var(--mid);
+    border-radius: 10px; padding: 12px 16px; font-size: .88rem; color: var(--navy);
+    margin: 14px 0; font-style: italic; }
+
+  @media (max-width: 640px) {
+    .hero { padding: 28px 22px; } .hero h1 { font-size: 1.55rem; }
+    section, .placeholder-section { padding: 22px 18px; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<div class="hero">
+  <div class="tag">Part 4 of 4</div>
+  <h1>From reliability to generalisability: planning the optimal study</h1>
+  <p>We now have everything we need to ask a deeper question: not just "is this measure reliable?" but "how many raters and clips would we actually need to make our estimates generalise?" Cronbach's Generalisability Theory and Rouder & Mehrvarz (2024) together provide the conceptual framework; our variance components from Part 3 provide the numbers.</p>
+  <div class="stage-links">
+    <a href="part1_icc.html">Part 1: ICC</a>
+    <a href="part2_aggregation.html">Part 2: Aggregation</a>
+    <a href="part3_mixed_models.html">Part 3: Mixed models</a>
+    <a class="active" href="#">Part 4: Generalisability</a>
+  </div>
+</div>
+
+
+<!-- SECTION 1: THREE QUESTIONS -->
+<section>
+  <h2>1 — Three questions all called "reliability"</h2>
+
+  <p>A recurring confusion in psychometrics is that the word <em>reliability</em> is used to mean at least three quite different things. Each is a legitimate question — but they are not the same question, and misunderstanding what they mean can lead to very poor study design.</p>
+
+  <div class="level-grid">
+    <div class="level-card l1">
+      <div class="lnum">Level 1</div>
+      <div class="ltitle">Test-retest stability</div>
+      <div class="lq">"If I ran this same study again with the same design, would I get the same result?"</div>
+      <div class="ltools">Tools: test-retest correlation, ICC(C,1), ICC(C,k)</div>
+    </div>
+    <div class="level-card l2">
+      <div class="lnum">Level 2</div>
+      <div class="ltitle">Internal consistency</div>
+      <div class="lq">"Do the items or raters in this particular test hang together consistently?"</div>
+      <div class="ltools">Tools: Cronbach's α, split-half reliability, Spearman-Brown</div>
+    </div>
+    <div class="level-card l3">
+      <div class="lnum">Level 3</div>
+      <div class="ltitle">Generalisability</div>
+      <div class="lq">"What design would make my estimates travel beyond this specific study — to other raters, other clips, other occasions?"</div>
+      <div class="ltools">Tools: Generalisability Theory, Rouder signal-to-noise planning</div>
+    </div>
+  </div>
+
+  <p>The key distinction is between Levels 1–2 and Level 3. Levels 1 and 2 are <strong>design-conditional</strong> — they answer the question "given that I keep everything the same, how reproducible is this?" They are therefore properties of a specific study rather than properties of a measurement approach.</p>
+
+  <p>Level 3 is <strong>design-optimising</strong>. It treats raters, clips, trials, and occasions as sampled facets — each with its own variance — and asks: how many do I need from each facet so that my estimate is a good approximation to the underlying truth? This is a fundamentally different question, and it is the one that Rouder and Mehrvarz (2024) argue researchers should be asking far more often than they actually do.</p>
+
+  <div class="callout blue">
+    <strong>The distinction in plain terms:</strong> A Level 1–2 answer tells you that the study you ran was reliable. A Level 3 answer tells you what the optimal design for your study is for you to deploy in the first place.
+  </div>
+
+  <p>Parts 1–3 of this series have focused primarily on Levels 1 and 2: we have established that our ICC is high, that the test-retest correlation is excellent, and that the LMM variance decomposition gives us a detailed picture of where noise lives. Part 4 uses that variance structure to answer the Level 3 question.</p>
+</section>
+
+
+<!-- SECTION 2: G-THEORY -->
+<section>
+  <h2>2 — Cronbach's Generalisability Theory: the formal bridge</h2>
+
+  <p>The formal framework that sits between classical reliability (Parts 1–2) and the Rouder reframe (Section 3) is Cronbach's Generalisability Theory, introduced in Cronbach, Rajaratnam & Gleser (1963) and fully developed in the 1972 monograph <em>The Dependability of Behavioral Measurements</em>. G-theory was the first framework to explicitly treat all sources of variation in a measurement — persons, items, raters, occasions, tasks — as sampled facets, each with its own variance contribution. It is also the framework that Cronbach himself eventually concluded should replace the very coefficient that bears his name.</p>
+
+  <div class="callout purple">
+    <strong>Cronbach's own verdict on coefficient alpha (Cronbach &amp; Shavelson, 2004):</strong> "I no longer regard the alpha formula as the most appropriate way to examine most data. Over the years, my associates and I developed the complex generalizability (G) theory … which can be simplified to deal specifically with a simple two-way matrix and produce coefficient alpha." (Cronbach &amp; Shavelson, 2004, p. 403; cited in Webb, Shavelson & Haertel, 2006)
+  </div>
+
+  <p>This is a striking admission. Alpha was introduced in 1951 and became perhaps the most widely reported statistic in behavioural science. Yet its creator came to regard it as a special case — a simplified version of a richer theory that most researchers never got around to using. Why? Because alpha is most defensible only under restrictive assumptions — essentially tau-equivalent items with uncorrelated errors — and even then it collapses all item-related error into a single summary, telling you nothing about <em>which</em> source of error is largest or how to reduce it. G-theory relaxes all of these assumptions. Notice that Cronbach's central complaint here is precisely that one should partition sources of variance into distinct, labelled components — exactly what we did in Part 3 using the mixed model. This is not a coincidence: the mixed-model approach is a modern estimation engine for exactly the logic Cronbach was advocating. It is why his theory and the mixed model framework belong in the same conversation.</p>
+
+  <h3>The core structure: G-study and D-study</h3>
+
+  <p>G-theory replaces the single error term of classical test theory with as many labelled variance components as there are identifiable sources of variation. Cronbach and colleagues called the sources of variation <strong>facets</strong> (analogous to factors in ANOVA), and the levels of each facet its <strong>conditions</strong>. In a face-rating study, for example, the facets are identities, raters, clips, and sessions. In a cognitive task battery, they might be participants, items, occasions, and tasks.</p>
+
+  <p>G-theory divides empirical work into two phases:</p>
+
+  <p><strong>The G-study (Generalisability study)</strong> estimates the magnitude of variance from every facet and their interactions, using a design that is as broadly crossed as possible. The aim is to get variance component estimates for the full range of sources that could plausibly enter into future measurement. This is analogous to running a factorial ANOVA and reading off the mean squares for each effect — except the output is not F-ratios but variance components, which are the raw inputs for the next phase.</p>
+
+  <p><strong>The D-study (Decision study)</strong> uses the G-study variance components to answer design questions: if I were to collect data with n₁ items, n₂ raters, and n₃ occasions, what level of reliability (now called a <em>generalisability coefficient</em>) would I achieve? The D-study is, in essence, a prospective version of the Spearman-Brown prophecy formula — but generalised to multiple facets simultaneously, and grounded in empirical variance estimates rather than assumptions about parallelism.</p>
+
+  <div class="formula">G-study output:    σ²(identity), σ²(rater), σ²(clip), σ²(rater×identity), ...
+
+D-study question:  Eρ² = ?  when n_raters = 50, n_images = 10</div>
+
+  <h3>Relative and absolute decisions</h3>
+
+  <p>One of G-theory's most useful distinctions is between two types of measurement question. A <strong>relative decision</strong> asks about rank ordering — is identity A more friendly than identity B? For relative decisions, constant rater effects cancel out (everyone's ratings shift by the same amount), so rater-level variance does not count as error; only the rater × identity interaction does. An <strong>absolute decision</strong> asks about the actual score level — is this identity's friendliness score above some threshold? For absolute decisions, constant rater effects do matter, because they shift all scores together and therefore affect whether any particular score clears the threshold.</p>
+
+  <p>This maps directly onto the two reliability coefficients in Section 4: consistency reliability (ignores rater generosity, analogous to a relative decision) and absolute reliability (includes rater generosity in the error term, analogous to an absolute decision). G-theory provides the formal justification for why these are different quantities and when each is appropriate.</p>
+
+  <div class="callout teal">
+    <strong>The generalisability coefficient (Eρ²)</strong> for relative decisions is the ratio of universe-score variance to expected observed-score variance:
+    Eρ² = σ²(p) / [σ²(p) + σ²_Rel/n]
+    where σ²_Rel sums only the variance components associated with facet interactions (not main effects of facets, which cancel in relative comparisons). For absolute decisions, the analogous coefficient (Φ) includes facet main effects in the error term.
+  </div>
+
+  <h3>Why our LMM is a G-study</h3>
+
+  <p>The key insight connecting G-theory to Parts 3 and 4 of this series is that the mixed model we fitted in Part 3 is akin to a G-study. We estimated variance components for six sources: identity, clip file, rater, rater×identity taste, rater×session, and identity×session. Each component is exactly the kind of facet variance that a classical G-study would report from an ANOVA. Classical G-theory was originally implemented using ANOVA — variance components were derived from expected mean squares, which works cleanly only when the design is fully balanced (equal numbers of observations in every cell). The LMM approach does the same conceptual job — partitioning variance into labelled facets — but handles unbalanced designs naturally, accommodates crossed random effects without combinatorial explosion, and produces variance component estimates directly via maximum likelihood rather than deriving them indirectly from mean squares. The logic of the G-study is identical; the LMM is simply a more flexible and robust way of carrying it out.</p>
+
+  <p>Section 4 below completes the D-study logic: given those variance components, what reliability would we achieve under different designs? This is the question G-theory was built to answer — we are just using a more modern estimation engine to compute the inputs.</p>
+
+  <h3>What this means for replication</h3>
+
+  <p>The so-called replication crisis in psychology — the finding, accelerating from around 2011 onward, that a large proportion of published results fail to reproduce in independent studies — has attracted many proposed explanations: publication bias, underpowered designs, questionable researcher degrees of freedom, p-hacking. These are all real contributors. But viewed through the lens of G-theory, there is a simpler and more structural account that deserves more attention: some failures to replicate may be better understood as <strong>failures of generalisability</strong> than as failures of honesty, power, or inference alone.</p>
+
+  <p>A study that is internally reliable (good ICC, good alpha) may still not generalise if the conditions sampled — the specific items, the specific rater pool, the specific occasion, the specific stimulus set — are not representative of a broader universe. G-theory's "universe of generalisation" makes this explicit: a finding is only reproducible to the extent that the conditions in the original study were sampled from the same universe as the conditions in the replication. If lab A used 12 items and lab B used a different 12 items, and item-sampling variance is large, the two studies may yield very different results even if both are measuring the same thing and both are internally consistent.</p>
+
+
+  <div class="callout amber">
+    <strong>The generalisability diagnosis of the replication crisis:</strong> A Level 1–2 reliability check (ICC, alpha) tells you only whether your specific design was internally consistent. It says nothing about whether someone else's design — with different items, different raters, different stimuli, or different occasions — will produce the same result. A study can pass every internal reliability check and still fail to replicate, if the conditions sampled were not representative of the universe the researcher intended to generalise to. G-theory and Rouder's signal-to-noise framework (outlined below) both point to the same remedy: before asking "is this reliable?", ask "reliable with how many items, raters, trials, or stimuli, and from what universe?"
+  </div>
+
+  <div class="callout green">
+    <strong>The thread connecting all four parts:</strong> Classical test theory (Parts 1–2) gives you a single reliability number conditional on your current design. G-theory names the facets and lets you ask design questions. Our LMM (Part 3) delivers the G-study. Section 3 below introduces a complementary framework that reframes the same logic from a different direction. In the subsequent sections we will use all of this to illustrate what is effectively a D-study as framed by Cronbach.
+  </div>
+</section>
+
+
+<!-- SECTION 3: ROUDER -->
+<section>
+  <h2>3 — Rouder & Mehrvarz (2024): signal-to-noise as a task property</h2>
+
+  <p>Rouder and Mehrvarz (2024) arrive at the same destination as G-theory, but travelling from a different direction. Working in the tradition of hierarchical modelling of cognitive tasks (with a Bayesian flavour, though the core logic does not require it), they provide a simple, accessible framework for asking exactly the question Cronbach was advocating: what are the intrinsic signal properties of this measurement procedure, and what design do you need to surface them reliably? Rouder & Haaf (2019) give this design-invariance property a name — <strong>portability</strong> — defining it as the idea that a measure's underlying value should not depend on how many observations a researcher happened to collect. G-theory's variance components share this property, but Rouder names it explicitly and reduces the multi-component output to a single communicable ratio. The value of their contribution is not that it supersedes Cronbach, but that it re-introduces the same logic to a new audience — researchers working with reaction time tasks and cognitive paradigms — who had largely never engaged with G-theory at all.</p>
+
+  <p>The usual explanation for poor replication in cognitive tasks is low reliability — but this turns out to be circular: reliability depends on how many trials were collected, so "this task has low reliability" is just "this experiment ran too few trials" in disguise. A design statement dressed up as a task property. Their solution is to define a measure that is invariant to trial size. They call it the signal-to-noise ratio.</p>
+
+  <h3>The signal-to-noise ratio γ</h3>
+
+  <p>In a standard individual-differences task, an observation from participant <em>i</em> on trial <em>ℓ</em> can be decomposed into three parts: the participant's true overall score, their true condition effect (the "signal" we want to measure), and trial-by-trial noise. The signal varies between individuals with variance σ²<sub>B</sub>; the noise varies within each individual with variance σ²<sub>W</sub>. The signal-to-noise ratio is simply:</p>
+
+  <div class="formula">γ² = σ²_B / σ²_W</div>
+
+  <p>This ratio is a property of the task itself — it does not depend on how many trials were collected. A task with a large γ has substantial individual differences relative to trial noise: participants' true effects are spread out and can be localised reliably even from a small number of trials. A task with a small γ requires many trials before individual effects become distinguishable from noise.</p>
+
+  <h3>The same thread, again</h3>
+
+  <p>Running through every section of this series has been a single consistent message: reliability is a function of two things — the strength of the signal in each individual observation, and the number of observations you aggregate across. We saw it in ICC: a single rating has low reliability because the identity signal is a small fraction of total variance. We saw it in Spearman-Brown: aggregate more ratings and the noise averages down while the signal accumulates. We saw it in the LMM: the bottleneck is wherever signal is weakest relative to the noise that has not yet been averaged away. Rouder is making exactly the same point, in a different domain.</p>
+
+  <p>Given γ, the expected test-retest reliability as a function of trial size L per condition is:</p>
+
+  <div class="formula">E(r) ≈  γ²
+       ———————————
+       γ² + (2 / L)</div>
+
+  <p>The structure is identical to what we have seen before. The numerator is the signal — γ², the between-person variance relative to within-person noise, a property of the task that does not change with design. The denominator adds a noise term that shrinks as L grows. More trials means the (2/L) term becomes smaller, the denominator approaches the numerator, and reliability approaches 1. (The noise constant depends on the measure: 2/L for a contrast between two conditions of L trials each — the case for effects like Stroop, and the form the γ̂ estimator below also uses — versus 1/L for a single mean. Note that the trial counts in the table below run lower than this 2/L formula alone implies; they are reproduced from Rouder &amp; Mehrvarz, Table 1, so check the paper's definition of L before recomputing them.) How quickly that happens depends entirely on γ. With a large γ even a handful of trials suffices; with a small γ you may need hundreds. So given the repeated theme it is apparent that this is directly related to the Spearman-Brown formula we discussed in Part 2 (Reliability = k × r̄ / (1 + (k−1) × r̄)) — the same architecture: signal in the numerator, noise term that shrinks with k in the denominator.</p>
+
+  <p>Rouder's contribution was not a new formula but a new question: what actually <em>is</em> the per-observation signal for a cognitive contrast measure like Stroop? As we will see, it turns out that in the case of Stroop the per-item signal is very small for the purposes of rank ordering observations — way smaller than other examples he illustrates in his paper (see below). The consequence is then obvious: if the signal per observation is tiny, we only have one lever to pull, which is ramping up the number of observations considerably.</p>
+
+  <h3>Signal-to-noise ratios across tasks</h3>
+
+  <p>The table below shows estimated γ values for several tasks, drawn from Rouder & Mehrvarz (2024), Table 1. The contrast between cognitive-control tasks and perceptual/body-measure tasks is striking.</p>
+
+  <table class="rtable">
+    <thead>
+      <tr><th>Domain</th><th>Task / Measure</th><th>γ (SD ratio)</th><th>Trials for r = .70</th><th>Trials for r = .90</th></tr>
+    </thead>
+    <tbody>
+      <tr class="section-head"><td colspan="5">Body measure</td></tr>
+      <tr><td></td><td>Weight</td><td class="hi">11.48</td><td class="hi">1</td><td class="hi">1</td></tr>
+      <tr class="section-head"><td colspan="5">Cognitive control (Stroop / Flanker)</td></tr>
+      <tr><td></td><td>Stroop — effect (congruent vs incongruent)</td><td class="lo">0.12</td><td class="lo">158</td><td class="lo">607</td></tr>
+      <tr><td></td><td>Stroop — overall speed</td><td>0.96</td><td>3</td><td>10</td></tr>
+      <tr><td></td><td>Flanker — effect</td><td class="lo">0.07</td><td class="lo">353</td><td class="lo">1,359</td></tr>
+      <tr><td></td><td>Flanker — overall speed</td><td>0.70</td><td>5</td><td>19</td></tr>
+      <tr class="section-head"><td colspan="5">Visual illusions</td></tr>
+      <tr><td></td><td>Mueller-Lyer bias</td><td class="hi">0.72</td><td class="hi">5</td><td class="hi">19</td></tr>
+      <tr><td></td><td>Poggendorf bias</td><td class="hi">1.41</td><td class="hi">2</td><td class="hi">5</td></tr>
+    </tbody>
+  </table>
+
+  <div class="callout amber">
+    <strong>Rouder's key point:</strong> the reliability crisis in cognitive control is not a sign that individual differences in executive function do not exist. It is a sign that researchers have been using low-γ contrast measures and collecting far too few trials to localise them. The deeper problem arises when researchers try to correlate performance across tasks using sample contrast scores: the resulting correlation is not just biased downward (attenuated), it is <em>inconsistent</em> — adding more participants does not correct the bias but instead narrows the confidence interval around the wrong value. As Rouder puts it, you have entered "a bit of a statistical hell": the more participants you recruit, the more certain you become of an incorrect answer. This also reveals that researchers have two levers, not one. When γ is small, you can either increase L — which may require impractically large trial counts — or reconsider the operationalisation. The table above shows that overall Stroop speed (γ ≈ 0.96) and the Stroop effect (γ ≈ 0.12) come from the same paradigm but have radically different signal properties for recovering the rank ordering of participants. Sometimes the more practical solution is not to run more trials, but to ask whether the measure itself is the bottleneck.
+  </div>
+
+  <h3>Estimating γ without a hierarchical model</h3>
+
+  <p>A useful feature of the Rouder framework is that γ can be estimated from ordinary summary statistics, without fitting any model. If Var(d) is the variance of person-level sample effects and MSE is the mean squared error of observations around person-by-condition means:</p>
+
+  <div class="formula">γ̂² = Var(d) / MSE − 2/L</div>
+
+  <p>This makes the framework accessible even in settings where hierarchical modelling is not available. However, as Rouder and Mehrvarz note, hierarchical models go further: they provide uncertainty estimates on γ and on the resulting reliability predictions — which is particularly important in small-sample settings.</p>
+</section>
+
+
+<!-- SECTION 4: APPLICATION TO FACE RATINGS -->
+<section>
+  <h2>4 — Translating to the face-rating paradigm</h2>
+
+  <p>The goal throughout this series has been to recover reliable <strong>identity-level</strong> estimates for downstream analysis — a stable consensus friendliness score for each of the 20 face identities. Parts 1–3 established that our current design (47 raters × 5 clips, two sessions) achieves this reasonably well. But was it optimal? Rouder's framework from Section 3 gives us the right way to think about this: reliability is determined by signal strength and the number of observations averaging the noise away. In a cognitive task there is one lever — trials. Here we have two: raters and clips, each targeting a different noise source. That is exactly the situation the D-study from Section 2 was built for — the same signal-in-the-numerator, noise-divided-by-observations logic, extended to handle multiple facets at once. The variance components estimated in Part 3 are the G-study inputs; plugging them in lets us predict what reliability any combination of raters and clips would achieve, without collecting new data. So the question is: given those components, what design actually gives us the best return?</p>
+
+  <h3>The design-adjusted reliability formula</h3>
+
+  <p>The structure follows the same signal-over-noise logic as Rouder's formula from Section 3. The numerator is the target signal — V_Identity, stable differences between faces, a property of the world that adding more raters or clips cannot change. The denominator is signal plus noise, where each noise source is divided by the observations averaging it away. The annotated formula below shows why each term sits where it does:</p>
+
+  <div class="formula">Reliability =
+
+          V_Identity                               # numerator: target signal — unaffected by design
+  ─────────────────────────────────────────────────────────────────────────
+   V_Identity                                      # signal repeated in denominator
+ + V_File         / n_images                       # clip effects — averaged over clips
+ + V_PID          / n_raters                       # rater generosity — averaged over raters
+ + V_PID_Identity / n_raters                       # taste — rater-specific, averaged over raters
+ + V_Residual     / (n_raters × n_images)          # residual noise — averaged over both</div>
+
+  <p>The formula comes in two versions, and this distinction should be familiar: it is the same question Part 1 asked when separating ICC(A) from ICC(C). Does rater generosity count as error? <strong>Absolute reliability</strong> says yes — include V_PID in the denominator, because rater generosity shifts absolute score levels and matters if you care about the actual number (e.g. comparing results across studies with different rater pools). <strong>Consistency reliability</strong> says no — drop V_PID, because uniform shifts cancel out when comparing identities against each other, so generosity does not corrupt rank ordering. The target of inference dictates which version is appropriate, and that was true in Part 1 too. Either way, treat this as a <em>simplified</em> D-study formula: it uses the Part 3 variance components and assumes the omitted higher-order interactions (rater×clip, clip×session, and so on) are negligible or absorbed into the residual. It is a design prediction conditional on those estimates, not a fresh empirical result.</p>
+
+
+
+  <p>One thing to hold in mind reading the table: the ICC(C,47) ≈ 0.95 and test–retest r ≈ 0.98 from Parts 1–2 are not in conflict with the ≈ .74–.76 below. The former describe reproducibility for the <em>particular</em> clips, raters and occasion we used; the latter ask the broader question — how well would the identity scores generalise to <em>new</em> clips and raters drawn from the same universe? Same study, two different questions.</p>
+
+  <h3>Predicted reliability for key designs</h3>
+
+  <table class="dtable">
+    <thead>
+      <tr><th>Design</th><th>Absolute reliability</th><th>Consistency reliability</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>5 raters × 1 clip</td><td>.276</td><td>.309</td></tr>
+      <tr><td>10 raters × 1 clip</td><td>.341</td><td>.365</td></tr>
+      <tr><td>20 raters × 1 clip</td><td>.387</td><td>.402</td></tr>
+      <tr><td>5 raters × 5 clips</td><td>.474</td><td>.584</td></tr>
+      <tr><td>10 raters × 5 clips</td><td>.590</td><td>.670</td></tr>
+      <tr><td>20 raters × 5 clips</td><td>.673</td><td>.724</td></tr>
+      <tr class="current"><td><strong>47 raters × 5 clips (current)</strong></td><td><strong>.735</strong></td><td><strong>.760</strong></td></tr>
+      <tr><td>100 raters × 5 clips</td><td>.762</td><td>.775</td></tr>
+      <tr class="highlight"><td><strong>50 raters × 10 clips</strong></td><td><strong>.820</strong></td><td><strong>.850</strong></td></tr>
+    </tbody>
+  </table>
+
+  <p>Adding 53 raters (going from 47 to 100) while keeping 5 clips gains only 0.027 in absolute reliability. Adding 5 clips (going from 5 to 10) while keeping roughly 50 raters gains 0.085 — more than three times as much. This is not a surprise: Part 3 Section 4's aggregation table already showed that after 47 raters, rater-related noise had been divided to near zero (0.44%), while clip noise — divided by only 5 — remained the dominant surviving source (2.50%). The D-study quantifies exactly what that table implied: clips are the efficient lever.</p>
+
+  <p>This matters because identity scores are rarely the end of the analysis — they are the input to it. Any downstream correlation between a friendliness score and some other variable (facial symmetry, attractiveness, perceived dominance) is attenuated by unreliability in proportion to √r₁₁. Getting the design right at the stimulus-norming stage is therefore not a methodological nicety; it directly determines how cleanly subsequent analyses can detect the effects they are looking for.</p>
+</section>
+
+
+<!-- SECTION 5: INTERACTIVE EXPLORER -->
+<section>
+  <h2>5 — Interactive design explorer</h2>
+  <p>The formula gives us two levers: how many raters we recruit, and how many clips we collect per identity. Every combination of those two numbers is what generalisability theory calls a <strong>D study</strong> (decision study) — a predicted reliability for a hypothetical design, computed by plugging the chosen values into the formula and reading off the result. Crucially, the predictions are only as good as the variance estimates they rest on; the numbers here are derived from the mixed-model fit in Part 3, using our particular sample of identities, clips, and raters. A study with a very different population might produce different variance components and therefore different predictions.</p>
+  <p>What the explorer reveals quickly is <strong>diminishing returns on both levers</strong>. Rater noise is already being divided by a reasonably large number in our current design, so doubling raters from 47 to 100 gains relatively little. Clip noise, by contrast, is currently the least-averaged component — it is divided only by 5 — so adding clips buys more reliability per unit of effort at this point. The curves below make that asymmetry visible. Use the sliders to move both levers and find the design that hits your target.</p>
+  <p>Adjust the sliders to see how predicted reliability changes as you add raters or clips. The dashed lines mark common reliability thresholds (.70 and .80). The current design (47 raters × 5 clips) is marked on each curve.</p>
+
+  <div class="slider-row">
+    <label>Number of raters</label>
+    <input type="range" id="sl-raters" min="5" max="200" value="47" step="1">
+    <span class="val" id="val-raters">47</span>
+  </div>
+  <div class="slider-row">
+    <label>Clips per identity</label>
+    <input type="range" id="sl-clips" min="1" max="20" value="5" step="1">
+    <span class="val" id="val-clips">5</span>
+  </div>
+
+  <div class="rel-display">
+    <div class="rel-box">
+      <div class="rval" id="abs-val">.735</div>
+      <div class="rlabel">Absolute reliability</div>
+      <div class="rtarget" id="abs-target"></div>
+    </div>
+    <div class="rel-box">
+      <div class="rval" id="con-val">.760</div>
+      <div class="rlabel">Consistency reliability</div>
+      <div class="rtarget" id="con-target"></div>
+    </div>
+  </div>
+
+  <div class="fig-row">
+    <div class="fig-panel">
+      <h4>Reliability vs number of raters (clips fixed at current selection)</h4>
+      <canvas id="cv-raters" width="460" height="280"></canvas>
+      <div class="fig-caption">The curve flattens quickly because rater noise is already being divided by a large number. Adding more raters beyond ~50 yields diminishing returns when clips are fixed.</div>
+    </div>
+    <div class="fig-panel">
+      <h4>Reliability vs clips per identity (raters fixed at current selection)</h4>
+      <canvas id="cv-clips" width="460" height="280"></canvas>
+      <div class="fig-caption">The clip curve falls more steeply and reaches the .80 target sooner because clip-sampling noise is currently the least-averaged component in the denominator.</div>
+    </div>
+  </div>
+</section>
+
+
+
+
+<!-- SECTION 6: SERIES SUMMARY -->
+<section>
+  <h2>6 — Pulling it all together</h2>
+
+  <p>This series began with a practical question — can we trust the rank ordering of 20 face identities by perceived friendliness that emerges from our rating study? — and used that question as a thread through four progressively deeper levels of analysis. Each part built on the last, and each revealed something the previous one could not.</p>
+
+  <h3>The single recurring theme</h3>
+
+  <p>Running through every part is one consistent message: <strong>reliability is a function of two things — the signal in each individual observation, and the number of observations you aggregate across.</strong> This is not a new insight at the end; it was present from the beginning and simply appeared in different forms each time.</p>
+
+  <p><strong>Part 1</strong> introduced the study and the concept of reliability through the ICC. A single rating of a single video clip is only about 27% signal — the remaining 73% is noise from rater quirks, clip characteristics, and moment-to-moment variability. The ICC formalises this ratio and introduced an important early distinction: whether you care about absolute score levels (ICC(A)) or just rank ordering (ICC(C)), and why — for our purposes — consistency is the right choice.</p>
+
+  <p><strong>Part 2</strong> showed what aggregation does to that ratio. The Spearman-Brown formula makes the mechanism explicit: signal accumulates coherently across observations, while independent noise averages out. With 47 raters and 5 clips per identity, ICC(C,47) reaches ≈ 0.95, confirmed empirically by a test-retest correlation of 0.98. The paradigm works. But Spearman-Brown achieves this by treating all non-signal variance as a single undifferentiated lump — averaged away, but never named or understood.</p>
+
+  <p><strong>Part 3</strong> opened that lump up. The linear mixed model decomposed total variance into six labelled sources: identity signal, clip effects, rater generosity, taste (rater × identity interaction), session drift, and residual. This did two things. First, it explained <em>why</em> the ICC from Part 2 is high — each noise source is being divided by the number of observations averaging it away, and after 47 raters and 5 clips most of them have been reduced to near zero. Second — and this is where Part 3 goes beyond reliability into something richer — it revealed that several of those noise sources are not merely error to be suppressed but phenomena worth investigating in their own right. Clip effects (12.5%) are reliably estimated and amenable to covariate analysis. Taste (14.5%) — the idiosyncratic component of who finds which faces friendly — is larger than the identity signal itself, and its BLUP matrix revealed that this variation is not purely random: male raters give male faces idiosyncratically higher ratings than female raters do, a pattern of in-group favouritism that only becomes visible once generosity and consensus are partitioned out. None of this is visible in the aggregate; it only emerges once the variance is partitioned rather than averaged away.</p>
+
+  <p><strong>Part 4</strong> took the variance components from Part 3 and asked a question that Parts 1–3 could not address: was our design actually optimal? This is the distinction between design-conditional reliability (Levels 1–2: how well does this specific study work?) and design-optimising reliability (Level 3: what design should we have used?). The formal framework for this question — Generalisability Theory — was proposed by Cronbach and colleagues in 1963 and developed fully in 1972. Cronbach himself eventually concluded that G-theory should replace coefficient alpha, precisely because alpha collapses all non-target variance into a single error term and gives no information about where it comes from or how to reduce it. The mixed model from Part 3 serves as a modern estimation engine for a G-study: it estimates the same variance components that classical G-theory derived from ANOVA expected mean squares, but handles unbalanced designs and crossed random effects naturally. Rouder & Mehrvarz (2024) make the same argument from a different direction — working with cognitive tasks, they show that the signal-to-noise ratio γ is a portable property of the measurement procedure itself, invariant to design choices, and that many apparent reliability failures in the cognitive literature are not failures of measurement but failures of collecting enough observations relative to a low per-observation signal. The D-study and Rouder's planning formula are structurally the same calculation: signal in the numerator, noise divided by observation count in the denominator. Rouder's contribution was to make this argument accessible to a new audience who had largely never engaged with G-theory.</p>
+
+  <h3>The practical answer</h3>
+
+  <p>For our face-rating study, the D-study converges on a clear recommendation. The current design (47 raters × 5 clips) achieves absolute reliability ≈ .74. The efficient path to higher reliability is more clips per identity, not more raters: rater-related noise has already been divided to near zero by 47 raters, whereas clip noise — divided by only 5 — remains the dominant surviving source. Moving from 5 to 10 clips while keeping roughly 50 raters is predicted to reach absolute reliability ≈ .82, at the cost of additional stimulus video clips rather than additional participant recruitment. This conclusion required the full chain — ICC established the starting point, Spearman-Brown showed the aggregation effect, the LMM named and sized each noise source, and the D-study turned those sizes into design predictions.</p>
+
+  <div class="callout blue">
+    <strong>The four questions, in sequence:</strong>
+    Part 1: <em>How reliable is a single rating?</em> (27% signal — not good enough on its own.)
+    Part 2: <em>What does aggregation do?</em> (ICC rises to ≈ 0.95 — the paradigm works.)
+    Part 3: <em>Where does the noise live, and is any of it interesting?</em> (Six sources named; two worth investigating.)
+    Part 4: <em>Was our design optimal, and what framework tells us how to improve it?</em> (Add clips, not raters — and G-theory plus Rouder both tell us why.)
+    Each question required the answer to the previous one.
+  </div>
+</section>
+
+
+<!-- SECTION 7: ANNOTATED CODE -->
+<section>
+  <h2>7 — Annotated R code for the reliability planning calculation</h2>
+
+  <details>
+    <summary>Show full Stage 6 R code</summary>
+    <div>
+      <p style="margin-bottom:14px;">This code takes the variance components from the LMM fitted in Part 3 and uses them to compute predicted reliability across a grid of designs.</p>
+      <pre>
+# ============================================================
+# Stage 6. Rouder-inspired reliability planning
+# ============================================================
+# Reference: Rouder, J. N., & Mehrvarz, M. (2024).
+#   Hierarchical-model insights for planning and interpreting
+#   individual-difference studies of cognitive abilities.
+#   Current Directions in Psychological Science, 33(2), 128-135.
+# ============================================================
+
+library(brms); library(tidyverse)
+
+# --- Extract posterior variance components ---
+# (assumes fit_ord is already in the workspace from Stage 5)
+draws_full <- as_draws_df(fit_ord)
+
+var_draws <- draws_full %>%
+  transmute(
+    draw            = row_number(),
+    Var_PID         = sd_PID__Intercept^2,         # rater scale-use
+    Var_Identity    = sd_Identity__Intercept^2,     # target signal
+    Var_File        = sd_File__Intercept^2,         # clip-specific
+    Var_PID_Identity= sd_PID_Identity__Intercept^2, # taste
+    Var_Residual    = pi^2 / 3                      # fixed logistic variance
+  )
+
+# --- Design grid ---
+design_grid <- expand_grid(n_raters = 1:200, n_images = 1:20)
+
+# --- Compute reliability per draw per design ---
+planning_draws <- design_grid %>%
+  crossing(var_draws) %>%
+  mutate(
+    reliability_absolute =
+      Var_Identity /
+      (Var_Identity
+       + Var_File / n_images
+       + Var_PID / n_raters
+       + Var_PID_Identity / n_raters
+       + Var_Residual / (n_raters * n_images)),
+
+    reliability_consistency =
+      Var_Identity /
+      (Var_Identity
+       + Var_File / n_images
+       + Var_PID_Identity / n_raters
+       + Var_Residual / (n_raters * n_images))
+  )
+
+# --- Summarise across posterior draws ---
+planning_summary <- planning_draws %>%
+  group_by(n_raters, n_images) %>%
+  summarise(
+    absolute_mean  = mean(reliability_absolute),
+    absolute_lower = quantile(reliability_absolute, .025),
+    absolute_upper = quantile(reliability_absolute, .975),
+    consistency_mean  = mean(reliability_consistency),
+    consistency_lower = quantile(reliability_consistency, .025),
+    consistency_upper = quantile(reliability_consistency, .975),
+    .groups = "drop"
+  )
+
+# --- Key designs ---
+key_designs <- planning_summary %>%
+  filter(
+    (n_raters == 47  & n_images == 5)  |   # current
+    (n_raters == 100 & n_images == 5)  |   # more raters
+    (n_raters == 50  & n_images == 10)     # more clips
+  )
+
+key_designs
+      </pre>
+    </div>
+  </details>
+</section>
+
+
+<!-- SECTION 9: CITATION -->
+<section>
+  <h2>8 — References</h2>
+  <p>The signal-to-noise reliability framework and the planning formulas in Sections 3–6 are drawn from:</p>
+  <cite-block>
+    Rouder, J. N., &amp; Mehrvarz, M. (2024). Hierarchical-model insights for planning and interpreting individual-difference studies of cognitive abilities. <em>Current Directions in Psychological Science</em>, <em>33</em>(2), 128–135. https://doi.org/10.1177/09637214231220923
+  </cite-block>
+  <p>The G-theory framework in Section 2 draws on:</p>
+  <cite-block>Cronbach, L. J., Rajaratnam, N., &amp; Gleser, G. C. (1963). Theory of generalizability: A liberalization of reliability theory. <em>British Journal of Statistical Psychology</em>, <em>16</em>(2), 137–163.</cite-block>
+  <cite-block>Cronbach, L. J., Gleser, G. C., Nanda, H., &amp; Rajaratnam, N. (1972). <em>The dependability of behavioral measurements: Theory of generalizability for scores and profiles.</em> Wiley.</cite-block>
+  <cite-block>Cronbach, L. J., &amp; Shavelson, R. J. (2004). My current thoughts on coefficient alpha and successor procedures. <em>Educational and Psychological Measurement</em>, <em>64</em>(3), 391–418.</cite-block>
+  <cite-block>Shavelson, R. J., Webb, N. M., &amp; Rowley, G. L. (1989). Generalizability theory. <em>American Psychologist</em>, <em>44</em>(6), 922–932.</cite-block>
+  <cite-block>Webb, N. M., Shavelson, R. J., &amp; Haertel, E. H. (2006). Reliability coefficients and generalizability theory. In C. R. Rao &amp; S. Sinharay (Eds.), <em>Handbook of Statistics</em> (Vol. 26, pp. 81–124). Elsevier.</cite-block>
+  <p>The portability argument in Section 3 is sourced from:</p>
+  <cite-block>Rouder, J. N., &amp; Haaf, J. M. (2019). A psychometrics of individual differences in experimental tasks. <em>Psychonomic Bulletin and Review</em>, <em>26</em>, 452–467. https://doi.org/10.3758/s13423-018-1558-y</cite-block>
+  <p>The variance decomposition underlying the D-study in Section 4 was estimated using the linear mixed model described in Part 3 of this series.</p>
+</section>
+
+
+</div><!-- .wrap -->
+
+<script>
+// ──────────────────────────────────────────────────────────
+// Variance proportions from the LMM (Part 3)
+// ──────────────────────────────────────────────────────────
+const V = {
+  identity:     0.107,
+  file:         0.125,
+  pid:          0.205,
+  pid_identity: 0.145,
+  residual:     0.387
+};
+
+function absRel(r, i) {
+  const d = V.identity + V.file/i + V.pid/r + V.pid_identity/r + V.residual/(r*i);
+  return V.identity / d;
+}
+function conRel(r, i) {
+  const d = V.identity + V.file/i + V.pid_identity/r + V.residual/(r*i);
+  return V.identity / d;
+}
+
+// ──────────────────────────────────────────────────────────
+// Canvas drawing helpers
+// ──────────────────────────────────────────────────────────
+function drawCurve(canvasId, xFn, xMin, xMax, fixedLabel, curX, curRelFn, currentFixed) {
+  const canvas = document.getElementById(canvasId);
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  const W = canvas.width, H = canvas.height;
+  const PAD = { top: 18, right: 24, bottom: 42, left: 48 };
+  const plotW = W - PAD.left - PAD.right;
+  const plotH = H - PAD.top - PAD.bottom;
+
+  ctx.clearRect(0, 0, W, H);
+
+  // Scales
+  const xToP = x => PAD.left + (x - xMin) / (xMax - xMin) * plotW;
+  const yToP = y => PAD.top + (1 - y) * plotH;
+
+  // Grid & axes
+  ctx.strokeStyle = '#e5e7eb'; ctx.lineWidth = 1;
+  [0.2, 0.4, 0.6, 0.7, 0.8, 1.0].forEach(y => {
+    ctx.beginPath(); ctx.moveTo(PAD.left, yToP(y)); ctx.lineTo(PAD.left + plotW, yToP(y)); ctx.stroke();
+    ctx.fillStyle = '#9aa3b5'; ctx.font = '11px sans-serif'; ctx.textAlign = 'right';
+    ctx.fillText(y.toFixed(1), PAD.left - 6, yToP(y) + 4);
+  });
+
+  // .70 and .80 target dashes
+  [[.70,'#f59e0b'],[.80,'#1a7a4a']].forEach(([yval, col]) => {
+    ctx.save(); ctx.strokeStyle = col; ctx.lineWidth = 1.4;
+    ctx.setLineDash([6, 4]);
+    ctx.beginPath(); ctx.moveTo(PAD.left, yToP(yval)); ctx.lineTo(PAD.left + plotW, yToP(yval)); ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.fillStyle = col; ctx.font = '10px sans-serif'; ctx.textAlign = 'left';
+    ctx.fillText(yval.toFixed(2), PAD.left + plotW + 3, yToP(yval) + 4);
+    ctx.restore();
+  });
+
+  // Axes
+  ctx.strokeStyle = '#475467'; ctx.lineWidth = 1.4;
+  ctx.beginPath(); ctx.moveTo(PAD.left, PAD.top); ctx.lineTo(PAD.left, PAD.top + plotH); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(PAD.left, PAD.top + plotH); ctx.lineTo(PAD.left + plotW, PAD.top + plotH); ctx.stroke();
+
+  // Absolute reliability curve
+  ctx.strokeStyle = '#314e8b'; ctx.lineWidth = 2.2; ctx.beginPath();
+  let first = true;
+  for (let x = xMin; x <= xMax; x += (xMax - xMin) / 200) {
+    const y = xFn(x, currentFixed, 'abs');
+    const px = xToP(x), py = yToP(y);
+    first ? ctx.moveTo(px, py) : ctx.lineTo(px, py);
+    first = false;
+  }
+  ctx.stroke();
+
+  // Consistency curve (dashed)
+  ctx.strokeStyle = '#5b75ad'; ctx.lineWidth = 1.6; ctx.setLineDash([5, 3]);
+  ctx.beginPath(); first = true;
+  for (let x = xMin; x <= xMax; x += (xMax - xMin) / 200) {
+    const y = xFn(x, currentFixed, 'con');
+    const px = xToP(x), py = yToP(y);
+    first ? ctx.moveTo(px, py) : ctx.lineTo(px, py);
+    first = false;
+  }
+  ctx.stroke(); ctx.setLineDash([]);
+
+  // Current design point
+  const curAbsY = xFn(curX, currentFixed, 'abs');
+  const cpx = xToP(curX), cpy = yToP(curAbsY);
+  ctx.fillStyle = '#314e8b';
+  ctx.beginPath(); ctx.arc(cpx, cpy, 5, 0, Math.PI*2); ctx.fill();
+  ctx.fillStyle = '#1a2030'; ctx.font = '11px sans-serif'; ctx.textAlign = 'left';
+  ctx.fillText(`Current (${curAbsY.toFixed(3)})`, cpx + 8, cpy - 4);
+
+  // X axis ticks
+  ctx.fillStyle = '#9aa3b5'; ctx.font = '11px sans-serif'; ctx.textAlign = 'center';
+  const tickCount = Math.min(8, xMax - xMin);
+  const step = Math.ceil((xMax - xMin) / tickCount);
+  for (let x = xMin; x <= xMax; x += step) {
+    ctx.fillText(x, xToP(x), PAD.top + plotH + 16);
+  }
+
+  // Legend
+  ctx.fillStyle = '#314e8b'; ctx.font = '11px sans-serif'; ctx.textAlign = 'left';
+  ctx.fillRect(PAD.left + 10, PAD.top + 8, 22, 3);
+  ctx.fillText('Absolute', PAD.left + 36, PAD.top + 13);
+  ctx.strokeStyle = '#5b75ad'; ctx.lineWidth = 1.6; ctx.setLineDash([5,3]);
+  ctx.beginPath(); ctx.moveTo(PAD.left + 10, PAD.top + 22); ctx.lineTo(PAD.left + 32, PAD.top + 22); ctx.stroke();
+  ctx.setLineDash([]); ctx.fillStyle = '#5b75ad';
+  ctx.fillText('Consistency', PAD.left + 36, PAD.top + 27);
+}
+
+function ratersXFn(r, fixedImages, type) {
+  return type === 'abs' ? absRel(r, fixedImages) : conRel(r, fixedImages);
+}
+function imagesXFn(i, fixedRaters, type) {
+  return type === 'abs' ? absRel(fixedRaters, i) : conRel(fixedRaters, i);
+}
+
+// ──────────────────────────────────────────────────────────
+// UI update
+// ──────────────────────────────────────────────────────────
+function update() {
+  const r = parseInt(document.getElementById('sl-raters').value);
+  const i = parseInt(document.getElementById('sl-clips').value);
+  document.getElementById('val-raters').textContent = r;
+  document.getElementById('val-clips').textContent = i;
+
+  const a = absRel(r, i), c = conRel(r, i);
+  document.getElementById('abs-val').textContent = a.toFixed(3);
+  document.getElementById('con-val').textContent = c.toFixed(3);
+
+  // Target annotations
+  const aTarget = a >= 0.80 ? '✓ Above .80 target' : a >= 0.70 ? '✓ Above .70 target' : 'Below .70';
+  const cTarget = c >= 0.80 ? '✓ Above .80 target' : c >= 0.70 ? '✓ Above .70 target' : 'Below .70';
+  const aCol = a >= 0.80 ? '#1a7a4a' : a >= 0.70 ? '#92570a' : '#8b1a1a';
+  const cCol = c >= 0.80 ? '#1a7a4a' : c >= 0.70 ? '#92570a' : '#8b1a1a';
+  const aEl = document.getElementById('abs-target');
+  const cEl = document.getElementById('con-target');
+  aEl.textContent = aTarget; aEl.style.color = aCol;
+  cEl.textContent = cTarget; cEl.style.color = cCol;
+  document.getElementById('abs-val').style.color = aCol;
+  document.getElementById('con-val').style.color = cCol;
+
+  // Draw curves
+  drawCurve('cv-raters', ratersXFn, 5, 200, 'clips', r, null, i);
+  drawCurve('cv-clips', imagesXFn, 1, 20,  'raters', i, null, r);
+}
+
+document.getElementById('sl-raters').addEventListener('input', update);
+document.getElementById('sl-clips').addEventListener('input', update);
+
+// Initial draw
+update();
+</script>
+
+</body>
+</html>

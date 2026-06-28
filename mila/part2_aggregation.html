@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<!-- saved from url=(0231)file:///Users/j.tree/Library/Application%20Support/Claude/local-agent-mode-sessions/3112974c-29e8-42c3-9f17-4667fa700f75/bb64f21e-2edc-48f9-b8f5-e669f6bbe48e/local_5ddb7fbd-c069-4a77-92e0-8c26790a406e/outputs/part2_aggregation.html -->
+<html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+<title>Part 2: What aggregation does</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --navy: #1e2e5c; --blue: #314e8b; --mid: #5b75ad;
+    --light-blue: #edf3ff; --bg: #f5f5f2; --card: #ffffff;
+    --border: #d5dae8; --text: #1a2030; --muted: #5a6480;
+    --green: #1a7a4a; --green-bg: #eaf5ef;
+    --amber: #92570a; --amber-bg: #fff8ee;
+    --red: #8b1a1a; --red-bg: #fff0f0;
+    --teal: #0e6e6e; --teal-bg: #e6f5f5;
+    --purple: #4a2e7a; --purple-bg: #f2eeff;
+  }
+  body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+    background: var(--bg); color: var(--text); line-height: 1.6; font-size: 16px; }
+  .wrap { max-width: 1060px; margin: 0 auto; padding: 36px 22px 80px; }
+
+  .hero { background: linear-gradient(135deg, #1a3a5c, #4a6a9f);
+    color: white; padding: 44px 40px; border-radius: 20px;
+    box-shadow: 0 12px 32px rgba(0,0,0,.18); margin-bottom: 28px; }
+  .hero .tag { font-size: .8rem; font-weight: 600; letter-spacing: .08em;
+    text-transform: uppercase; opacity: .75; margin-bottom: 10px; }
+  .hero h1 { font-size: 2rem; line-height: 1.15; margin-bottom: 12px; }
+  .hero p { font-size: 1.05rem; opacity: .92; max-width: 780px; }
+  .hero .stage-links { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 18px; }
+  .hero .stage-links a {
+    padding: 5px 16px; border-radius: 20px; font-size: .82rem; text-decoration: none;
+    border: 1px solid rgba(255,255,255,.35); color: rgba(255,255,255,.75); transition: all .2s; }
+  .hero .stage-links a.active { background: rgba(255,255,255,.25); color: white; border-color: rgba(255,255,255,.6); }
+  .hero .stage-links a:hover:not(.active) { background: rgba(255,255,255,.1); color: white; }
+
+  section { background: var(--card); border: 1px solid var(--border);
+    border-radius: 18px; padding: 30px 32px; margin-bottom: 22px;
+    box-shadow: 0 6px 18px rgba(30,46,92,.06); }
+  h2 { color: var(--blue); font-size: 1.3rem; margin-bottom: 14px; }
+  h3 { color: var(--navy); font-size: 1.05rem; margin: 22px 0 8px; }
+  p { margin-bottom: 12px; }
+  p:last-child { margin-bottom: 0; }
+
+  .callout { border-radius: 12px; padding: 14px 18px; margin: 16px 0;
+    border-left: 4px solid; font-size: .97rem; }
+  .callout.blue  { background: var(--light-blue); border-color: var(--mid); }
+  .callout.green { background: var(--green-bg);   border-color: var(--green); }
+  .callout.amber { background: var(--amber-bg);   border-color: var(--amber); }
+  .callout.teal  { background: var(--teal-bg);    border-color: var(--teal); }
+  .callout.purple{ background: var(--purple-bg);  border-color: var(--purple); }
+  .callout strong { display: block; margin-bottom: 4px; }
+
+  .formula { background: #f0f2f8; border: 1px solid var(--border);
+    border-radius: 12px; padding: 16px 20px; margin: 14px 0;
+    font-family: "SFMono-Regular", Consolas, monospace; font-size: .92rem;
+    overflow-x: auto; line-height: 1.9; }
+
+  /* Stacked-fraction equation */
+  .eqn { display: flex; align-items: center; justify-content: center; gap: 16px;
+    flex-wrap: wrap; background: #f0f2f8; border: 1px solid var(--border);
+    border-radius: 12px; padding: 22px 20px; margin: 14px 0; overflow-x: auto;
+    font-family: "SFMono-Regular", Consolas, monospace; }
+  .eqn .lhs { font-size: 1.05rem; font-weight: 700; color: var(--navy); white-space: nowrap; }
+  .frac { display: inline-flex; flex-direction: column; text-align: center; }
+  .frac .num { padding: 0 16px 7px; }
+  .frac .bar { height: 2px; background: var(--navy); width: 100%; }
+  .frac .den { padding: 7px 16px 0; }
+  .frac .num, .frac .den { font-size: .95rem; color: var(--text); white-space: nowrap; }
+  .eqn sub { font-size: .68em; }
+  .eqn-note { font-size: .85rem; color: var(--muted); text-align: center; margin: -2px 0 14px; }
+
+  /* Spearman-Brown widget */
+  #sb-widget { background: var(--light-blue); border: 1px solid var(--border);
+    border-radius: 14px; padding: 24px; margin: 20px 0; }
+  .sb-slider-row { display: flex; align-items: center; gap: 16px; margin-bottom: 18px; flex-wrap: wrap; }
+  .sb-slider-row label { font-size: .9rem; color: var(--muted); white-space: nowrap; }
+  .sb-slider-row input[type=range] { flex: 1; min-width: 160px; accent-color: var(--blue); }
+  .sb-val { font-weight: 700; font-size: 1.1rem; color: var(--navy); min-width: 28px; }
+  .sb-result-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+  @media (max-width: 540px) { .sb-result-row { grid-template-columns: 1fr; } }
+  .sb-card { background: white; border: 1.5px solid var(--border);
+    border-radius: 12px; padding: 14px 16px; text-align: center; }
+  .sb-card .sl { font-size: .72rem; font-weight: 700; text-transform: uppercase;
+    letter-spacing: .08em; color: var(--muted); margin-bottom: 6px; }
+  .sb-card .sv { font-size: 2.2rem; font-weight: 700; line-height: 1; margin-bottom: 4px; }
+  .sb-card .si { font-size: .8rem; color: var(--muted); }
+  .sb-track { height: 7px; background: #eef0f6; border-radius: 4px; margin-top: 8px; overflow: hidden; }
+  .sb-fill { height: 100%; border-radius: 4px; transition: width .35s ease, background .3s; }
+
+  /* ICC curve canvas */
+  #sb-curve-wrap { margin: 16px 0; }
+  #sb-curve { width: 100%; display: block; border-radius: 8px; border: 1px solid var(--border); }
+
+  /* Scatter plot (session correlation) */
+  #scatter-wrap { margin: 20px 0; background: var(--light-blue);
+    border: 1px solid var(--border); border-radius: 14px; padding: 20px; }
+  #scatter { width: 100%; display: block; }
+
+  /* Two lever cards */
+  .lever-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 16px 0; }
+  @media (max-width: 580px) { .lever-grid { grid-template-columns: 1fr; } }
+  .lever-card { border: 1.5px solid var(--border); border-radius: 14px; padding: 18px; background: #fafbff; }
+  .lever-card.raters { border-top: 3px solid #314e8b; }
+  .lever-card.clips { border-top: 3px solid #0e6e6e; }
+  .lever-card h4 { font-size: .95rem; margin-bottom: 8px; }
+  .lever-card.raters h4 { color: var(--blue); }
+  .lever-card.clips  h4 { color: var(--teal); }
+  .lever-card p { font-size: .88rem; color: var(--muted); margin: 0; }
+
+  /* Teaser */
+  .teaser { background: linear-gradient(135deg, #1e2e5c 0%, #314e8b 100%);
+    color: white; border-radius: 16px; padding: 26px 28px; margin-top: 22px; }
+  .teaser h3 { color: white; margin: 0 0 8px; font-size: 1.1rem; }
+  .teaser p { opacity: .88; font-size: .97rem; margin-bottom: 14px; }
+  .teaser a { display: inline-block; background: rgba(255,255,255,.2);
+    color: white; text-decoration: none; padding: 8px 20px;
+    border-radius: 20px; font-size: .88rem; border: 1px solid rgba(255,255,255,.4);
+    transition: background .2s; }
+  .teaser a:hover { background: rgba(255,255,255,.3); }
+
+  details { border: 1px solid var(--border); border-radius: 12px; margin: 16px 0; overflow: hidden; }
+  summary { padding: 12px 16px; cursor: pointer; font-size: .93rem; color: var(--blue);
+    background: var(--light-blue); list-style: none; display: flex; align-items: center; gap: 8px; }
+  summary::before { content: '▶'; font-size: .68rem; transition: transform .2s; flex-shrink: 0; }
+  details[open] summary::before { transform: rotate(90deg); }
+  details > *:not(summary) { padding: 18px 20px; background: #fafbff; font-size: .93rem; }
+
+  @media (max-width: 640px) {
+    .hero { padding: 28px 22px; } .hero h1 { font-size: 1.55rem; }
+    section { padding: 22px 18px; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<div class="hero">
+  <div class="tag">Part 2 of 4</div>
+  <h1>What aggregation does to reliability</h1>
+  <p>A single rating is about 27% signal. But we do not rely on a single rating — we average across many raters and multiple clips. The law of large numbers and the Spearman-Brown formula tell us exactly what this does to the ICC, and by the end we will see that the rank ordering of our 20 identities is very reliably recovered.</p>
+  <div class="stage-links">
+    <a href="file:///Users/j.tree/Library/Application%20Support/Claude/local-agent-mode-sessions/3112974c-29e8-42c3-9f17-4667fa700f75/bb64f21e-2edc-48f9-b8f5-e669f6bbe48e/local_5ddb7fbd-c069-4a77-92e0-8c26790a406e/outputs/part1_icc.html">Part 1: ICC</a>
+    <a class="active" href="file:///Users/j.tree/Library/Application%20Support/Claude/local-agent-mode-sessions/3112974c-29e8-42c3-9f17-4667fa700f75/bb64f21e-2edc-48f9-b8f5-e669f6bbe48e/local_5ddb7fbd-c069-4a77-92e0-8c26790a406e/outputs/part2_aggregation.html#">Part 2: Aggregation</a>
+    <a href="file:///Users/j.tree/Library/Application%20Support/Claude/local-agent-mode-sessions/3112974c-29e8-42c3-9f17-4667fa700f75/bb64f21e-2edc-48f9-b8f5-e669f6bbe48e/local_5ddb7fbd-c069-4a77-92e0-8c26790a406e/outputs/part3_mixed_models.html">Part 3: Mixed models</a>
+    <a href="file:///Users/j.tree/Library/Application%20Support/Claude/local-agent-mode-sessions/3112974c-29e8-42c3-9f17-4667fa700f75/bb64f21e-2edc-48f9-b8f5-e669f6bbe48e/local_5ddb7fbd-c069-4a77-92e0-8c26790a406e/outputs/part4_generalisability.html">Part 4: Generalisability</a>
+  </div>
+</div>
+
+<!-- SECTION 1: MORE RATERS -->
+<section>
+  <h2>1 — Averaging raters: from many lines to one</h2>
+
+  <p>Remember Figure 1 in Part 1, where we had a bold single rank-order line — that was the consensus, based on an aggregate. It has one point per clip, and each point is a summary statistic: that clip's mean rating. Since our goal is to reliably recover the rank order of our video clips, the question becomes: how many observations do we need before the mean at each point on that line can be considered reliable? In short, it is a question of the value of <em>k</em> in our ICC formula.</p>
+
+  <p>Since each point is the mean of k raters, and we saw how wildly individual raters scatter around the consensus, a point built from one rater is naturally shaky. Average k of them and — to the extent their quirks are independent — the scatter cancels: the error in each mean shrinks as a function of the standard error, SD/√k. More raters per point means a more certain point, and k is simply how much information feeds it. We get this without re-running the study: we read the signal (how much clips differ) and the noise (how much raters disagree) off the one dataset, and the SD/√k law gives the rest — just as you can quote a standard error from a single sample. There is one catch: averaging only cancels noise that differs randomly from one rater to the next. If raters instead <em>share</em> a bias — all rating smiling faces a little too high, say, or following the same cultural convention — that bias is the same for everyone, so averaging cannot remove it, and the true reliability is lower than the formula predicts. (Pulling those shared sources apart is exactly what Part 3 does.)</p>
+
+  <p>The <strong>Spearman-Brown formula</strong> puts a number on this — how the line's reliability grows as each point is built from more raters:</p>
+
+  <div class="eqn">
+    <span class="lhs">ICC(C,k)&nbsp;=</span>
+    <span class="frac">
+      <span class="num">k × ICC(C,1)</span>
+      <span class="bar"></span>
+      <span class="den">1 + (k − 1) × ICC(C,1)</span>
+    </span>
+  </div>
+  <div class="formula" style="white-space:pre;font-size:.88rem">With ICC(C,1) = 0.271:
+  k = 1  rater:   ICC = 0.271
+  k = 5  raters:  ICC = 0.650
+  k = 10 raters:  ICC = 0.788
+  k = 20 raters:  ICC = 0.881
+  k = 47 raters:  ICC = 0.946</div>
+
+  <p>As an illustration, try the interactive widget below. The slider makes it tangible: every notch up in k pours more raters into each of the 100 points, tightening the line. Watch the ICC climb, and see where our 47-rater study sits.</p>
+
+  <div id="sb-widget">
+    <div class="sb-slider-row">
+      <label>Number of raters (k):</label>
+      <input type="range" id="sl-k" min="1" max="100" value="47">
+      <span class="sb-val" id="sv-k">47</span>
+    </div>
+    <div class="sb-result-row">
+      <div class="sb-card">
+        <div class="sl">Single rater ICC(C,1)</div>
+        <div class="sv" style="color:#92570a">0.271</div>
+        <div class="si">fixed — the single-rating value</div>
+        <div class="sb-track"><div class="sb-fill" style="width:27.1%;background:#92570a"></div></div>
+      </div>
+      <div class="sb-card">
+        <div class="sl">ICC(C,k) after aggregation</div>
+        <div class="sv" id="sv-icc" style="color: rgb(26, 122, 74);">0.946</div>
+        <div class="si" id="si-icc">with 47 raters</div>
+        <div class="sb-track"><div class="sb-fill" id="sf-icc" style="width: 94.5864%; background: rgb(26, 122, 74);"></div></div>
+      </div>
+      <div class="sb-card">
+        <div class="sl">Correlation with true score</div>
+        <div class="sv" id="sv-corr" style="color:#1a7a4a">0.973</div>
+        <div class="si">√ICC(C,k)</div>
+        <div class="sb-track"><div class="sb-fill" id="sf-corr" style="width: 97.2555%; background: rgb(26, 122, 74);"></div></div>
+      </div>
+    </div>
+    <canvas id="sb-curve" height="320" role="img" aria-label="Line chart of the Spearman-Brown predicted ICC as a function of the number of raters k, rising steeply at first and flattening as k grows; a dashed line marks the 0.90 threshold and a dot marks the current slider position." style="margin-top: 18px; background: white; border-radius: 8px; border: 1px solid var(--border); width: 900px; height: 160px;" width="1800"></canvas>
+    <div style="text-align:center;font-size:.76rem;color:var(--muted);margin-top:6px">
+      ICC(C,k) as a function of number of raters. ● marks the current slider position. Dashed line = 0.90 threshold.
+    </div>
+  </div>
+
+  <p>With k = 47 raters the ICC(C,47) reaches <strong>0.946</strong>, and √0.946 ≈ <strong>0.97</strong> is the corresponding correlation between the line and the underlying clip values it estimates — in effect, our certainty in the ordering at the clip level.</p>
+
+  <div class="callout amber">
+    <strong>Notice what we are now asking is reliable.</strong> In Part 1 the question was about a <em>single rating</em> — one rater, one clip — the atomic bit we build from (ICC(C,1) = 0.271 told us how much signal each raw bit carries). But nobody measures a clip with one rating. What we actually deploy is the <em>aggregate</em>: the rank-order line whose 100 points are each a 47-rater mean. ICC(C,47) judges <em>that</em>. So 0.946 is not "how good is a rating" — it is "if we used this 47-rater line as our measurement, how reproducibly would it recover the <em>same</em> rank ordering of the clips?". Same word, different object — and asking it of the aggregate we will actually use is the whole point of aggregating.</div>
+
+  <p>One layer still remains: the real target is the <em>person</em>, not the clip, and each person's score averages 5 clips as well as 47 raters — the step the rater-only ICC does not touch, and the one Section 2 takes next.</p>
+
+  <details>
+    <summary>Why is the numerator k × ICC(C,1) — what does multiplying by k actually mean?</summary>
+    <div>
+      <p style="margin-bottom:12px">The k comes directly from the way signal and noise behave differently when you add items together. Start from the basic decomposition: every item is true score plus error.</p>
+
+      <div class="formula" style="white-space:pre;font-size:.88rem">item₁ = true score + e₁
+item₂ = true score + e₂
+  ⋮
+itemₖ = true score + eₖ</div>
+
+      <p style="margin-bottom:12px">When you sum all k items, the true score appears k times and adds up <strong>coherently</strong> — all pointing in the same direction. The errors are independent of each other and add up <strong>incoherently</strong> — they partially cancel. This gives:</p>
+
+      <div class="formula" style="white-space:pre;font-size:.88rem">Total = k × true score  +  (e₁ + e₂ + ... + eₖ)
+
+Signal variance  → scales as k²   (k copies of the same signal stack up)
+Noise variance   → scales as k    (independent errors don't reinforce)</div>
+
+      <p style="margin-bottom:12px">So the reliability of the composite is:</p>
+
+      <div class="formula" style="white-space:pre;font-size:.88rem">Reliability  =  k² σ²_T  /  (k² σ²_T  +  k σ²_e)
+
+Divide top and bottom by k:
+
+           =  k σ²_T  /  (k σ²_T  +  σ²_e)</div>
+
+      <p style="margin-bottom:12px">Our single-rater reliability is just ICC(C,1) = σ²_T / (σ²_T + σ²_e); substituting it in gives exactly the Spearman-Brown formula:</p>
+
+      <div class="formula" style="white-space:pre;font-size:.88rem">Reliability  =  k × ICC(C,1)  /  (1 + (k−1) × ICC(C,1))</div>
+
+      <p style="margin-bottom:12px">The <strong>k in the numerator is simply the k-times-stronger signal</strong>. With k items each containing the same true score, the signal has accumulated k times. The denominator grows more slowly because the noise stays as one unit of σ²_e while the signal grows to k units — which is exactly the noise÷k logic from earlier, now expressed from the signal's side.</p>
+
+      <p style="margin-bottom:0">You can see this directly: for small ICC(C,1) (noisy items), the denominator is roughly 1 and reliability ≈ k × ICC(C,1) — it grows almost linearly with k. For large ICC(C,1) (already reliable items), the denominator grows quickly and adding more raters gives diminishing returns. Both limits make intuitive sense.</p>
+    </div>
+  </details>
+</section>
+
+<!-- SECTION 2: ADDING IMAGES -->
+<section>
+  <h2>2 — Adding more clips per identity</h2>
+
+  <p>Rater noise is not the only source of noise in a single rating. The specific video clip also matters — a clip that catches someone mid-blink, or in an unusually warm expression, or at an unflattering angle, will shift ratings away from what they would be for a more representative clip. This clip-specific variance is noise relative to the person's stable perceived friendliness.</p>
+
+  <p>Averaging across multiple clips of the same person helps in the same general way that averaging across raters addresses rater noise — provided the clips are reasonably diverse samples of how that person can appear. Just as different raters have independent quirks that cancel when averaged, different video clips of the same person have largely independent clip-specific effects that cancel when averaged. The catch is that clips of one person can share a bias — all unusually smiley, say, or all shot in the same flattering light — and a shared bias does not cancel; averaging then stabilises that biased impression rather than recovering the person's general perceived friendliness. (That is the seed of the generalisability question in Part 4.) Our study uses 5 video clips per identity, which means the clip-level noise in each identity mean is already divided by 5 before we average across raters.</p>
+
+  <div class="lever-grid">
+    <div class="lever-card raters">
+      <h4>Averaging across raters</h4>
+      <p>Cancels idiosyncratic rater scale-use and individual rater preferences for specific faces. Each rater's quirks are independent of each other's, so they average out. The more raters, the cleaner the estimate.</p>
+    </div>
+    <div class="lever-card clips">
+      <h4>Averaging across clips</h4>
+      <p>Cancels clip-specific effects — the fact that some clips of a person happen to look friendlier than others. The more clips per identity, the less any single video clip's idiosyncrasies drive the result.</p>
+    </div>
+  </div>
+
+  <p>The two levers attack different noise and work at once — but note that the 0.946 from Spearman-Brown reflects the rater averaging only, holding the clip fixed. Averaging each person's 5 clips is a <em>separate</em> reduction of clip noise on top of it: together the identity mean rests on 47 raters × 5 clips (235 rating cells per person per session — not 235 independent observations, since the same raters recur across clips and the clips all belong to one identity), yet that single ICC number still captures only the rater lever.</p>
+
+  <details>
+    <summary>Does the Spearman-Brown formula account for the clip averaging too?</summary>
+    <div>
+      <p style="margin-bottom:0">No — it only increases the number of <em>raters</em>, holding everything else fixed. Our ICC(C,1) = 0.271 was computed with the <em>clip</em> as the target (the 100 clips as the unit, T1 session), so averaging over 47 raters gives the reliability of a clip's rater-mean and does not reduce clip variance at all; at this level clip-to-clip variance sits inside the signal. Recovering the identity mean takes the extra step of averaging each person's 5 clips, knocking down a noise source the rater-only ICC never touched. Part 3 separates rater noise from clip noise explicitly, and Part 4 treats the clips as a sampled facet — which is why the generalisable identity reliability there (≈ 0.76) is lower than this 0.946.</p>
+    </div>
+  </details>
+
+  <p>None of this stops us pulling both levers at once — it just means a single ICC number won't capture both. So what a researcher actually does is simple: for each of the 20 identities, average across all 5 clips <em>and</em> all 47 raters into one score. That collapses both sources of noise in one step and finally gives what we were after — one number per identity, and so a single rank-order line over the 20 people.</p>
+</section>
+
+<!-- SECTION 3: TEST-RETEST -->
+<section>
+  <h2>3 — Empirical confirmation: test-retest stability</h2>
+
+  <p>So how do we know that combined line is trustworthy? The most direct check is empirical: build it twice and see whether the two versions agree. The study ran across two sessions, so we can compute the 20-identity line from Session 1 and again from Session 2 — each collapsing all the same 47 raters and 5 clips — and ask how closely they match. The scatter below plots each identity's Session-1 mean against its Session-2 mean, and lets us try a different way of determining reliability, called <em>test-retest reliability</em>.</p>
+
+  <div id="scatter-wrap">
+    <canvas id="scatter" height="600" role="img" aria-label="Scatter plot of the 20 identity means from Session 1 (horizontal axis) against Session 2 (vertical axis). Points fall tightly along the diagonal, with a session-to-session correlation of r = 0.98." width="1816" style="width: 908px; height: 300px;"></canvas>
+    <div style="text-align:center;font-size:.78rem;color:var(--muted);margin-top:8px">
+      Session 1 vs Session 2 identity means (47 raters × 5 clips each session). Each point is one of the 20 identities.
+    </div>
+  </div>
+
+  <p>The session-to-session correlation across the 20 identity means is <strong>r = 0.98</strong> — the ordering is very highly stable from one session to the next (with only 20 identities, read this as a strong result for this dataset rather than a guarantee). Why so high? Because both sessions used the very same 5 clips and the very same raters; only the occasion changed. So this is a deliberately narrow test — repeat the exact same measurement and check you get the same answer — and you do, confirming that for this set of clips our averaged scores are stable and repeatable.</p>
+
+  <div class="callout green">
+    <strong>The paradigm works — with one caveat.</strong> With 47 raters and 5 clips, the rank ordering of these 20 people is highly stable — ICC(C,47) ≈ 0.95, test-retest r ≈ 0.98 — and a researcher could correlate it with an external variable with confidence. But note what these numbers actually describe: the reliability of the particular paradigm we ran — the specific clips, raters and occasions that fed into our dataset. They confirm the result is solid for the materials we used; they say nothing about how far it would travel to <em>new</em> clips or raters. That broader question — the <em>generalisability</em> of a paradigm, a wider way of framing reliability altogether — is the subject of Part 4.
+  </div>
+</section>
+
+<!-- SECTION 4: LIMITS -->
+<section>
+  <h2>4 — What this approach does not tell us</h2>
+
+  <p>The ICC approach did something valuable — it confirmed the measurement reliably reproduces the rank order of our 20 identities. But it got there by treating the residual 73% of variance in single clip ratings as a single, undifferentiated error term and averaging it away. It never asks how that residual breaks down: how much is the specific clip, how much idiosyncratic rater-by-clip taste, how much random moment-to-moment noise — and, more broadly, how much is stable rater generosity, which the consistency ICC set aside rather than counted. Those sources have different origins, respond differently to design choices, and — crucially — some may be interesting phenomena in their own right. Averaging them away makes them vanish from view, but they were real all along.</p>
+
+  <p>We have, in fact, already been partly alert to this. Choosing the consistency ICC over absolute agreement was a recognition that rater generosity is systematic, not random — so we removed it from the error rather than averaging it as noise. But what remains still has structure: a clip that catches someone mid-smile reliably draws higher scores than a neutral one, regardless of who rates it. Some of the rest is closer to genuinely random — a rater's passing mood, the clip seen just before — and less interesting. The ICC suppresses all of it by averaging; it never explains any of it.</p>
+
+  <p>And some of that "noise" may be the most interesting part of the data. Whether raters differ in <em>which</em> faces they find friendly — their individual taste, not just their overall generosity — is a psychological question in its own right: if Rater A reliably finds Face X friendlier than Rater B does, that disagreement might reveal something real about face perception rather than mere measurement error to be suppressed.</p>
+
+  <div class="callout purple">
+    <strong>"Noise" is defined relative to the question, not the variance itself.</strong> The rater-by-identity interaction is noise if you want a consensus ordering, but signal if you want to study individual differences in face perception — the same component, different status. As we shall see, a key luminary in the world of psychometrics and reliability — Cronbach — actually makes this complaint much later in his career, about another form of reliability measurement called coefficient alpha: collapsing all non-target variance into one error term throws away which sources are large, which small, and which are worth studying. Partitioning the variance instead of suppressing it is what the next step makes possible.
+  </div>
+
+  <div class="teaser">
+    <h3>Part 3 — What a mixed model reveals</h3>
+    <p>Instead of collapsing all non-identity variance into a single error term, a <em>mixed modelling</em> approach gives each source of variance its own labelled bucket. The picture that emerges is richer — and opens questions the ICC approach cannot even formulate.</p>
+    <a href="file:///Users/j.tree/Library/Application%20Support/Claude/local-agent-mode-sessions/3112974c-29e8-42c3-9f17-4667fa700f75/bb64f21e-2edc-48f9-b8f5-e669f6bbe48e/local_5ddb7fbd-c069-4a77-92e0-8c26790a406e/outputs/part3_mixed_models.html">Go to Part 3 →</a>
+  </div>
+</section>
+
+</div>
+
+<script>
+// ---- SPEARMAN-BROWN WIDGET ----
+const icc1 = 0.271;
+function sb(k) { return k * icc1 / (1 + (k - 1) * icc1); }
+
+function iccColor(v) {
+  if (v >= 0.90) return '#1a7a4a';
+  if (v >= 0.75) return '#314e8b';
+  if (v >= 0.50) return '#92570a';
+  return '#8b1a1a';
+}
+
+let curveCanvas, curveCtx;
+
+function drawCurve(kSelected) {
+  const dpr = window.devicePixelRatio || 1;
+  const W = curveCanvas.parentElement.clientWidth - 48;
+  const H = 160;
+  curveCanvas.width = W * dpr;
+  curveCanvas.height = H * dpr;
+  curveCanvas.style.width = W + 'px';
+  curveCanvas.style.height = H + 'px';
+  curveCtx.scale(dpr, dpr);
+
+  const padL = 40, padR = 16, padT = 14, padB = 28;
+  const plotW = W - padL - padR;
+  const plotH = H - padT - padB;
+
+  function xPos(k) { return padL + (k - 1) / 99 * plotW; }
+  function yPos(v) { return padT + plotH * (1 - v); }
+
+  // Gridlines
+  curveCtx.strokeStyle = '#e8ecf4'; curveCtx.lineWidth = 1;
+  [0, .25, .5, .75, 1].forEach(v => {
+    const y = yPos(v);
+    curveCtx.beginPath(); curveCtx.moveTo(padL, y); curveCtx.lineTo(W - padR, y); curveCtx.stroke();
+    curveCtx.fillStyle = '#8a94aa'; curveCtx.font = '10px Arial';
+    curveCtx.textAlign = 'right'; curveCtx.fillText(v.toFixed(2), padL - 4, y + 4);
+  });
+
+  // 0.90 dashed threshold
+  curveCtx.setLineDash([4, 4]);
+  curveCtx.strokeStyle = '#1a7a4a'; curveCtx.lineWidth = 1;
+  curveCtx.beginPath();
+  curveCtx.moveTo(padL, yPos(0.90));
+  curveCtx.lineTo(W - padR, yPos(0.90));
+  curveCtx.stroke();
+  curveCtx.setLineDash([]);
+  curveCtx.fillStyle = '#1a7a4a'; curveCtx.font = '9px Arial'; curveCtx.textAlign = 'left';
+  curveCtx.fillText('0.90', W - padR + 2, yPos(0.90) + 3);
+
+  // Curve
+  curveCtx.beginPath(); curveCtx.strokeStyle = '#314e8b'; curveCtx.lineWidth = 2.5;
+  for (let k = 1; k <= 100; k++) {
+    const x = xPos(k), y = yPos(sb(k));
+    k === 1 ? curveCtx.moveTo(x, y) : curveCtx.lineTo(x, y);
+  }
+  curveCtx.stroke();
+
+  // Selected point
+  const selK = kSelected;
+  const selV = sb(selK);
+  const sx = xPos(selK), sy = yPos(selV);
+  curveCtx.beginPath();
+  curveCtx.arc(sx, sy, 6, 0, 2 * Math.PI);
+  curveCtx.fillStyle = iccColor(selV); curveCtx.fill();
+  curveCtx.strokeStyle = 'white'; curveCtx.lineWidth = 2; curveCtx.stroke();
+
+  // x-axis labels
+  curveCtx.fillStyle = '#8a94aa'; curveCtx.font = '10px Arial'; curveCtx.textAlign = 'center';
+  [1, 10, 20, 30, 47, 60, 80, 100].forEach(k => {
+    curveCtx.fillText(k, xPos(k), H - 6);
+  });
+  curveCtx.fillText('Number of raters (k)', padL + plotW / 2, H);
+}
+
+function updateSB() {
+  const k = parseInt(document.getElementById('sl-k').value);
+  document.getElementById('sv-k').textContent = k;
+  const icc = sb(k);
+  const corr = Math.sqrt(icc);
+  document.getElementById('sv-icc').textContent = icc.toFixed(3);
+  document.getElementById('sv-icc').style.color = iccColor(icc);
+  document.getElementById('si-icc').textContent = 'with ' + k + ' rater' + (k > 1 ? 's' : '');
+  document.getElementById('sf-icc').style.width = (icc * 100) + '%';
+  document.getElementById('sf-icc').style.background = iccColor(icc);
+  document.getElementById('sv-corr').textContent = corr.toFixed(3);
+  document.getElementById('sv-corr').style.color = iccColor(corr);
+  document.getElementById('sf-corr').style.width = (corr * 100) + '%';
+  document.getElementById('sf-corr').style.background = iccColor(corr);
+  drawCurve(k);
+}
+
+window.addEventListener('load', () => {
+  curveCanvas = document.getElementById('sb-curve');
+  curveCtx = curveCanvas.getContext('2d');
+  document.getElementById('sl-k').addEventListener('input', updateSB);
+  updateSB();
+});
+
+// ---- SCATTER PLOT (session correlation) ----
+window.addEventListener('load', () => {
+  const canvas = document.getElementById('scatter');
+  const dpr = window.devicePixelRatio || 1;
+  const W = canvas.parentElement.clientWidth - 40;
+  const H = 300;
+  canvas.width = W * dpr; canvas.height = H * dpr;
+  canvas.style.width = W + 'px'; canvas.style.height = H + 'px';
+  const ctx = canvas.getContext('2d');
+  ctx.scale(dpr, dpr);
+
+  // Real identity means from the study data (CleanData sheet), 20 identities (ID1..ID20).
+  // s1 = Session T1 mean, s2 = Session T2 mean — each is the mean over 47 raters × 5 clips.
+  const s1 = [6.430,4.506,4.736,6.102,5.600,5.357,5.783,5.843,6.072,6.345,
+              4.170,4.740,4.694,5.774,5.094,4.991,4.987,5.374,5.115,6.166];
+  const s2 = [6.477,4.213,4.340,6.128,5.455,5.340,5.464,5.591,6.123,6.004,
+              3.932,4.506,4.379,5.702,4.800,4.779,4.830,5.506,5.077,6.111];
+
+  const padL = 48, padR = 20, padT = 16, padB = 44;
+  const plotW = W - padL - padR;
+  const plotH = H - padT - padB;
+  const minV = 3.5, maxV = 7;
+  function xp(v) { return padL + (v - minV) / (maxV - minV) * plotW; }
+  function yp(v) { return padT + plotH * (1 - (v - minV) / (maxV - minV)); }
+
+  // Gridlines
+  ctx.strokeStyle = '#e8ecf4'; ctx.lineWidth = 1;
+  [4,5,6,7].forEach(v => {
+    ctx.beginPath(); ctx.moveTo(xp(v), padT); ctx.lineTo(xp(v), padT + plotH); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(padL, yp(v)); ctx.lineTo(padL + plotW, yp(v)); ctx.stroke();
+    ctx.fillStyle = '#8a94aa'; ctx.font = '11px Arial';
+    ctx.textAlign = 'center'; ctx.fillText(v, xp(v), padT + plotH + 14);
+    ctx.textAlign = 'right'; ctx.fillText(v, padL - 5, yp(v) + 4);
+  });
+
+  // Diagonal reference line (y=x)
+  ctx.setLineDash([5,5]); ctx.strokeStyle = '#c0c8da'; ctx.lineWidth = 1;
+  ctx.beginPath(); ctx.moveTo(xp(minV), yp(minV)); ctx.lineTo(xp(maxV), yp(maxV)); ctx.stroke();
+  ctx.setLineDash([]);
+
+  // Least-squares regression line through the real (T1, T2) identity means
+  const meanS1 = s1.reduce((a,b)=>a+b,0)/20;
+  const meanS2 = s2.reduce((a,b)=>a+b,0)/20;
+  const slope = s1.reduce((a,v,i)=>a+(v-meanS1)*(s2[i]-meanS2),0) /
+                s1.reduce((a,v)=>a+(v-meanS1)**2,0);
+  const intercept = meanS2 - slope * meanS1;
+  ctx.strokeStyle = '#314e8b'; ctx.lineWidth = 2; ctx.setLineDash([]);
+  const xLo = Math.min(...s1), xHi = Math.max(...s1);
+  ctx.beginPath();
+  ctx.moveTo(xp(xLo), yp(intercept + slope * xLo));
+  ctx.lineTo(xp(xHi), yp(intercept + slope * xHi));
+  ctx.stroke();
+
+  // Dots
+  s1.forEach((v, i) => {
+    ctx.beginPath();
+    ctx.arc(xp(v), yp(s2[i]), 6, 0, 2*Math.PI);
+    ctx.fillStyle = '#314e8b'; ctx.fill();
+    ctx.strokeStyle = 'white'; ctx.lineWidth = 1.5; ctx.stroke();
+  });
+
+  // Axis labels
+  ctx.fillStyle = '#5a6480'; ctx.font = '12px Arial'; ctx.textAlign = 'center';
+  ctx.fillText('Session 1 identity mean', padL + plotW / 2, H - 4);
+  ctx.save(); ctx.translate(14, padT + plotH / 2); ctx.rotate(-Math.PI/2);
+  ctx.fillText('Session 2 identity mean', 0, 0); ctx.restore();
+
+  // r label (Pearson r computed from the real data above)
+  const sdS1 = Math.sqrt(s1.reduce((a,v)=>a+(v-meanS1)**2,0));
+  const sdS2 = Math.sqrt(s2.reduce((a,v)=>a+(v-meanS2)**2,0));
+  const rVal = s1.reduce((a,v,i)=>a+(v-meanS1)*(s2[i]-meanS2),0) / (sdS1 * sdS2);
+  ctx.fillStyle = '#1a7a4a'; ctx.font = 'bold 13px Arial'; ctx.textAlign = 'right';
+  ctx.fillText('r = ' + rVal.toFixed(2), padL + plotW - 4, padT + 18);
+});
+</script>
+
+
+
+</body></html>

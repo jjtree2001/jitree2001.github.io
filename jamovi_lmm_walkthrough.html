@@ -1,0 +1,968 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Jamovi linear mixed models — a walkthrough</title>
+<style>
+  :root {
+    --ink: #1d2021;
+    --muted: #6b6b6b;
+    --bg: #fdfdfb;
+    --panel: #f5f3ee;
+    --accent: #1a6a8a;
+    --accent-soft: #d8ecf4;
+    --tip: #2d6a4f;
+    --tip-soft: #e6f4ea;
+    --warn: #b45309;
+    --warn-soft: #fff4e0;
+    --code: #2b2b2b;
+    --border: #d8d4ca;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; background: var(--bg); color: var(--ink); }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    line-height: 1.55;
+    font-size: 16px;
+  }
+  .wrap {
+    max-width: 880px;
+    margin: 0 auto;
+    padding: 32px 28px 80px;
+  }
+  header.page {
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 18px;
+    margin-bottom: 28px;
+  }
+  header.page h1 {
+    margin: 0 0 6px;
+    font-size: 28px;
+    letter-spacing: -0.01em;
+  }
+  header.page .sub {
+    color: var(--muted);
+    font-size: 15px;
+  }
+  nav.toc {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 14px 18px;
+    margin: 22px 0 32px;
+    font-size: 14.5px;
+  }
+  nav.toc h3 {
+    margin: 0 0 8px;
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--muted);
+    font-weight: 600;
+  }
+  nav.toc ol { margin: 0; padding-left: 22px; }
+  nav.toc li { margin: 2px 0; }
+  nav.toc a { color: var(--accent); text-decoration: none; }
+  nav.toc a:hover { text-decoration: underline; }
+
+  h2 {
+    font-size: 22px;
+    margin: 40px 0 12px;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 6px;
+  }
+  h3 { font-size: 18px; margin: 26px 0 8px; }
+  h4 { font-size: 16px; margin: 18px 0 6px; color: var(--accent); }
+  p { margin: 10px 0; }
+  ul, ol { padding-left: 24px; }
+  li { margin: 4px 0; }
+
+  figure {
+    margin: 18px 0;
+    background: white;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 10px;
+  }
+  figure img {
+    display: block;
+    max-width: 100%;
+    height: auto;
+    margin: 0 auto;
+  }
+  figcaption {
+    margin-top: 8px;
+    font-size: 13.5px;
+    color: var(--muted);
+    text-align: center;
+    font-style: italic;
+  }
+
+  code, .mono {
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: 13.5px;
+  }
+  code {
+    background: #efece4;
+    padding: 1px 5px;
+    border-radius: 3px;
+  }
+  pre {
+    background: #2b2b2b;
+    color: #f5f5f5;
+    padding: 12px 14px;
+    border-radius: 6px;
+    overflow-x: auto;
+    font-size: 13px;
+  }
+  pre code { background: none; padding: 0; color: inherit; }
+
+  /* Callouts */
+  .callout {
+    border-left: 4px solid var(--accent);
+    background: var(--accent-soft);
+    padding: 10px 14px;
+    margin: 14px 0;
+    border-radius: 0 6px 6px 0;
+    font-size: 15px;
+  }
+  .callout.tip { border-color: var(--tip); background: var(--tip-soft); }
+  .callout.warn { border-color: var(--warn); background: var(--warn-soft); }
+  .callout strong { display: block; margin-bottom: 3px; font-size: 13px; text-transform: uppercase; letter-spacing: 0.06em; }
+
+  /* Collapsibles */
+  details {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 8px 14px;
+    margin: 12px 0;
+  }
+  details[open] { padding-bottom: 14px; }
+  summary {
+    cursor: pointer;
+    font-weight: 600;
+    color: var(--accent);
+    padding: 4px 0;
+    list-style: none;
+  }
+  summary::before {
+    content: "▸ ";
+    display: inline-block;
+    transition: transform 0.15s;
+  }
+  details[open] summary::before { content: "▾ "; }
+  summary:hover { color: #0e4a64; }
+
+  /* Tables */
+  table {
+    border-collapse: collapse;
+    width: 100%;
+    margin: 14px 0;
+    font-size: 14px;
+  }
+  th, td {
+    border: 1px solid var(--border);
+    padding: 6px 10px;
+    text-align: left;
+  }
+  th { background: var(--panel); font-weight: 600; }
+
+  /* Interactive widgets */
+  .widget {
+    background: white;
+    border: 2px solid var(--accent);
+    border-radius: 10px;
+    padding: 18px 20px;
+    margin: 20px 0;
+  }
+  .widget h4 {
+    margin: 0 0 10px;
+    color: var(--accent);
+    font-size: 15px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+  .toggle-row { display: flex; flex-wrap: wrap; gap: 8px; margin: 8px 0; }
+  .toggle-row label {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: var(--panel);
+    padding: 6px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+    user-select: none;
+    border: 1px solid var(--border);
+  }
+  .toggle-row label.on { background: var(--accent-soft); border-color: var(--accent); }
+  .formula-out {
+    background: #2b2b2b;
+    color: #ffd866;
+    padding: 14px;
+    border-radius: 6px;
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: 14px;
+    margin-top: 12px;
+    word-break: break-word;
+  }
+  .annot { color: #7ec699; font-size: 12.5px; display: block; margin-top: 4px; }
+
+  /* R² bar widget */
+  .r2-stage { margin: 14px 0; }
+  .r2-row { display: grid; grid-template-columns: 140px 1fr 60px; gap: 10px; align-items: center; margin: 6px 0; font-size: 14px; }
+  .r2-bar { background: #eee; height: 22px; border-radius: 4px; position: relative; overflow: hidden; border: 1px solid var(--border); }
+  .r2-fill { height: 100%; transition: width 0.5s; }
+  .r2-fixed { background: var(--accent); }
+  .r2-rand  { background: #f4a261; }
+  .r2-legend { font-size: 12.5px; color: var(--muted); margin-top: 6px; }
+  .r2-legend span.sw { display: inline-block; width: 12px; height: 12px; border-radius: 2px; margin-right: 4px; vertical-align: middle; }
+  .r2-controls { display: flex; gap: 8px; margin-top: 12px; flex-wrap: wrap; }
+  .r2-controls button {
+    background: var(--accent); color: white; border: none; padding: 8px 14px;
+    border-radius: 6px; cursor: pointer; font-size: 14px;
+  }
+  .r2-controls button:hover { background: #0e4a64; }
+  .r2-controls button.alt { background: var(--panel); color: var(--ink); border: 1px solid var(--border); }
+
+  /* Two-column figure rows */
+  .pair { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 16px 0; }
+  .pair figure { margin: 0; }
+  @media (max-width: 700px) { .pair { grid-template-columns: 1fr; } }
+
+  /* Tables — scroll horizontally on narrow screens rather than break the page */
+  .table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; margin: 14px 0; }
+  .table-wrap > table { margin: 0; min-width: 100%; }
+
+  /* ===== Mobile (≤ 640px) ===== */
+  @media (max-width: 640px) {
+    body { font-size: 15.5px; }
+    .wrap { padding: 18px 14px 60px; }
+    header.page h1 { font-size: 22px; }
+    h2 { font-size: 19px; margin-top: 30px; }
+    h3 { font-size: 17px; }
+    h4 { font-size: 15.5px; }
+    nav.toc { padding: 12px 14px; font-size: 13.5px; }
+    nav.toc ol { padding-left: 18px; }
+
+    /* Tables get scrollable wrappers and tighter cells */
+    table { font-size: 13px; }
+    th, td { padding: 5px 7px; }
+
+    /* Pre/code blocks: shrink + allow horizontal scroll */
+    pre { font-size: 12px; padding: 10px; }
+
+    /* Figures: tighter padding */
+    figure { padding: 6px; }
+    figcaption { font-size: 12.5px; }
+
+    /* Widgets */
+    .widget { padding: 14px; }
+    .widget h4 { font-size: 13.5px; }
+    .toggle-row label { font-size: 13px; padding: 5px 9px; }
+    .formula-out { font-size: 12.5px; padding: 11px; }
+
+    /* R² widget: stack the label above the bar so the bar gets room */
+    .r2-row {
+      grid-template-columns: 1fr 50px;
+      grid-template-areas: "label total" "bar bar";
+      gap: 4px 8px;
+      margin: 10px 0;
+    }
+    .r2-row > div:first-child { grid-area: label; }
+    .r2-row > div:nth-child(2) { grid-area: bar; }
+    .r2-row > div:last-child { grid-area: total; text-align: right; }
+    .r2-controls button { font-size: 13px; padding: 7px 11px; flex: 1 1 auto; }
+
+    /* Callouts: tighter padding, smaller text */
+    .callout { padding: 9px 12px; font-size: 14px; }
+
+    /* Details: tighter */
+    details { padding: 7px 12px; }
+  }
+
+  .pill {
+    display: inline-block;
+    background: var(--accent-soft);
+    color: var(--accent);
+    padding: 1px 8px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 600;
+    margin-right: 4px;
+  }
+
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header class="page">
+  <h1>Jamovi linear mixed models — a walkthrough</h1>
+  <div class="sub">To complement the earlier exercise worksheet, this is a two-part teaching demo covering how Jamovi's mixed-model window works, and a full walkthrough of the face-recognition reaction-time model.</div>
+</header>
+
+<nav class="toc">
+  <h3>Contents</h3>
+  <ol>
+    <li><a href="#part-a">Part A — The Jamovi LMM window</a>
+      <ol>
+        <li><a href="#variables">Variables: outcome, factors, covariates, cluster variables</a></li>
+        <li><a href="#fixed-random">Fixed effects vs random effects</a></li>
+        <li><a href="#estimation">Estimation, CIs, model comparison</a></li>
+        <li><a href="#residuals">Residual structure</a></li>
+        <li><a href="#ci-df">CI method &amp; DF method</a></li>
+      </ol>
+    </li>
+    <li><a href="#part-b">Part B — The face-recognition model</a>
+      <ol>
+        <li><a href="#study">The study and the data</a></li>
+        <li><a href="#full-model">The full model</a></li>
+        <li><a href="#model-fit">Model fit and the R² question</a></li>
+        <li><a href="#fixed-omnibus">Fixed effects: omnibus tests</a></li>
+        <li><a href="#fixed-params">Fixed effects: parameter estimates</a></li>
+        <li><a href="#emm">Estimated marginal means</a></li>
+        <li><a href="#random-comp">Random components</a></li>
+        <li><a href="#random-corr">Random parameter correlations</a></li>
+        <li><a href="#assumptions">Assumption checks</a></li>
+        <li><a href="#vs-anova">What the LMM buys you over ANOVA</a></li>
+        <li><a href="#reporting">A short reporting template</a></li>
+      </ol>
+    </li>
+  </ol>
+</nav>
+
+<!-- =============== PART A =============== -->
+<h2 id="part-a">Part A — The Jamovi LMM window</h2>
+
+<p>When you open <em>GAMLj → Mixed Model</em> in Jamovi, you get a single panel that asks you to slot variables into roles and then tick a handful of options. Most of what looks like a long list of choices reduces to a small set of decisions. This part walks through each region of the window using the face-recognition study as the running example.</p>
+
+<figure>
+  <img src="assets/main_window_defaults.png" alt="Jamovi Linear Mixed Model main window">
+  <figcaption>The main GAMLj Mixed Model window. RT is the dependent variable, <code>familiar</code> is a factor, <code>PI20</code> is a covariate, and both <code>pid</code> (participant) and <code>faceid</code> (item) are cluster variables.</figcaption>
+</figure>
+
+<h3 id="variables">Variables: DV, factors, covariates, cluster variables</h3>
+
+<p>The right-hand column has four slots. Jamovi cares which slot you use because it changes how each variable is treated downstream.</p>
+
+<div class="table-wrap"><table>
+  <thead><tr><th>Slot</th><th>What goes here</th><th>In this study</th></tr></thead>
+  <tbody>
+    <tr><td><strong>Dependent variable</strong></td><td>The continuous outcome you are predicting.</td><td><code>RT</code> (reaction time, ms)</td></tr>
+    <tr><td><strong>Factors</strong></td><td>Categorical predictors — groups or conditions.</td><td><code>familiar</code> (familiar / unfamiliar)</td></tr>
+    <tr><td><strong>Covariates</strong></td><td>Continuous predictors.</td><td><code>PI20</code> (self-rated face perception, z-scored)</td></tr>
+    <tr><td><strong>Cluster variables</strong></td><td>Variables that identify repeated or grouped observations. Tells the model which rows are <em>not</em> independent.</td><td><code>pid</code> and <code>faceid</code></td></tr>
+  </tbody>
+</table></div>
+
+<div class="callout tip">
+  <strong>Why two cluster variables?</strong>
+  Each participant sees many faces, and each face is seen by many participants. The data are <em>crossed</em>, not nested. Putting both into the cluster slot lets Jamovi model variance from both sources at once — something a traditional repeated-measures ANOVA cannot do without aggregating one of them away.
+</div>
+
+<h3 id="fixed-random">Fixed effects vs random effects</h3>
+
+<p>Once you press the arrow at the top right you get to the next panel where you decide which fixed effects and which random effects you want. The distinction is usually the bit that trips people up.</p>
+
+<ul>
+  <li><strong>Fixed effects</strong> are the predictors whose <em>average effect</em> you want to estimate. The intercept, slopes for covariates, and group differences for factors all live here. These are the things you'd report in a results section.</li>
+  <li><strong>Random effects</strong> describe variability <em>across</em> the levels of a cluster variable. A random intercept lets each participant (or each face) have its own baseline RT. A random slope lets the effect of a predictor differ across participants or across faces.</li>
+</ul>
+
+<p>As we saw in the worksheet we used earlier, Jamovi expresses random terms in <strong>Wilkinson notation</strong> — the same notation R uses for <code>lme4</code>. The bit inside the parentheses says what varies and across what:</p>
+
+<ul>
+  <li><code>(1 | pid)</code> — random intercept across participants (each participant has their own baseline RT).</li>
+  <li><code>(1 + familiar | pid)</code> — random intercept and random slope of <code>familiar</code> across participants (each participant has their own baseline <em>and</em> their own familiarity effect).</li>
+  <li><code>(1 + PI20 | faceid)</code> — random intercept across faces and a random slope of <code>PI20</code> across faces.</li>
+</ul>
+
+<h4>Putting random effects into the panel</h4>
+
+<p>Once the cluster variables are set, Jamovi opens a <strong>Random Effects</strong> panel with two boxes side by side. The left box (<em>Components</em>) lists every possible random term — every intercept and slope you could include. The right box (<em>Random Coefficients</em>) lists the ones actually in your model. You drag terms from left to right with the arrow button.</p>
+
+<figure>
+  <img src="assets/random_effects_panel.png" alt="Jamovi Random Effects panel showing Components on the left and Random Coefficients on the right">
+  <figcaption>The Random Effects panel. Anything listed in <em>Components</em> on the left is available; only what's been moved into <em>Random Coefficients</em> on the right is actually included in the model. Here the model includes <code>Intercept | pid</code>, <code>Intercept | faceid</code>, <code>familiar | pid</code>, and <code>PI20 | faceid</code> — the four terms that make up <code>(1 + familiar | pid) + (1 + PI20 | faceid)</code>.</figcaption>
+</figure>
+
+<div class="callout warn">
+  <strong>Always drag both the intercept and the slope across</strong>
+  When you want a random slope of <code>familiar</code> across participants, you almost always also need <code>Intercept | pid</code> in the right-hand box. Same for <code>PI20 | faceid</code>: include <code>Intercept | faceid</code> too. Fitting a random slope <em>without</em> its corresponding random intercept implies that clusters share a baseline but differ in slope — a strong and usually implausible assumption. So in practice, every random-slope term you drag across should have the matching intercept dragged across with it.
+</div>
+
+<details>
+  <summary>Why does the random slope "need" the random intercept?</summary>
+  <p>A random slope without a random intercept forces every participant (or face) to start from the same baseline RT, but lets them differ in <em>how the predictor moves them away</em> from that shared baseline. For most data — including this one — that's the wrong constraint: participants obviously differ in baseline speed, so the model needs the freedom to let those baselines vary. Including both terms also lets Jamovi estimate the <em>correlation</em> between intercept and slope — which is the entire point of the "random parameter correlations" table you'll see in Part B.</p>
+</details>
+
+<div class="widget">
+  <h4>Try it: build a random-effects formula</h4>
+  <p style="margin:6px 0 10px; font-size:14px;">Click to toggle terms on/off. The Wilkinson formula updates live.</p>
+  <div><strong>Fixed effects</strong></div>
+  <div class="toggle-row" id="fx-row">
+    <label data-term="PI20" class="on"><input type="checkbox" checked> PI20</label>
+    <label data-term="familiar" class="on"><input type="checkbox" checked> familiar</label>
+    <label data-term="PI20:familiar" class="on"><input type="checkbox" checked> PI20 × familiar (interaction)</label>
+  </div>
+  <div style="margin-top:10px;"><strong>Random effects by participant (<code>pid</code>)</strong></div>
+  <div class="toggle-row" id="pid-row">
+    <label data-term="1" class="on"><input type="checkbox" checked> intercept (1)</label>
+    <label data-term="familiar" class="on"><input type="checkbox" checked> slope of familiar</label>
+    <label data-term="PI20"><input type="checkbox"> slope of PI20 <em style="color:var(--warn)">(can't — see below)</em></label>
+  </div>
+  <div style="margin-top:10px;"><strong>Random effects by face (<code>faceid</code>)</strong></div>
+  <div class="toggle-row" id="face-row">
+    <label data-term="1" class="on"><input type="checkbox" checked> intercept (1)</label>
+    <label data-term="PI20" class="on"><input type="checkbox" checked> slope of PI20</label>
+    <label data-term="familiar"><input type="checkbox"> slope of familiar <em style="color:var(--warn)">(can't — see below)</em></label>
+  </div>
+  <div class="formula-out" id="formula-out"></div>
+  <div style="margin-top:10px; font-size:13.5px; color: var(--muted);">
+    The two "can't" terms are deliberately included so you can see what happens if you tick them. PI20 doesn't vary <em>within</em> a participant (it's a person-level score), and <code>familiar</code> doesn't vary <em>within</em> a face (each face is either familiar or unfamiliar, never both). Random slopes only make sense when the predictor actually varies inside the cluster.
+  </div>
+</div>
+
+<details>
+  <summary>How does Jamovi decide if my random slope is valid?</summary>
+  <p>It doesn't, really. The fit will sometimes succeed with a non-identifiable slope, sometimes warn you, and sometimes silently lean on regularisation. The check is on you: ask "does this predictor actually vary <em>within</em> each level of the cluster?" before adding the slope.</p>
+</details>
+
+<h3 id="estimation">Estimation, CIs, model comparison</h3>
+
+<figure>
+  <img src="assets/image2.png" alt="Estimation, Confidence Intervals, Model comparison panel" style="max-width:560px;">
+  <figcaption>The estimation block at the bottom of the variables panel.</figcaption>
+</figure>
+
+<h4>Estimation: REML or ML?</h4>
+<p><strong>REML</strong> (restricted maximum likelihood) gives slightly less biased estimates of the random-effect variances. <strong>ML</strong> (maximum likelihood, REML unticked) underestimates variance components a little, because it doesn't account for the degrees of freedom used up by estimating the fixed effects. The size of that bias depends on how many clusters you have: with hundreds of participants and items the gap is tiny; with a dozen, it can be appreciable.</p>
+
+<div class="callout tip">
+  <strong>Practical workflow in Jamovi</strong>
+  Leave REML ticked. It gives you the better variance-component estimates, and the model-comparison machinery still works correctly — Jamovi does the right thing under the hood.
+</div>
+
+<details>
+  <summary>Under the hood: why model comparison still works with REML ticked</summary>
+  <p>When you tick <em>Model comparison → Activate</em>, GAMLj (via <code>lme4</code>'s <code>anova()</code>) refits both the nested and full models with ML to compute the likelihood-ratio χ² and ΔR² — regardless of whether REML is ticked. The REML setting controls how variance components, fixed-effect standard errors, and confidence intervals are reported in the rest of the output; the comparison itself is always done on ML refits.</p>
+</details>
+
+<p><strong>Do not run</strong> simply stops Jamovi from re-fitting after every small change — useful when you're setting up a complex model and don't want each tick to trigger a re-estimation.</p>
+
+<h4>Confidence intervals</h4>
+<ul>
+  <li><strong>Fixed parameters</strong> — CIs for the intercept, slopes, group differences, interactions. Keep this on by default.</li>
+  <li><strong>Random variances</strong> — CIs for variance components themselves. Turn on only when you care about uncertainty around variance estimates; they're slower and can be unstable.</li>
+  <li><strong>Confidence level</strong> — usually 95%.</li>
+</ul>
+
+<h4>Model comparison</h4>
+<p><strong>Activate</strong> turns on a formal likelihood-ratio comparison of your current model against a simpler "nested" version that drops the fixed-effect predictors. This is an additional tweak that lets you separate out how much of the observed variance the random effects alone account for (a model called <em>nested</em> in the output) from a model that includes both random and fixed effects (called <em>full</em>). I'll come back to this in Part B because it illustrates the kind of extra information you get from a linear mixed model at no extra cost — sometimes that information is very interesting, and we would be entirely ignorant of it in the ANOVA land many people live in. <strong>More Fit Indices</strong> adds AIC, BIC, log-likelihood — useful when you're comparing several specifications by something other than a single LRT.</p>
+
+<h3 id="residuals">Residual structure</h3>
+
+<figure>
+  <img src="assets/image3.png" alt="Residuals Structure options" style="max-width:560px;">
+  <figcaption>Residual covariance options under "Residuals Structure".</figcaption>
+</figure>
+
+<p>This panel controls how the model handles <em>leftover</em> correlation in residuals — correlation that the random effects didn't already mop up. It is <em>not</em> the same as random effects.</p>
+
+<div class="table-wrap"><table>
+  <thead><tr><th>Option</th><th>What it assumes</th><th>When to use</th></tr></thead>
+  <tbody>
+    <tr><td><strong>Identity</strong></td><td>Residuals are independent with equal variance.</td><td>Default. Use unless you have a clear repeated-measures structure the random effects don't capture.</td></tr>
+    <tr><td><strong>Compound symmetry</strong></td><td>All pairs of repeated observations within a cluster are equally correlated.</td><td>Exchangeable repeated measures (e.g. several conditions per person where order doesn't matter).</td></tr>
+    <tr><td><strong>Unstructured</strong></td><td>Every residual variance/covariance estimated separately.</td><td>Few repeated levels, lots of data. Flexible but unstable.</td></tr>
+    <tr><td><strong>AR(1)</strong></td><td>Observations closer in order are more correlated than ones further apart.</td><td>Ordered repeated measures — trials, days, sessions, especially equally spaced.</td></tr>
+    <tr><td><strong>ARMA(1,1)</strong></td><td>A richer serial-dependence structure than AR(1).</td><td>Only if you have a strong reason to expect more complex time-based correlation.</td></tr>
+  </tbody>
+</table></div>
+
+<div class="callout tip">
+  <strong>Practical rule</strong>
+  For most teaching examples, start with Identity. For trial-level RT models like this one, get the random-effects structure right first; only complicate the residual structure if the random effects clearly don't capture the dependency.
+</div>
+
+<h3 id="ci-df">CI Method &amp; DF Method</h3>
+
+<figure>
+  <img src="assets/image4.png" alt="CI Method and DF Method options" style="max-width:560px;">
+  <figcaption>Controls for how uncertainty and degrees of freedom are computed.</figcaption>
+</figure>
+
+<h4>CI Method</h4>
+<ul>
+  <li><strong>Standard (fast)</strong> — the usual mathematical approximation. Fine for teaching examples and well-behaved models. Default.</li>
+  <li><strong>Bootstrap (Parametric)</strong> — simulates new datasets from the fitted model, refits, and uses the spread to build CIs. Slower but more robust, especially for complex models or random-effect uncertainty. <em>Bootstrap rep.</em> sets the number of simulations (1000 is a common starting point).</li>
+</ul>
+
+<h4>DF Method</h4>
+<ul>
+  <li><strong>Satterthwaite</strong> — a fast, commonly used approximation to the degrees of freedom for fixed-effect tests. Default for most analyses.</li>
+  <li><strong>Kenward–Roger</strong> — a more conservative refinement that also adjusts standard errors. Slower. Use for small samples, unbalanced designs, or complex random-effects structures.</li>
+</ul>
+
+<div class="callout">
+  <strong>Defaults that travel well</strong>
+  Standard CIs + Satterthwaite is fine for most analyses. Reach for Kenward–Roger or parametric bootstrap when the data are small or messy, or when you want more honest uncertainty around variance components.
+</div>
+
+<!-- =============== PART B =============== -->
+<h2 id="part-b">Part B — The face-recognition model</h2>
+
+<h3 id="study">The study and the data</h3>
+
+<p>Alex's exercise dataset comes from a face-recognition study. 60 participants each saw a series of celebrity faces (Hollywood and Dutch — so a face appears in only one familiarity condition) and pressed a key as soon as they recognised whether the face was <em>familiar</em> or <em>unfamiliar</em>. Each participant also gave a self-rated face perception score (<strong>PI20</strong>, z-scored: 0 = average, positive = <em>worse</em> than average).</p>
+
+<div class="table-wrap"><table>
+  <thead><tr><th>Column</th><th>Meaning</th></tr></thead>
+  <tbody>
+    <tr><td><code>pid</code></td><td>participant identifier</td></tr>
+    <tr><td><code>faceid</code></td><td>stimulus identifier</td></tr>
+    <tr><td><code>familiar</code></td><td>1 = familiar, 0 = unfamiliar</td></tr>
+    <tr><td><code>PI20</code></td><td>participant's self-rated face perception (z-scored)</td></tr>
+    <tr><td><code>RT</code></td><td>reaction time (ms) — the outcome</td></tr>
+  </tbody>
+</table></div>
+
+<p>The dataset has 1,701 trials from 60 participants and 40 faces. Because the study ran online, not everyone finished all trials — the data are unbalanced. An LMM uses all of it, with no aggregation.</p>
+
+<h3 id="full-model">The full model</h3>
+
+<p>Here is what we are fitting:</p>
+
+<pre><code>RT ~ 1 + PI20 + familiar + PI20:familiar
+     + (1 + familiar | pid)
+     + (1 + PI20     | faceid)</code></pre>
+
+<p>The model above broken down in words — remember, in that equation, the parameter to the left of the <code>~</code> symbol is what we are predicting (in this case RT):</p>
+
+<ul>
+  <li><strong>The bit <em>outside</em> the brackets</strong> = the <strong>fixed effects</strong>: <code>1 + PI20 + familiar + PI20:familiar</code>. That's an intercept (<code>1</code>), a main effect of PI20 (<code>+ PI20</code>), a main effect of familiarity (<code>+ familiar</code>), and their interaction (<code>+ PI20:familiar</code>).</li>
+  <li><strong>The first bit in brackets</strong> = <strong>random effects across participants</strong>: <code>(1 + familiar | pid)</code>. Each participant has their own baseline RT (random intercept) and their own familiarity effect (random slope of <code>familiar</code>).</li>
+  <li><strong>The second bit in brackets</strong> = <strong>random effects across faces</strong>: <code>(1 + PI20 | faceid)</code>. Each face has its own baseline RT (random intercept) and a face-specific PI20 effect (random slope of <code>PI20</code>). Remember the <code>1</code> in each case is the intercept element.</li>
+</ul>
+
+<details>
+  <summary>Why no random slope of <code>familiar</code> across <code>faceid</code>, and no random slope of <code>PI20</code> across <code>pid</code>?</summary>
+  <p><code>familiar</code> doesn't vary within a face — each face is either familiar or unfamiliar for everyone. PI20 doesn't vary within a participant — each person has one score. Random slopes are estimated from <em>within-cluster</em> variability; if the predictor doesn't vary within the cluster, there's nothing to estimate.</p>
+</details>
+
+<p>Jamovi runs the model via GAMLj. With <em>Model comparison → Activate</em> ticked and REML on (the default), the generated R call is:</p>
+
+<pre><code>GAMLj3::gamljmixed(
+    formula = RT ~ 1 + PI20 + familiar + PI20:familiar
+              + (1 + familiar | pid)
+              + (1 + PI20 | faceid),
+    data = data,
+    nested_re = ~ (1 + familiar | pid) + (1 + PI20 | faceid)
+)</code></pre>
+
+<p>The <code>nested_re</code> line tells Jamovi which simpler "nested" model to compare against — here, the same random structure with no fixed-effect predictors. We'll unpack what the comparison gives us in the next section.</p>
+
+<h4>A note on centring</h4>
+
+<p>Have a look at the footer of the model info table — it says <em>"All covariates are centered to the mean."</em> Jamovi does this automatically. The Covariates Scaling panel is where you can change it:</p>
+
+<figure>
+  <img src="assets/covariates_scaling.png" alt="Jamovi Covariates Scaling panel" style="max-width:680px;">
+  <figcaption>The Covariates Scaling panel. PI20 is centred by default. The other options here control how follow-up plots and estimated marginal means are conditioned (Mean ± 1 SD, percentiles, or min-to-max).</figcaption>
+</figure>
+
+<p>Centring matters because it changes what <em>zero</em> means for a covariate, which in turn changes how the intercept is interpreted. With PI20 centred, the intercept gives the predicted RT at the <em>mean</em> PI20 in the sample (and at the reference level of <code>familiar</code>). If PI20 were not centred, the intercept would instead be the predicted RT when PI20 = 0 in raw units — which, depending on the scale, may not correspond to anyone in the dataset and is harder to interpret.</p>
+
+<div class="callout tip">
+  <strong>Why bother — PI20 is already z-scored, isn't it?</strong>
+  It is. So in this study Jamovi's mean-centring barely shifts anything (the mean of an already-z-scored variable is near 0). But for raw-unit covariates — age in years, RT in ms, anything not pre-centred — leaving Jamovi's default on saves you from intercept-at-zero confusion.
+</div>
+
+<h3 id="model-fit">Model fit and the R² question</h3>
+
+<p>With <em>Model comparison → Activate</em> ticked, Jamovi compares two models:</p>
+
+<ul>
+  <li><strong>Nested model</strong>: random effects only. Just <code>(1 + familiar | pid) + (1 + PI20 | faceid)</code> with no fixed-effect predictors.</li>
+  <li><strong>Full model</strong>: the spec above, with PI20, familiar, and their interaction added as fixed effects.</li>
+</ul>
+
+<p>The output gives several R² values that can look confusing at first because they're answering different questions.</p>
+
+<div class="widget">
+  <h4>Marginal vs conditional R² — and ΔR²</h4>
+  <p style="margin:6px 0 10px; font-size:14px;">Click through the stages to see what each R² is measuring.</p>
+
+  <div class="r2-stage" id="r2-stage">
+    <div class="r2-row">
+      <div><strong>Nested</strong> model</div>
+      <div class="r2-bar"><div class="r2-fill r2-fixed" id="b-n-marg" style="width:0%"></div><div class="r2-fill r2-rand" id="b-n-rand" style="width:0%; position:absolute; left:0; top:0;"></div></div>
+      <div id="t-n-tot">—</div>
+    </div>
+    <div class="r2-row">
+      <div><strong>Full</strong> model</div>
+      <div class="r2-bar"><div class="r2-fill r2-fixed" id="b-f-marg" style="width:0%"></div><div class="r2-fill r2-rand" id="b-f-rand" style="width:0%; position:absolute; left:0; top:0;"></div></div>
+      <div id="t-f-tot">—</div>
+    </div>
+  </div>
+  <div class="r2-legend">
+    <span class="sw" style="background:var(--accent)"></span> Marginal R² (fixed effects)
+    &nbsp;&nbsp;
+    <span class="sw" style="background:#f4a261"></span> Extra from random effects (= conditional − marginal)
+  </div>
+  <div class="r2-controls">
+    <button onclick="r2Stage(0)" class="alt">Reset</button>
+    <button onclick="r2Stage(1)">1 · Show nested</button>
+    <button onclick="r2Stage(2)">2 · Add full model</button>
+    <button onclick="r2Stage(3)">3 · Highlight ΔR²</button>
+  </div>
+  <div id="r2-explain" style="margin-top:14px; font-size:14.5px; min-height: 80px;"></div>
+</div>
+
+<h4>The numbers from the Jamovi output</h4>
+
+<div class="table-wrap"><table>
+  <thead><tr><th>Model</th><th>Type</th><th>R²</th><th>LRT χ²</th><th>p</th></tr></thead>
+  <tbody>
+    <tr><td>Full</td><td>Conditional</td><td>0.767</td><td>1984.98</td><td>&lt;.001</td></tr>
+    <tr><td>Full</td><td>Marginal</td><td>0.228</td><td>34.10</td><td>&lt;.001</td></tr>
+    <tr><td>Nested</td><td>Conditional</td><td>0.574</td><td>1950.88</td><td>&lt;.001</td></tr>
+    <tr><td>Nested</td><td>Marginal</td><td>0.000</td><td>0.00</td><td>1.000</td></tr>
+    <tr><td>ΔR²</td><td>Comparison</td><td>0.193</td><td>53.61</td><td>&lt;.001</td></tr>
+  </tbody>
+</table></div>
+
+<p>Take-home: adding PI20 and familiarity buys us about 19 extra percentage points of explained variance (ΔR² = .193), but a substantial chunk of the full model's total fit (.539) is still coming from participant and face baselines differing — not from the predictors of interest. That's something a traditional ANOVA on subject means would have hidden entirely.</p>
+
+<details>
+  <summary>Why isn't marginal R² (.228) equal to ΔR² (.193)?</summary>
+  <p>The two numbers <em>are</em> close, but the small gap (.035) has a meaning. When you add PI20, familiar, and the interaction, the fixed-effect share of variance goes from 0 to .228 (a gain of .228). But the random-effect share <em>shrinks</em> from .574 to .539 (a loss of .035). PI20 is a participant-level variable, so some of what the nested model was attributing to "people just differ from each other" is now correctly claimed by PI20 itself. Variance got reassigned rather than newly explained. The net improvement in total fit is therefore .228 − .035 = .193, which is exactly the ΔR².</p>
+  <p><strong>Equation:</strong> ΔR² &nbsp;=&nbsp; (marginal R² of full) &nbsp;−&nbsp; (shrinkage in random-effect variance).</p>
+</details>
+
+<h3 id="fixed-omnibus">Fixed effects: omnibus tests</h3>
+
+<p>The omnibus table gives one row per predictor and asks: "does this variable explain meaningful variation in RT?" For a factor it tests whether groups differ; for a covariate, whether the slope differs from zero. For an interaction, whether the effect of one predictor depends on the level of the other.</p>
+
+<div class="table-wrap"><table>
+  <thead><tr><th>Predictor</th><th>F</th><th>df</th><th>df (res)</th><th>p</th></tr></thead>
+  <tbody>
+    <tr><td>PI20</td><td>19.9</td><td>1</td><td>77.0</td><td>&lt;.001</td></tr>
+    <tr><td>familiar</td><td>13.3</td><td>1</td><td>53.6</td><td>&lt;.001</td></tr>
+    <tr><td>PI20 × familiar</td><td>0.20</td><td>1</td><td>40.3</td><td>.657</td></tr>
+  </tbody>
+</table></div>
+
+<p>So PI20 and familiarity both matter overall; the interaction does not. This table tells you <em>whether</em> a predictor matters but not the <em>direction</em> or <em>size</em>. For that, the parameter estimates table is next.</p>
+
+<h3 id="fixed-params">Fixed effects: parameter estimates</h3>
+
+<p>This is the most interpretable fixed-effects table.</p>
+
+<div class="table-wrap"><table>
+  <thead><tr><th>Term</th><th>Estimate</th><th>SE</th><th>95% CI</th><th>t</th><th>p</th></tr></thead>
+  <tbody>
+    <tr><td>(Intercept)</td><td>338.2</td><td>7.04</td><td>324.4, 352.0</td><td>48.02</td><td>&lt;.001</td></tr>
+    <tr><td>PI20</td><td>+54.3</td><td>12.17</td><td>30.4, 78.2</td><td>4.46</td><td>&lt;.001</td></tr>
+    <tr><td>familiar (1 − 0)</td><td>−23.7</td><td>6.49</td><td>−36.4, −10.9</td><td>−3.65</td><td>&lt;.001</td></tr>
+    <tr><td>PI20 × familiar</td><td>−8.8</td><td>19.62</td><td>−47.3, 29.7</td><td>−0.45</td><td>.657</td></tr>
+  </tbody>
+</table></div>
+
+<ul>
+  <li><strong>Intercept (338.2 ms)</strong> — predicted RT at the mean PI20 (because PI20 is centred) and at the reference level of <code>familiar</code> (unfamiliar = 0).</li>
+  <li><strong>PI20 (+54.3 ms)</strong> — for a one-unit (one-SD here) increase in PI20, predicted RT rises by about 54 ms. Higher PI20 means a <em>worse</em> self-rated face perceiver, so this is internally consistent: poorer self-rated perceivers are slower.</li>
+  <li><strong>familiar (−23.7 ms)</strong> — familiar faces are recognised about 24 ms faster than unfamiliar ones (at the mean PI20).</li>
+  <li><strong>PI20 × familiar (−8.8 ms, p = .66)</strong> — the familiarity advantage doesn't reliably depend on PI20.</li>
+</ul>
+
+<div class="callout">
+  <strong>Headline</strong>
+  Higher PI20 predicts slower responses; familiar faces are recognised faster; the interaction is small. Often in ANOVA land this is as far as we can go — but as we'll see later when we look at the random effects, we can ask whether these main effects differ depending on the particular participants or the particular items.
+</div>
+
+<h3 id="emm">Estimated marginal means</h3>
+
+<p>The fixed-effects table tells you about <em>differences</em> (slopes, contrasts) but it doesn't directly give you predicted RTs at meaningful values. That's what <em>Estimated Marginal Means</em> is for. You add a variable (or interaction term) to the right-hand box and Jamovi reports model-predicted RTs at chosen levels of it, with CIs.</p>
+
+<figure>
+  <img src="assets/emm_selector.png" alt="Jamovi Estimated Marginal Means selector" style="max-width:680px;">
+  <figcaption>The Estimated Marginal Means selector. Here all three fixed-effect terms have been moved across, so Jamovi will report predicted RTs at each level of <code>familiar</code>, at low/mean/high PI20, and at every combination of the two.</figcaption>
+</figure>
+
+<p>Jamovi then produces three tables — marginal means for each predictor on its own, and a joint table for the interaction:</p>
+
+<figure>
+  <img src="assets/emm_output.png" alt="Estimated Marginal Means output tables" style="max-width:680px;">
+  <figcaption>The EMM output. Predicted RTs at the reference levels of each fixed effect; CIs come from the model.</figcaption>
+</figure>
+
+<p>A few things worth pointing out:</p>
+
+<ul>
+  <li><strong>Marginal means for <code>familiar</code></strong>: unfamiliar = 350 ms, familiar = 326 ms — a 24 ms gap, which matches the familiar coefficient (−23.7) from the parameter estimates table.</li>
+  <li><strong>Marginal means for PI20</strong>: at Mean − 1 SD = 291 ms; at Mean = 338 ms; at Mean + 1 SD = 386 ms. A roughly 95 ms swing across two SDs of PI20 — consistent with the PI20 slope of +54 ms per SD.</li>
+  <li><strong>The joint <code>familiar × PI20</code> table</strong>: predicted RTs at every combination. This is the table to look at when you want to describe the interaction in concrete units (even when, as here, it isn't significant).</li>
+</ul>
+
+<div class="callout tip">
+  <strong>When EMM is most useful</strong>
+  When you have a significant interaction. You can then ask "is the slope of PI20 different from zero <em>within</em> familiar faces, and within unfamiliar faces?" — those are <em>simple slopes</em>, and they fall out of the EMM machinery (often via a "post-hoc" or "comparisons" subsection in GAMLj). For a non-significant interaction like this one, EMM is mainly a sanity check that the predicted RTs line up with what the parameter estimates implied.
+</div>
+
+<details>
+  <summary>Where do the Mean ± 1 SD values come from?</summary>
+  <p>Set in the Covariates Scaling panel we saw earlier — the "Covariates conditioning" radio button. The default is Mean ± 1 SD with the step set to 1, which gives the three rows at low/mean/high PI20. You can change it to percentiles, or to Min-to-Max with however many steps you like.</p>
+</details>
+
+<h3 id="random-comp">Random components</h3>
+
+<p>This is "free" extra information you get from the LMM. It tells you <em>how much</em> variation exists across clusters — and in this study, the answer is very different for participants and for faces.</p>
+
+<div class="table-wrap"><table>
+  <thead><tr><th>Group</th><th>Term</th><th>Variance</th><th>SD</th><th>ICC</th></tr></thead>
+  <tbody>
+    <tr><td>pid</td><td>(Intercept)</td><td>2474</td><td>49.7</td><td><strong>0.504</strong></td></tr>
+    <tr><td>pid</td><td>familiar slope</td><td>518</td><td>22.8</td><td></td></tr>
+    <tr><td>faceid</td><td>(Intercept)</td><td>276</td><td>16.6</td><td>0.102</td></tr>
+    <tr><td>faceid</td><td>PI20 slope</td><td>3656</td><td>60.5</td><td></td></tr>
+    <tr><td>Residual</td><td></td><td>2438</td><td>49.4</td><td></td></tr>
+  </tbody>
+</table></div>
+
+<ul>
+  <li><strong>Participant intercept variance (ICC = .504)</strong> — about half the variance in RT is associated with which participant you are. Participants differ a lot in their baseline speed.</li>
+  <li><strong>Face intercept variance (ICC = .102)</strong> — small. Faces don't differ much in their average RT. If we cared about face-level effects per se, we would likely want more faces.</li>
+  <li><strong>Residual variance</strong> — what's left over after fixed and random effects.</li>
+</ul>
+
+<p>This is why the nested model already had a conditional R² of .574: a lot of explainable variance was sitting in the <em>participants</em>, not the predictors. Good to know — and not visible at all in a between-subjects ANOVA.</p>
+
+<h3 id="random-corr">Random parameter correlations</h3>
+
+<p>When you have both a random intercept <em>and</em> a random slope in the same cluster, this table asks: <em>do clusters with higher baselines also tend to have stronger (or weaker) slopes?</em></p>
+
+<h4>Participants × familiarity (correlation = .592)</h4>
+
+<p>Remember, as we described earlier, the fixed effect of familiarity is <em>negative</em> (familiar faster than unfamiliar). A <em>positive</em> intercept–slope correlation means that participants with higher baseline RTs (slower people) have a familiarity slope that is shifted in a more positive direction — i.e. their familiarity advantage is <em>smaller</em>.</p>
+
+<p>Or, more usefully: <strong>generally faster people show a larger familiarity effect</strong>. The figure below illustrates this — each line is one participant's slope. A flat slope means basically no RT difference between unfamiliar and familiar for that participant; a steep slope means a large effect. Notice that as a participant's predicted RT (y-axis) goes up — that is, as they get generally slower — the slope flattens.</p>
+
+<figure>
+  <img src="assets/image5.png" alt="Participant-specific familiarity effects">
+  <figcaption>Example participant-specific familiarity slopes. Each line is one participant's predicted RT for unfamiliar vs familiar faces. Slower (higher) participants tend to have flatter slopes.</figcaption>
+</figure>
+
+<details>
+  <summary>What might be going on?</summary>
+  <p>It begs further questions: do the "slower" participants find the "familiar" faces less familiar than we assumed? Are they just doing the task differently? An LMM doesn't tell you why — but it surfaces the pattern, which a subject-means analysis hides. One possibility is that slower participants are simply less familiar with famous faces overall, so they naturally show no familiarity advantage. We can use what we've gleaned here to ask better follow-up questions.</p>
+</details>
+
+<h4>Faces × PI20 (correlation = .825)</h4>
+
+<p>Faces with higher baseline RTs (slower / "harder" faces) also tend to show a <em>stronger</em> PI20 effect. The plot below shows this — items 17 and 35 fan out far more steeply than items 27 and 30, so the size of the PI20 effect clearly varies across items. Again, this raises questions we'd otherwise be ignorant of: why might the PI20 effect differ depending on which face is shown?</p>
+
+<figure>
+  <img src="assets/image6.png" alt="Item-specific PI20 effects">
+  <figcaption>Example item-specific PI20 slopes. Each line is one face's predicted RT as a function of the participant's PI20 score.</figcaption>
+</figure>
+
+<div class="callout warn">
+  <strong>Caveat</strong>
+  A correlation of .825 between two random terms is high, and the face intercept variance was small to begin with (ICC = .102). This is the kind of pattern that can reflect overfitting. Worth comparing against a simpler model — drop the random slope of PI20 by face, refit, compare. This is precisely the kind of comparison where leaving REML ticked is fine and Jamovi handles the LRT correctly.
+</div>
+
+<h3 id="assumptions">Assumption checks</h3>
+
+<p>All of the diagnostic plots that follow come from the <em>Assumption Checks</em> menu in GAMLj:</p>
+
+<figure>
+  <img src="assets/assumption_checks_panel.png" alt="Jamovi Assumption Checks panel" style="max-width:760px;">
+  <figcaption>The Assumption Checks options. <em>Tests</em> gives a single Shapiro–Wilk on residuals. <em>Residual Plots</em> gives the Q–Q plot, histogram, and overall residuals-vs-predicted plot. <em>By clusters</em> gives the per-cluster plots — coloured residual scatter, residual boxplots, and the per-cluster grids you'll see below.</figcaption>
+</figure>
+
+<p>"Identify extremes" labels the most-deviant trials by row number, which is what you'll see annotated on the residual scatter plots below.</p>
+
+<h4>Q–Q plot and residual histogram</h4>
+
+<div class="pair">
+  <figure>
+    <img src="assets/image7.png" alt="Q-Q plot of standardised residuals">
+    <figcaption>Q–Q plot. Slight deviation at the upper tail but mostly on the line.</figcaption>
+  </figure>
+  <figure>
+    <img src="assets/image8.png" alt="Residual histogram">
+    <figcaption>Residual histogram with normal overlay. Looks well-behaved.</figcaption>
+  </figure>
+</div>
+
+<p>The Q–Q plot checks whether the residuals are approximately normal. Both panels here look fine — a slight upper-tail deviation that's not a deal-breaker for this kind of sample size.</p>
+
+<h4>Residuals by cluster</h4>
+
+<div class="pair">
+  <figure>
+    <img src="assets/image9.png" alt="Residuals vs predicted, coloured by participant">
+    <figcaption>Residuals vs predicted, coloured by participant. Most observations sit near zero.</figcaption>
+  </figure>
+  <figure>
+    <img src="assets/image10.png" alt="Residuals vs predicted, coloured by face">
+    <figcaption>Same plot, coloured by face. Outlier dots are not all the same colour.</figcaption>
+  </figure>
+</div>
+
+<p>The labelled extreme dots are scattered in colour — they aren't all from one participant or one face. That suggests the outliers are <em>trial-level</em> oddities, not systematically poor participants or items. Not an exclusion issue, but it would be worth re-running on log-RT to see whether the upper tail flattens.</p>
+
+<div class="callout">
+  <strong>Log-RT as a follow-up</strong>
+  Reaction time distributions are typically right-skewed — a long tail of slow responses. Modelling <code>log(RT)</code> instead of raw RT often gives a tighter residual distribution and is standard practice in the RT literature. In Jamovi you can compute <code>logRT</code> as a new variable, swap it in as the DV, and re-fit. The coefficients then describe multiplicative (proportional) effects rather than additive ms shifts.
+</div>
+
+<h4>Residuals-predicted grid (per participant, per face)</h4>
+
+<div class="pair">
+  <figure>
+    <img src="assets/image11.png" alt="Residual grid by participant">
+    <figcaption>One small panel per participant. The vertical distance from zero is the residual error.</figcaption>
+  </figure>
+  <figure>
+    <img src="assets/image12.png" alt="Residual grid by face">
+    <figcaption>One small panel per face. Same story — mostly tight around zero.</figcaption>
+  </figure>
+</div>
+
+<p>Most participants and most faces look well-fit. The labelled outliers are isolated trials rather than entire participants/faces being consistently misfit. Reassuring.</p>
+
+<h3 id="vs-anova">What the LMM buys you over a traditional ANOVA</h3>
+
+<p>If you tried to test this study with a repeated-measures ANOVA, you'd hit problems straight away:</p>
+
+<ul>
+  <li><strong>The design is unbalanced.</strong> Participants didn't all complete every trial. Repeated-measures ANOVA would either drop incomplete participants or require some imputation step.</li>
+  <li><strong>PI20 is continuous.</strong> An ANOVA would force you to median-split PI20 into "high" vs "low" — throwing away information and reducing power.</li>
+  <li><strong>You can't model items and participants simultaneously.</strong> A subjects-as-random ANOVA would average over faces; an items-as-random ANOVA would average over people. There's no clean way to do both at once. The LMM does, by simply listing both as cluster variables.</li>
+  <li><strong>No variance-component story.</strong> The ANOVA would tell you the predictors are significant but not that ~50% of the variance is between participants and ~10% between faces. That kind of structural insight is invisible to it.</li>
+  <li><strong>No way to see that effects vary across participants and items.</strong> As we saw in the Random Components and Random Parameter Correlations sections, both of our main effects — familiarity and PI20 — varied meaningfully across the people who took part and the items they saw. We'd be ignorant of all of that under ANOVA.</li>
+</ul>
+
+<h3 id="reporting">A short reporting template</h3>
+
+<p>For a results section, the model and key numbers could be written up as:</p>
+
+<div class="callout">
+<em>"Reaction times were analysed using a linear mixed model fit in Jamovi (GAMLj, REML), with familiarity (familiar vs unfamiliar), PI20 (z-scored), and their interaction as fixed effects. Random intercepts for participants and faces were included, along with a random slope of familiarity by participant and a random slope of PI20 by face. The model explained substantial variance (conditional R² = .77; marginal R² = .23). Both fixed effects were reliable: PI20 (b = +54.3 ms per SD, SE = 12.2, t(77.0) = 4.46, p &lt; .001) and familiarity (b = −23.7 ms, SE = 6.5, t(53.6) = −3.65, p &lt; .001). The PI20 × familiarity interaction was not significant (p = .66). Random-effects variance was substantial, with participants accounting for an ICC of .50 (intercept SD = 49.7 ms) and faces an ICC of .10 (intercept SD = 16.6 ms)."</em>
+</div>
+
+<p>Adjust to taste — many journals will also want the random correlations, the LRT against the nested model, and a note on convergence. But this skeleton has the essentials.</p>
+
+<h2 id="wrap">In summary</h2>
+
+<p>The LMM does three things a traditional analysis cannot:</p>
+
+<ol>
+  <li>Uses every trial without aggregating, with no need to balance the design.</li>
+  <li>Quantifies how much of the variance lives in participants vs faces vs residual — here, half of it is in participants, almost none in faces.</li>
+  <li>Estimates how individual participants and individual faces differ in <em>how strongly</em> the predictors act on them — and the patterns (faster people show bigger familiarity effects; harder faces show bigger PI20 effects) raise further questions worth pursuing.</li>
+</ol>
+
+<p>And as Alex demonstrated, the LMM approach also gives us more <em>precise</em> estimates from our model — all of this now possible just using Jamovi. What a time to be alive.</p>
+
+</div>
+
+<script>
+// === Interactive 1: Wilkinson formula builder ===
+(function() {
+  function buildFormula() {
+    const fxBoxes = document.querySelectorAll('#fx-row input[type=checkbox]');
+    const pidBoxes = document.querySelectorAll('#pid-row input[type=checkbox]');
+    const faceBoxes = document.querySelectorAll('#face-row input[type=checkbox]');
+
+    const fx = [];
+    fxBoxes.forEach(b => { if (b.checked) fx.push(b.parentElement.dataset.term); });
+
+    const pid = [];
+    pidBoxes.forEach(b => { if (b.checked) pid.push(b.parentElement.dataset.term); });
+    const face = [];
+    faceBoxes.forEach(b => { if (b.checked) face.push(b.parentElement.dataset.term); });
+
+    let formula = 'RT ~ 1';
+    if (fx.length) formula += ' + ' + fx.join(' + ');
+
+    if (pid.length) formula += '\n     + (' + pid.join(' + ') + ' | pid)';
+    if (face.length) formula += '\n     + (' + face.join(' + ') + ' | faceid)';
+
+    // Warnings
+    let warn = '';
+    if (Array.from(pidBoxes).find(b => b.parentElement.dataset.term === 'PI20' && b.checked))
+      warn += '\n# ⚠ PI20 | pid: PI20 doesn\'t vary within a participant. This term is not identifiable.';
+    if (Array.from(faceBoxes).find(b => b.parentElement.dataset.term === 'familiar' && b.checked))
+      warn += '\n# ⚠ familiar | faceid: familiar doesn\'t vary within a face. Not identifiable.';
+
+    document.getElementById('formula-out').textContent = formula + warn;
+
+    // Update label backgrounds
+    document.querySelectorAll('.toggle-row label').forEach(l => {
+      const cb = l.querySelector('input');
+      if (cb.checked) l.classList.add('on'); else l.classList.remove('on');
+    });
+  }
+  document.querySelectorAll('.widget .toggle-row input').forEach(cb => {
+    cb.addEventListener('change', buildFormula);
+  });
+  buildFormula();
+})();
+
+// === Interactive 2: R² stages ===
+function r2Stage(stage) {
+  // Stage values from Jeremy's REML run, full model with interaction
+  // Nested marginal = 0 (no fixed effects), nested conditional = 0.574
+  // Full marginal = 0.228, full conditional = 0.767, ΔR² = 0.193
+  const nMarg = 0, nCond = 0.574, fMarg = 0.228, fCond = 0.767;
+  const bNM = document.getElementById('b-n-marg');
+  const bNR = document.getElementById('b-n-rand');
+  const bFM = document.getElementById('b-f-marg');
+  const bFR = document.getElementById('b-f-rand');
+  const tN = document.getElementById('t-n-tot');
+  const tF = document.getElementById('t-f-tot');
+  const exp = document.getElementById('r2-explain');
+
+  // Reset
+  [bNM,bNR,bFM,bFR].forEach(b => { b.style.outline = 'none'; });
+
+  if (stage === 0) {
+    bNM.style.width = '0%'; bNR.style.width = '0%';
+    bFM.style.width = '0%'; bFR.style.width = '0%';
+    tN.textContent = '—'; tF.textContent = '—';
+    exp.innerHTML = '';
+    return;
+  }
+  if (stage >= 1) {
+    bNM.style.width = (nMarg*100) + '%';
+    bNR.style.width = (nCond*100) + '%';
+    bNR.style.left = (nMarg*100) + '%';
+    tN.textContent = nCond.toFixed(2);
+  }
+  if (stage >= 2) {
+    bFM.style.width = (fMarg*100) + '%';
+    bFR.style.width = ((fCond - fMarg)*100) + '%';
+    bFR.style.left = (fMarg*100) + '%';
+    tF.textContent = fCond.toFixed(2);
+  }
+
+  if (stage === 1) {
+    exp.innerHTML = '<strong>Nested model (random effects only).</strong> Marginal R² is 0 — there are no fixed effects to explain anything. Conditional R² is .574 — that\'s entirely from participants and faces differing in baseline RT.';
+  } else if (stage === 2) {
+    exp.innerHTML = '<strong>Full model.</strong> Marginal R² = .228 — what the fixed effects (PI20 + familiar + interaction) explain on their own. Conditional R² = .767 — fixed plus random together. <br><br>So the "marginal" number is the fixed-effect slice of <em>this</em> model; the rest of the total fit (.539) is still coming from the random effects.';
+  } else if (stage === 3) {
+    exp.innerHTML = '<strong>ΔR² = .193</strong> is the <em>gap between the two conditional R² values</em> (.767 − .574). It says: adding fixed effects to the nested model improved total explained variance by about 19 percentage points. <br><br>Notice that marginal R² (.228) is <em>not</em> equal to ΔR² (.193). The gap is .035 — and that\'s the bit of variance that <em>used to</em> be attributed to "differences between participants" but is now claimed by PI20 (a participant-level predictor). Random-intercept variance shrank from .574 → .539 when fixed effects were added.';
+    bFR.style.outline = '2px solid #c84444';
+    bNR.style.outline = '2px solid #c84444';
+  }
+}
+</script>
+
+</body>
+</html>

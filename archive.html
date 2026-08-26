@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Project Archive — Analyses, Proposals &amp; Working Documents</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Mono:wght@400;500&family=Epilogue:wght@400;500;700;800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --ink: #1a1714;
+  --paper: #f7f3ee;
+  --paper-mid: #ede8e1;
+  --paper-dark: #ddd6cb;
+  --amber: #c07c2a;
+  --amber-light: #e8a44a;
+  --amber-pale: #f5e8d0;
+  --teal: #2a6b6e;
+  --teal-light: #4a9b9e;
+  --teal-pale: #eaf4f4;
+  --teal-mid: #5DCAA5;
+  --teal-track-b: #1D9E75;
+  --red: #b84040;
+  --coral: #D85A30;
+  --coral-pale: #fbe7de;
+  --violet: #6b4a8e;
+  --violet-pale: #ede6f5;
+  --muted: #7a7068;
+  --serif: 'Cormorant Garamond', Georgia, serif;
+  --sans: 'Epilogue', sans-serif;
+  --mono: 'DM Mono', monospace;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body { background: var(--paper); color: var(--ink); font-family: var(--serif); font-size: 19px; line-height: 1.75; }
+
+/* ── HEADER ── */
+header { background: var(--ink); color: #fff; padding: 5.5rem 2rem 4rem; position: relative; overflow: hidden; text-align: center; }
+header::before {
+  content: ''; position: absolute; inset: 0;
+  background: radial-gradient(ellipse 70% 50% at 50% 35%, rgba(107,74,142,0.10) 0%, transparent 70%);
+  pointer-events: none;
+}
+header::after {
+  content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 4px;
+  background: linear-gradient(90deg, var(--coral), var(--violet), var(--teal-mid), var(--amber-light));
+}
+.eyebrow { font-family: var(--sans); font-size: 0.65rem; letter-spacing: 0.18em; text-transform: uppercase; color: rgba(255,255,255,0.45); margin-bottom: 1.6rem; position: relative; z-index: 1; }
+header h1 { font-family: var(--serif); font-weight: 300; font-size: clamp(2.2rem, 5vw, 3.6rem); line-height: 1.15; letter-spacing: -0.01em; max-width: 800px; margin: 0 auto 1.4rem; position: relative; z-index: 1; }
+header h1 em { color: #b28fd4; font-style: italic; }
+header .subtitle { font-style: italic; font-weight: 300; color: rgba(255,255,255,0.75); max-width: 660px; margin: 0 auto 0.5rem; font-size: 1.1rem; position: relative; z-index: 1; }
+header .subtitle a { color: var(--teal-mid); text-decoration: none; border-bottom: 1px dashed rgba(93,202,165,0.5); }
+header .subtitle a:hover { color: var(--amber-light); }
+header .meta-row { font-family: var(--sans); font-size: 0.65rem; letter-spacing: 0.18em; text-transform: uppercase; color: rgba(255,255,255,0.45); margin-top: 1.8rem; position: relative; z-index: 1; display: flex; justify-content: center; align-items: center; gap: 1rem; flex-wrap: wrap; }
+header .meta-dot { width: 4px; height: 4px; background: rgba(255,255,255,0.3); border-radius: 50%; }
+
+/* ── SECTIONS ── */
+section { max-width: 1100px; margin: 0 auto; padding: 4rem 2rem 3rem; }
+.section-alt { background: var(--paper-mid); margin-top: 1rem; padding-top: 4rem; padding-bottom: 4rem; }
+.section-alt-inner { max-width: 1100px; margin: 0 auto; padding: 0 2rem; }
+.section-last { padding-bottom: 5rem; }
+
+.track-header { display: flex; align-items: center; gap: 1rem; margin-bottom: 0.6rem; flex-wrap: wrap; }
+.track-badge { font-family: var(--sans); font-size: 0.65rem; font-weight: 700; letter-spacing: 0.18em; text-transform: uppercase; padding: 0.35rem 0.9rem; border-radius: 3px; flex-shrink: 0; }
+.track-badge.v { background: var(--violet-pale); color: var(--violet); border: 1px solid #cdbbe0; }
+.track-badge.c { background: var(--coral-pale); color: var(--coral); border: 1px solid #eec2ad; }
+.track-badge.t { background: var(--teal-pale); color: var(--teal-track-b); border: 1px solid #b0d8da; }
+section h2 { font-family: var(--serif); font-size: clamp(1.8rem, 3.5vw, 2.4rem); font-weight: 600; line-height: 1.15; letter-spacing: -0.01em; }
+section h2 em { font-style: italic; }
+.sec-v h2 em { color: var(--violet); }
+.sec-c h2 em { color: var(--coral); }
+.sec-t h2 em { color: var(--teal-track-b); }
+.section-lead { font-size: 1.05rem; color: var(--muted); font-style: italic; max-width: 780px; margin: 0.6rem 0 2rem; line-height: 1.65; }
+
+/* ── CARD GRID ── */
+.card-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1.2rem; margin-top: 1.5rem; }
+.card { background: #fff; border: 1px solid var(--paper-dark); border-radius: 6px; padding: 1.5rem 1.4rem 1.3rem; text-decoration: none; color: var(--ink); display: flex; flex-direction: column; gap: 0.55rem; transition: all 0.18s ease; position: relative; }
+.card:hover { transform: translateY(-3px); box-shadow: 0 6px 20px rgba(0,0,0,0.08); }
+.card.v { border-top: 4px solid var(--violet); }
+.card.v:hover { border-color: var(--violet); }
+.card.c { border-top: 4px solid var(--coral); }
+.card.c:hover { border-color: var(--coral); }
+.card.t { border-top: 4px solid var(--teal-mid); }
+.card.t:hover { border-color: var(--teal-mid); border-top-color: var(--teal-track-b); }
+.card-num { font-family: var(--mono); font-size: 0.7rem; letter-spacing: 0.12em; text-transform: uppercase; }
+.card.v .card-num { color: var(--violet); }
+.card.c .card-num { color: var(--coral); }
+.card.t .card-num { color: var(--teal-track-b); }
+.card-title { font-family: var(--serif); font-size: 1.15rem; font-weight: 600; line-height: 1.25; color: var(--ink); }
+.card-title em { font-style: italic; }
+.card.v .card-title em { color: var(--violet); }
+.card.c .card-title em { color: var(--coral); }
+.card.t .card-title em { color: var(--teal-track-b); }
+.card-desc { font-size: 0.92rem; color: var(--muted); line-height: 1.6; flex-grow: 1; }
+.card-cta { font-family: var(--sans); font-size: 0.62rem; font-weight: 700; letter-spacing: 0.15em; text-transform: uppercase; padding-top: 0.7rem; margin-top: 0.3rem; border-top: 1px solid var(--paper-dark); }
+.card.v .card-cta { color: var(--violet); }
+.card.c .card-cta { color: var(--coral); }
+.card.t .card-cta { color: var(--teal-track-b); }
+.card:hover .card-cta { color: var(--ink); }
+
+/* wide single card */
+.card-wide { grid-column: 1 / -1; }
+
+/* ── NOTE BOX ── */
+.design-note { background: var(--paper-mid); border: 1px solid var(--paper-dark); border-left: 3px solid var(--violet); border-radius: 0 6px 6px 0; padding: 1.2rem 1.5rem; margin-top: 2rem; font-size: 0.95rem; color: var(--ink); }
+.section-alt .design-note { background: #fff; }
+.design-note .design-label { font-family: var(--sans); font-size: 0.6rem; font-weight: 700; letter-spacing: 0.18em; text-transform: uppercase; color: var(--violet); margin-bottom: 0.4rem; }
+.design-note em { font-style: italic; }
+
+/* ── BACK-TO-TEACHING BANNER ── */
+.crosslink { max-width: 1100px; margin: 0 auto; padding: 0 2rem 4.5rem; }
+.crosslink-inner { background: #fff; border: 1px solid var(--paper-dark); border-top: 4px solid var(--amber); border-radius: 6px; padding: 1.8rem 1.8rem 1.6rem; }
+.crosslink-label { font-family: var(--sans); font-size: 0.62rem; font-weight: 700; letter-spacing: 0.15em; text-transform: uppercase; color: var(--amber); margin-bottom: 0.5rem; }
+.crosslink h3 { font-family: var(--serif); font-weight: 600; font-size: 1.35rem; line-height: 1.25; margin-bottom: 0.5rem; }
+.crosslink h3 em { font-style: italic; color: var(--amber); }
+.crosslink p { font-size: 0.95rem; color: var(--muted); line-height: 1.6; }
+.crosslink p a { color: var(--teal-track-b); text-decoration: none; border-bottom: 1px dashed transparent; font-weight: 500; }
+.crosslink p a:hover { border-bottom-color: var(--teal-track-b); }
+
+/* ── FOOTER ── */
+footer { background: var(--ink); color: rgba(247,243,238,0.55); text-align: center; padding: 2.8rem 2rem; font-family: var(--sans); font-size: 0.78rem; letter-spacing: 0.04em; }
+footer p { margin-bottom: 0.4rem; color: rgba(247,243,238,0.55); }
+footer p:last-child { margin-bottom: 0; }
+footer strong { color: rgba(247,243,238,0.85); font-weight: 600; }
+footer a { color: var(--teal-mid); text-decoration: none; }
+footer a:hover { color: var(--amber-light); }
+
+/* ── RESPONSIVE ── */
+@media (max-width: 640px) {
+  body { font-size: 17px; line-height: 1.65; }
+  header { padding: 3rem 1.2rem 2.5rem; }
+  header h1 { font-size: 1.7rem; }
+  header .subtitle { font-size: 0.95rem; }
+  header .meta-row { font-size: 0.55rem; gap: 0.5rem; letter-spacing: 0.12em; }
+  section { padding: 2.5rem 1.1rem 2rem; }
+  .section-alt { padding: 2.5rem 0; margin-top: 0.5rem; }
+  .section-alt-inner { padding: 0 1.1rem; }
+  .section-last { padding-bottom: 3rem; }
+  section h2 { font-size: 1.45rem; }
+  .section-lead { font-size: 0.95rem; margin-bottom: 1.4rem; }
+  .track-header { gap: 0.6rem; }
+  .track-badge { font-size: 0.58rem; padding: 0.3rem 0.7rem; }
+  .card-grid { grid-template-columns: 1fr; gap: 0.8rem; }
+  .card { padding: 1.2rem 1.1rem; }
+  .card-title { font-size: 1.05rem; }
+  .card-desc { font-size: 0.88rem; }
+  .design-note { padding: 1rem 1.1rem; font-size: 0.88rem; }
+  .crosslink { padding: 0 1.1rem 3rem; }
+  .crosslink-inner { padding: 1.2rem 1.1rem; }
+  footer { padding: 2rem 1.2rem; font-size: 0.7rem; }
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="eyebrow">Jeremy Tree · Swansea University</div>
+  <h1>Project <em>Archive</em></h1>
+  <p class="subtitle">Analyses, study proposals and working documents, kept in one place so they stay findable. The structured teaching material lives on the <a href="index.html">main site</a>.</p>
+  <div class="meta-row">
+    <span>Rating reliability</span>
+    <span class="meta-dot"></span>
+    <span>Single-case interpretation</span>
+    <span class="meta-dot"></span>
+    <span>Self-report &amp; face recognition</span>
+  </div>
+</header>
+
+<!-- ════════════════════════════════════════
+     MILA — RATING RELIABILITY
+════════════════════════════════════════ -->
+<section class="sec-v">
+  <div class="track-header">
+    <span class="track-badge v">Series · 4 parts + planning</span>
+    <h2>Rating <em>Reliability</em>: the Mila project</h2>
+  </div>
+  <p class="section-lead">A walkthrough of reliability in a friendliness-rating study — 47 raters, 100 clips, 20 identities — from the intraclass correlation through to generalisability theory, and the design-planning document it fed into.</p>
+
+  <div class="card-grid">
+    <a class="card v" href="mila/part1_icc.html">
+      <div class="card-num">Part 1</div>
+      <div class="card-title">What <em>ICC</em> Is and What It Tells Us</div>
+      <div class="card-desc">Signal and noise inside a single rating. ICC(C,1) = 0.271 — roughly 27% signal — and why the consistency variant is the right one for a rank-ordering question.</div>
+      <div class="card-cta">Read Part 1 →</div>
+    </a>
+    <a class="card v" href="mila/part2_aggregation.html">
+      <div class="card-num">Part 2</div>
+      <div class="card-title">What <em>Aggregation</em> Does</div>
+      <div class="card-desc">Averaging across raters and clips lifts the ICC from 0.271 to 0.946 via Spearman–Brown — but that is reliability for <em>these</em> materials, not yet for new ones.</div>
+      <div class="card-cta">Read Part 2 →</div>
+    </a>
+    <a class="card v" href="mila/part3_mixed_models.html">
+      <div class="card-num">Part 3</div>
+      <div class="card-title">What a <em>Mixed Model</em> Reveals</div>
+      <div class="card-desc">Variance decomposed into named sources — identity, clip, rater generosity, idiosyncratic taste. Aggregation suppresses these; the model explains them.</div>
+      <div class="card-cta">Read Part 3 →</div>
+    </a>
+    <a class="card v" href="mila/part4_generalisability.html">
+      <div class="card-num">Part 4</div>
+      <div class="card-title">From Reliability to <em>Generalisability</em></div>
+      <div class="card-desc">Three kinds of reliability, Cronbach's G-theory and Rouder &amp; Mehrvarz's signal-to-noise framework — turning an internal consistency check into a design question.</div>
+      <div class="card-cta">Read Part 4 →</div>
+    </a>
+    <a class="card v card-wide" href="Mila_identity_signal_reliability_planning_v3.html">
+      <div class="card-num">Planning document</div>
+      <div class="card-title">Identity <em>Signal Reliability</em> Planning</div>
+      <div class="card-desc">A Bayesian cumulative-logit decomposition of the ratings into identity signal and its competing noise sources, then reliability across candidate designs. Moving from 47 raters × 5 images to 50 × 10 takes absolute reliability from ≈.735 to ≈.820 — and adding images beats adding raters, because image-sampling noise is the least-averaged component.</div>
+      <div class="card-cta">Read the planning document →</div>
+    </a>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════
+     SINGLE-CASE INTERPRETATION
+════════════════════════════════════════ -->
+<section class="section-alt sec-c">
+  <div class="section-alt-inner">
+    <div class="track-header">
+      <span class="track-badge c">Single case</span>
+      <h2>Interpreting an <em>Individual Score</em></h2>
+    </div>
+    <p class="section-lead">What it actually takes to call one person's test score abnormal — and how much of the answer is decided by the framework rather than the data.</p>
+
+    <div class="card-grid">
+      <a class="card c card-wide" href="zscorekiller.html">
+        <div class="card-num">Analysis</div>
+        <div class="card-title">Is That Score Really <em>Extreme?</em> From z-Scores to Bayes</div>
+        <div class="card-desc">Conventional z-scores answer "how surprising is this?", not the clinical question. Crawford's frequentist corrections handle measurement error; Bayesian approaches ask about group membership and true-score estimation directly, with base rates and reliability doing the work. Run through on developmental prosopagnosia, where identical data reach different conclusions depending on the framework.</div>
+        <div class="card-cta">Read the analysis →</div>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════
+     CFMQ
+════════════════════════════════════════ -->
+<section class="sec-t section-last">
+  <div class="track-header">
+    <span class="track-badge t">Study proposal</span>
+    <h2>Self-Report &amp; <em>Objective</em> Face Recognition</h2>
+  </div>
+  <p class="section-lead">An observation in the CFMQ data, what it implies about general and face-specific components of self-reported recognition ability, and a study designed to separate the two.</p>
+
+  <div class="card-grid">
+    <a class="card t card-wide" href="CFMQ_study_proposal_FINAL_with_Figure_2.html">
+      <div class="card-num">Current version</div>
+      <div class="card-title">Testing <em>General</em> and <em>Face-Specific</em> Components</div>
+      <div class="card-desc">The data, the observation, and what it implies; the case for a better non-face questionnaire; and the proposed study. With an appendix on the divergent validity of the Abstract Art Memory Test.</div>
+      <div class="card-cta">Read the proposal →</div>
+    </a>
+  </div>
+
+  <div class="design-note">
+    <div class="design-label">Earlier drafts</div>
+    Three earlier passes at the same argument are held offline: <em>An observation and a proposed study</em>; <em>Two processes, and a study to measure the general one</em>; and <em>The CFMQ reframed — a two-channel model of self-reported face recognition</em>. The version above supersedes them.
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════
+     CROSS-LINK
+════════════════════════════════════════ -->
+<div class="crosslink">
+  <div class="crosslink-inner">
+    <div class="crosslink-label">Looking for the teaching material?</div>
+    <h3>Statistical Foundations &amp; <em>Psychometric Methods</em></h3>
+    <p>Two structured tracks — inference from first principles (law of large numbers and the central limit theorem, ANOVA and mixed models, generative distributions and generalised linear models, effect sizes and power) and behavioural measurement (measurement fallacies, classical test theory through item response theory, and the reliability problem). <a href="index.html">Go to the teaching collection →</a></p>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════
+     FOOTER
+════════════════════════════════════════ -->
+<footer>
+  <p><strong>Project Archive</strong> — Analyses, Proposals &amp; Working Documents</p>
+  <p style="opacity:0.7;">Any questions? Contact me · j.tree@swansea.ac.uk</p>
+  <p style="margin-top:0.6rem; font-size:0.7rem; letter-spacing:0.08em;">
+    <a href="index.html">Teaching collection</a>
+    &nbsp;·&nbsp;
+    <a href="mila/part1_icc.html">Mila 1</a>
+    &nbsp;·&nbsp;
+    <a href="mila/part2_aggregation.html">Mila 2</a>
+    &nbsp;·&nbsp;
+    <a href="mila/part3_mixed_models.html">Mila 3</a>
+    &nbsp;·&nbsp;
+    <a href="mila/part4_generalisability.html">Mila 4</a>
+    &nbsp;·&nbsp;
+    <a href="Mila_identity_signal_reliability_planning_v3.html">Planning</a>
+    &nbsp;·&nbsp;
+    <a href="zscorekiller.html">z-Scores to Bayes</a>
+    &nbsp;·&nbsp;
+    <a href="CFMQ_study_proposal_FINAL_with_Figure_2.html">CFMQ</a>
+  </p>
+</footer>
+
+</body>
+</html>
